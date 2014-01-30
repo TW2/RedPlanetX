@@ -8,6 +8,7 @@ package encofx;
 
 import encofx.lib.Configuration;
 import encofx.lib.FXObject;
+import encofx.lib.IO;
 import encofx.lib.ObjectCollectionInterface;
 import encofx.lib.SubObjects;
 import encofx.lib.VTD2;
@@ -21,16 +22,22 @@ import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VText;
 import encofx.lib.effects.VTextCollection;
 import encofx.lib.filefilter.VideoFilter;
+import encofx.lib.graphics.SyllableLocator;
 import encofx.lib.properties.AbstractProperty;
 import encofx.lib.renderers.DisplaySettingsDeluxe;
 import encofx.lib.renderers.NodeRenderer;
 import encofx.lib.settings.SetupObject;
 import encofx.lib.xuggle.VideoInfo;
 import java.awt.Desktop;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -44,6 +51,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -68,6 +76,9 @@ public class EncoFXFrame extends javax.swing.JFrame {
     //For table
     private DefaultTableModel tableModel;
     private ChangeSettings changeSettings = null;
+    
+    //For VTD control
+    private int xVTD = -1, yVTD = -1;
 
     /**
      * Creates new form EncoFXFrame
@@ -128,7 +139,18 @@ public class EncoFXFrame extends javax.swing.JFrame {
         
         vtd.init();
         jPanel1.add(vtd);
+        vtd.setComponentPopupMenu(vtdPopup);
         configureVTD();
+        
+        vtd.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getButton()==3){
+                    xVTD = e.getX();
+                    yVTD = e.getY();
+                }
+            }
+        });
         
 //        TextCollection col001 = new TextCollection();
 //        Text textAtStart = new Text();
@@ -265,6 +287,8 @@ public class EncoFXFrame extends javax.swing.JFrame {
         popmParent = new javax.swing.JMenuItem();
         fcOpenVideo = new javax.swing.JFileChooser();
         fcSaveFolder = new javax.swing.JFileChooser();
+        vtdPopup = new javax.swing.JPopupMenu();
+        popmAlignSyllables = new javax.swing.JMenuItem();
         jSlider1 = new javax.swing.JSlider();
         jPanel1 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
@@ -355,6 +379,14 @@ public class EncoFXFrame extends javax.swing.JFrame {
             }
         });
         treePopup.add(popmParent);
+
+        popmAlignSyllables.setText("Align selected syllables");
+        popmAlignSyllables.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popmAlignSyllablesActionPerformed(evt);
+            }
+        });
+        vtdPopup.add(popmAlignSyllables);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("RedPlanet Xpress \"Little Phoenix\"");
@@ -569,30 +601,49 @@ public class EncoFXFrame extends javax.swing.JFrame {
 
     private void btnAddHTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddHTextActionPerformed
         AddTextDialog atd = new AddTextDialog(this, true);
-        TextCollection tc = atd.showDialogForHText();
-        if(tc!=null){
-//            //Add the collection
-//            DefaultMutableTreeNode textnode = new DefaultMutableTreeNode(tc);
-//            root.add(textnode);
-            
-            //If list is empty (normal text case)
-            if(tc.getList().isEmpty()){
-                Text before = new Text();
-                before.setFrame(0);
-                tc.add(before);
-                Text after = new Text();
-                after.setFrame(Integer.parseInt(Long.toString(end_frame)));
-                tc.add(after);
+        atd.setFPS(videoInfo.getFPS());
+        List<TextCollection> ltc = atd.showDialogForHText();
+        if(ltc!=null){
+            for(TextCollection tc : ltc){
+                //If list is empty (normal text case)
+                if(tc.getList().isEmpty()){
+                    Text before = new Text();
+                    before.setFrame(0);
+                    tc.add(before);
+                    Text after = new Text();
+                    after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+                    tc.add(after);
+                }
+                
+                //Add the collection to the program
+                collection.add(tc);
+                
+                if(atd.getSyllablesOnTextCollection()!=null){
+                    int index = 0;
+                    for(TextCollection tca : atd.getSyllablesOnTextCollection()){
+                        if(tca.getNotStrippedSentence().equalsIgnoreCase(tc.getText())){
+                            
+                            SyllableLocator sloc = new SyllableLocator(videoInfo.getVideoWidth(), videoInfo.getVideoHeight());
+                            sloc.setFontname(tca.getFontname());
+                            sloc.setFontsize(tca.getList().get(0).getSize());
+                            sloc.setFontstyle(tca.getFontstyle().getStyle());
+                            sloc.setX((float) tca.getAnchor().getX());
+                            sloc.setString(tca.getNotStrippedSentence());
+                            Map<Integer, Float> locations = sloc.getSyllablesLocation();
+                            
+                            Point2D p2d = new Point2D.Float(
+                                    locations.get(index), 
+                                    (float) tca.getAnchor().getY());
+                            tca.setAnchor(p2d);
+                            
+                            //Add the collection to the program
+                            collection.add(tca);
+                        }
+                        index += 1;
+                    }
+                    tc.setText(IO.getStrippedElement(tc.getText()));
+                }
             }
-            
-//            //Add any Text object of the collection to the tree
-//            for(Text t : tc.getList()){
-//                DefaultMutableTreeNode property = new DefaultMutableTreeNode(t);
-//                textnode.add(property);
-//            }
-            
-            //Add the collection to the program
-            collection.add(tc);
             
             //Refresh the VTD
             vtd.setCollections(collection);
@@ -669,7 +720,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
             fcOpenVideo.removeChoosableFileFilter(f);
         }
         fcOpenVideo.addChoosableFileFilter(new VideoFilter());
-        fcSaveFolder.setDialogTitle("Choose the video...");
+        fcOpenVideo.setDialogTitle("Choose the video...");
         SwingUtilities.updateComponentTreeUI(fcOpenVideo);
         int z = fcOpenVideo.showOpenDialog(this);
         if (z == JFileChooser.APPROVE_OPTION){            
@@ -808,19 +859,22 @@ public class EncoFXFrame extends javax.swing.JFrame {
 
     private void btnAddVTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddVTextActionPerformed
         AddTextDialog atd = new AddTextDialog(this, true);
-        VTextCollection vtc = atd.showDialogForVText();
-        if(vtc!=null){
-            //If list is empty (normal text case)
-            if(vtc.getList().isEmpty()){
-                VText before = new VText();
-                before.setFrame(0);
-                vtc.add(before);
-                VText after = new VText();
-                after.setFrame(Integer.parseInt(Long.toString(end_frame)));
-                vtc.add(after);
-            }
-            //Add the collection to the program
-            collection.add(vtc);
+        atd.setFPS(videoInfo.getFPS());
+        List<VTextCollection> lvtc = atd.showDialogForVText();
+        if(lvtc!=null){
+            for(VTextCollection vtc : lvtc){
+                //If list is empty (normal text case)
+                if(vtc.getList().isEmpty()){
+                    VText before = new VText();
+                    before.setFrame(0);
+                    vtc.add(before);
+                    VText after = new VText();
+                    after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+                    vtc.add(after);
+                }
+                //Add the collection to the program
+                collection.add(vtc);
+            }            
             //Refresh the VTD
             vtd.setCollections(collection);
             //Refesh tree
@@ -852,6 +906,34 @@ public class EncoFXFrame extends javax.swing.JFrame {
         updateTree();
         expandTree();
     }//GEN-LAST:event_popmParentActionPerformed
+
+    private void popmAlignSyllablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmAlignSyllablesActionPerformed
+        if(objectsTree.getSelectionCount()>0){
+            TreePath[] paths = objectsTree.getSelectionPaths();
+            for (TreePath tp : paths){
+                DefaultMutableTreeNode tn = (DefaultMutableTreeNode)tp.getLastPathComponent();
+                if(tn.getUserObject() instanceof TextCollection){
+                    TextCollection tc = (TextCollection)tn.getUserObject();
+                    
+                    if(tc.getNotStrippedSentence().isEmpty()==false){
+                        SyllableLocator sloc = new SyllableLocator(videoInfo.getVideoWidth(), videoInfo.getVideoHeight());
+                        sloc.setFontname(tc.getFontname());
+                        sloc.setFontsize(tc.getList().get(0).getSize());
+                        sloc.setFontstyle(tc.getFontstyle().getStyle());
+                        sloc.setX((float) tc.getAnchor().getX());
+                        sloc.setString(tc.getNotStrippedSentence());
+                        Map<Integer, Float> locations = sloc.getSyllablesLocation();
+
+                        Point2D p2d = new Point2D.Float(
+                                locations.get(tc.getSyllableIndex())+xVTD, 
+                                yVTD);
+                        tc.setAnchor(p2d);
+                    }                  
+                    
+                }
+            }
+        }
+    }//GEN-LAST:event_popmAlignSyllablesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -913,6 +995,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuOpenVideo;
     private javax.swing.JTree objectsTree;
     private javax.swing.JMenuItem popmAddEvent;
+    private javax.swing.JMenuItem popmAlignSyllables;
     private javax.swing.JMenuItem popmCollapse;
     private javax.swing.JMenuItem popmCollapseAll;
     private javax.swing.JMenuItem popmExpand;
@@ -921,6 +1004,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem popmRemoveEvent;
     private javax.swing.JTable propTable;
     private javax.swing.JPopupMenu treePopup;
+    private javax.swing.JPopupMenu vtdPopup;
     // End of variables declaration//GEN-END:variables
 
     

@@ -257,6 +257,10 @@ public class GraphicsTextFX {
         return image;
     }
     
+    public BufferedImage getBlankImage(){
+        return image;
+    }
+    
     /**
      * <p>Définit le rendu.<br />
      * Rendering = Drawing quand nous sommes en mode édition.<br />
@@ -389,7 +393,5 @@ public class GraphicsTextFX {
         BufferedImageOp op = new ConvolveOp( blurmatrix.getKernel(), ConvolveOp.EDGE_NO_OP, null );
 	return op.filter(source, destination);        
     }
-    
-    
     
 }

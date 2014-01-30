@@ -6,7 +6,6 @@
 
 package encofx.lib.effects;
 
-import encofx.lib.FXObject;
 import encofx.lib.ObjectCollectionObject;
 import encofx.lib.SubObjects;
 import encofx.lib.graphics.GraphicsTextFX;

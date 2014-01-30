@@ -22,6 +22,9 @@ public class Text extends FXObject {
     //Objects for the table of properties and settings
     private final List<AbstractProperty> properties = new ArrayList<>();
     
+    private boolean isSyllable = false;
+    private int syllableIndex = -1;
+    
     public Text(){
         properties.add(propFontsize);
         properties.add(propX);
@@ -42,7 +45,26 @@ public class Text extends FXObject {
     
     @Override
     public String toString(){
+        if(isSyllable==true){
+            return "Syllable at the frame "+frame;
+        }
         return "At the frame "+frame;
+    }
+    
+    public void setSyllable(boolean isSyllable){
+        this.isSyllable = isSyllable;
+    }
+    
+    public boolean isSyllable(){
+        return isSyllable;
+    }
+    
+    public void setSyllableIndex(int index){
+        syllableIndex = index;
+    }
+    
+    public int getSyllableIndex(){
+        return syllableIndex;
     }
     
     public static Color getActualColor(Text before, Text after, int actualframe){

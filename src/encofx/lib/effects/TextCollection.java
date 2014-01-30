@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,6 +38,9 @@ public class TextCollection extends ObjectCollectionObject {
     private Font font = new Font("Arial", Font.PLAIN, 50);
     //Objects for the table of properties and settings
     List<AbstractProperty> properties = new ArrayList<>();
+    
+    private String notStrippedSentence = "";
+    private int syllableIndex = -1;
     
     public TextCollection(){
         properties.add(propChild);
@@ -50,6 +55,22 @@ public class TextCollection extends ObjectCollectionObject {
         properties.add(propGradientType);
     }
 
+    public void setNotStrippedSentence(String s){
+        notStrippedSentence = s;
+    }
+    
+    public String getNotStrippedSentence(){
+        return notStrippedSentence;
+    }
+    
+    public void setSyllableIndex(int index){
+        syllableIndex = index;
+    }
+    
+    public int getSyllableIndex(){
+        return syllableIndex;
+    }
+    
     @Override
     public SubObjects getSubObjects() {
         SubObjects<Text> so = new SubObjects();
@@ -297,8 +318,18 @@ public class TextCollection extends ObjectCollectionObject {
     public BufferedImage getFX(int frame, int imageWidth, int imageHeight, boolean encoding) {
         GraphicsTextFX graFX = new GraphicsTextFX(imageWidth, imageHeight);
         
+        boolean isRelative = true;
+        
         Text before = getBefore(frame);
         Text after = getAfter(frame);
+        
+        if(before==null | after == null){
+            return graFX.getBlankImage();
+        }else if(before!=null && after!=null){
+            if(before.getFrame()==after.getFrame()){
+                return graFX.getBlankImage();
+            }            
+        }
         
         //Propiétés dynamiques        
         //Couleur
@@ -349,8 +380,23 @@ public class TextCollection extends ObjectCollectionObject {
         if(propChild!=null){
             SetupObject<ParentCollection> soChild = (SetupObject<ParentCollection>)propChild.getObject();
             if(soChild.get()!=null){
+                
                 Parent parent_before = soChild.get().getBefore(frame);
                 Parent parent_after = soChild.get().getAfter(frame);
+                
+                if(isRelative==true && before!=null && after!=null){
+                    try {
+                        parent_before = (Parent)soChild.get().getBefore(frame).clone();
+                        parent_after = (Parent)soChild.get().getAfter(frame).clone();
+                        parent_before.setFrame(before.getFrame());
+                        parent_after.setFrame(after.getFrame());                        
+                    } catch (CloneNotSupportedException ex) {
+                        Logger.getLogger(TextCollection.class.getName()).log(Level.SEVERE, null, ex);
+                        parent_before = soChild.get().getBefore(frame);
+                        parent_after = soChild.get().getAfter(frame);
+                    }                    
+                }
+                
 
                 //Propiétés dynamiques        
                 //Couleur

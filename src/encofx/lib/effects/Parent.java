@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Yves
  */
-public class Parent extends FXObject {
+public class Parent extends FXObject implements Cloneable {
     
     //Objects for the table of properties and settings
     private final List<AbstractProperty> properties = new ArrayList<>();
@@ -43,6 +43,12 @@ public class Parent extends FXObject {
     @Override
     public String toString(){
         return "At the frame "+frame;
+    }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object o = super.clone();
+        return o;
     }
     
     public static Color getActualColor(Parent before, Parent after, int actualframe){

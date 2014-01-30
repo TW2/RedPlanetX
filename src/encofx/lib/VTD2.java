@@ -32,7 +32,7 @@ public class VTD2 extends JPanel{
     private int height = 720, virtualHeight = 720;
     private VideoInfo videoInfo = null;
     
-    public VTD2(){
+    public VTD2(){        
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {

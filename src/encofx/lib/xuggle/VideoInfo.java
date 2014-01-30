@@ -12,7 +12,6 @@ import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream;
 import encofx.lib.VTD2;
-import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -132,6 +131,10 @@ public class VideoInfo {
     
     public int getBitrate(){
         return bitrate;
+    }
+    
+    public void setFPS(double fps){
+        this.fps = fps;
     }
     
     /**

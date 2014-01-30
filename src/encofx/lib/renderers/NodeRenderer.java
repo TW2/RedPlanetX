@@ -8,6 +8,7 @@ package encofx.lib.renderers;
 
 import encofx.lib.FXObject;
 import encofx.lib.effects.ParentCollection;
+import encofx.lib.effects.Text;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VTextCollection;
 import encofx.lib.xuggle.VideoInfo;
@@ -68,6 +69,21 @@ public class NodeRenderer extends DefaultTreeCellRenderer {
             }else{
                 Icon icon = new ImageIcon(getClass().getResource("16px-point-blue.png"));
                 setIcon(icon);
+            }
+            if(fx instanceof Text){
+                Text t = (Text)fx;
+                if(t.isSyllable()==true){
+                    if(t.getFrame()==0){
+                        Icon icon = new ImageIcon(getClass().getResource("16px-triangle-green.png"));
+                        setIcon(icon);
+                    }else if(t.getFrame()==vi.getFrames()){
+                        Icon icon = new ImageIcon(getClass().getResource("16px-triangle-red.png"));
+                        setIcon(icon);
+                    }else{
+                        Icon icon = new ImageIcon(getClass().getResource("16px-triangle-blue.png"));
+                        setIcon(icon);
+                    }
+                }
             }
         }else if(node.getUserObject() instanceof ParentCollection){
             Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kllckety.png"));

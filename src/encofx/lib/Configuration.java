@@ -76,6 +76,7 @@ public class Configuration {
         obj.put("VIDEO_PATH", vi.getVideoPath());
         obj.put("SAVE_PATH", vi.getSaveFolder());
         obj.put("frames", vi.getFrames());
+        obj.put("fps", vi.getFPS());
         File projectFile = new File(vi.getVideoPath());
         File jsonFile = new File(CONFIG_FOLDER+File.separator+projectFile.getName()+".json");
         FileWriter fw = new FileWriter(jsonFile);
@@ -94,6 +95,7 @@ public class Configuration {
         vi.setVideo((String)jsonObject.get("VIDEO_PATH"));
         vi.setSaveFolder((String)jsonObject.get("SAVE_PATH"));
         vi.setFrames((Long)jsonObject.get("frames"));
+        vi.setFPS((Double)jsonObject.get("fps"));
         CONFIG_FOLDER = (String)jsonObject.get("SAVE_PATH");
         init();
         
@@ -104,11 +106,12 @@ public class Configuration {
     
     // Nouvelles méthodes ------------------------------------------------------
     
-    public static void createJSON(String video_path, String save_path, String conf_folder, int frames) throws IOException{
+    public static void createJSON(String video_path, String save_path, String conf_folder, int frames, double fps) throws IOException{
         JSONObject obj = new JSONObject();
         obj.put("VIDEO_PATH", video_path);
         obj.put("SAVE_PATH", save_path);
         obj.put("frames", frames);
+        obj.put("fps", fps);
         File projectFile = new File(video_path);
         File jsonFile = new File(conf_folder+File.separator+projectFile.getName()+".json");
         try (FileWriter fw = new FileWriter(jsonFile)) {
