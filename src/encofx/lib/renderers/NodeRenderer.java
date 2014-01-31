@@ -86,8 +86,14 @@ public class NodeRenderer extends DefaultTreeCellRenderer {
                 }
             }
         }else if(node.getUserObject() instanceof ParentCollection){
-            Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kllckety.png"));
-            setIcon(icon);
+            ParentCollection pc = (ParentCollection)node.getUserObject();
+            if(pc.getScript()==null){
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kllckety.png"));
+                setIcon(icon);
+            }else{
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kcmdf.png"));
+                setIcon(icon);
+            }            
         }
         
         return this;

@@ -50,6 +50,8 @@ public class ParentCollection extends ObjectCollectionObject {
     private boolean useGradient = false;
     private boolean useFourSides = false;
     
+    private Object script = null;
+    
     public ParentCollection(){
         properties.add(propFontname);
         properties.add(propFontstyle);
@@ -385,6 +387,14 @@ public class ParentCollection extends ObjectCollectionObject {
     
     public boolean getFourSidesUsage(){
         return useFourSides;
+    }
+    
+    public void setScript(Object o){
+        script = o;
+    }
+    
+    public Object getScript(){
+        return script;
     }
     
     //==========================================================================

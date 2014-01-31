@@ -26,12 +26,12 @@ import encofx.lib.graphics.SyllableLocator;
 import encofx.lib.properties.AbstractProperty;
 import encofx.lib.renderers.DisplaySettingsDeluxe;
 import encofx.lib.renderers.NodeRenderer;
+import encofx.lib.scripting.Scripting;
 import encofx.lib.settings.SetupObject;
 import encofx.lib.xuggle.VideoInfo;
 import java.awt.Desktop;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
@@ -184,6 +184,8 @@ public class EncoFXFrame extends javax.swing.JFrame {
 //        ParentCollection pc = new ParentCollection();
 //        pc.setText("None");
 //        parents.add(pc);
+        
+        createScriptsList();
     }
     
     private void forceUpdate(){
@@ -263,6 +265,43 @@ public class EncoFXFrame extends javax.swing.JFrame {
             }
         }
         objectsTree.updateUI();
+    }
+    
+    public void createScriptsList(){
+        Scripting sc = new Scripting();
+        sc.searchForScript(CONFIG_FOLDER);
+        for(Object o : sc.getSObjectList()){
+            ParentCollection existingParent = null;
+            for(ParentCollection p : parents){
+                if(p.getText().equalsIgnoreCase(o.toString())){
+                    existingParent = p;
+                }
+            }
+            
+            if(existingParent!=null){
+                existingParent.getList().get(1).setFrame(Integer.parseInt(Long.toString(end_frame)));
+            }else{
+                ParentCollection pc = new ParentCollection();
+                pc.setScript(o);
+                Parent before = new Parent();
+                before.setFrame(0);
+                pc.add(before);
+                Parent after = new Parent();
+                after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+                pc.add(after);
+                pc.setText(o.toString());
+                //Ajout à la liste des parents
+                parents.add(pc);        
+                //Add the collection to the program
+                collection.add(pc);
+            }
+            
+        }
+        //Refresh the VTD
+        vtd.setCollections(collection);
+        //Refesh tree
+        updateTree();
+        expandTree();
     }
 
     /**
@@ -586,9 +625,9 @@ public class EncoFXFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE))))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         pack();
@@ -768,6 +807,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
                     forceUpdate();
                 }
             }
+            createScriptsList();
             configureVTD();
             noderenderer.updateVideoInfo(videoInfo);
         }

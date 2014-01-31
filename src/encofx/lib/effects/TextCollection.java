@@ -319,6 +319,7 @@ public class TextCollection extends ObjectCollectionObject {
         GraphicsTextFX graFX = new GraphicsTextFX(imageWidth, imageHeight);
         
         boolean isRelative = true;
+        Object scriptObject = null;
         
         Text before = getBefore(frame);
         Text after = getAfter(frame);
@@ -380,6 +381,8 @@ public class TextCollection extends ObjectCollectionObject {
         if(propChild!=null){
             SetupObject<ParentCollection> soChild = (SetupObject<ParentCollection>)propChild.getObject();
             if(soChild.get()!=null){
+                
+                scriptObject = soChild.get().getScript();
                 
                 Parent parent_before = soChild.get().getBefore(frame);
                 Parent parent_after = soChild.get().getAfter(frame);
@@ -491,6 +494,10 @@ public class TextCollection extends ObjectCollectionObject {
         graFX.setGradientType(gradienttype);
         graFX.setColorsForGradientPaint(twosidesgradient);
         graFX.setColorsForFourSidesGradientPaint(foursidesgradient);
+        
+        if(scriptObject!=null){
+            return graFX.getImage(scriptObject);
+        }
         
         return graFX.getImage();
     }

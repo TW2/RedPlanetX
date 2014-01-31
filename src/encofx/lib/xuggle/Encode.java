@@ -62,6 +62,8 @@ public class Encode {
     
     private class ImageLayers extends MediaToolAdapter {        
         
+        int count = 0;
+        
         public ImageLayers(){
             
         }
