@@ -16,6 +16,7 @@ import com.xuggle.mediatool.event.VideoPictureEvent;
 import com.xuggle.xuggler.IVideoPicture;
 import com.xuggle.xuggler.video.BgrConverter;
 import encofx.lib.VTD2;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -26,13 +27,13 @@ import java.awt.image.BufferedImage;
  */
 public class Encode {
     
-    VTD2 vtd = null;
+    static VTD2 vtd = null;
     VideoInfo videoInfo = null;
     private int lastFrame = -1;
 //    private ViewerThread vtENCODING = null;
     
     public Encode(VTD2 vtd, VideoInfo videoInfo){
-        this.vtd = vtd;
+        Encode.vtd = vtd;
         this.videoInfo = videoInfo;        
     }
     
@@ -40,14 +41,22 @@ public class Encode {
         lastFrame = -1;
         
         //Lecture
-        ImageLayers il = new ImageLayers();
+        ImageLayers il = new ImageLayers();        
         IMediaReader reader = ToolFactory.makeReader(videoInfo.getVideoPath());
         reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
         reader.addListener(il);
         
+//        HackImageMediaTool hack = new HackImageMediaTool();
+//        IMediaReader reader = ToolFactory.makeReader(videoInfo.getVideoPath());
+//        reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
+//        reader.addListener(hack);
+        
         //Ecriture
         IMediaWriter writer = ToolFactory.makeWriter(output, reader);
         il.addListener(writer);
+        
+//        IMediaWriter writer = ToolFactory.makeWriter(output, reader);
+//        hack.addListener(writer);
         
         //Visualisation
         IMediaViewer viewer = ToolFactory.makeViewer();
@@ -118,6 +127,36 @@ public class Encode {
                 myHack.interrupt();
                 pvw.dispose();
             }
+        }
+        
+    }
+    
+    private static class HackImageMediaTool extends MediaToolAdapter {
+        
+        private int imageNext = -1;
+        
+        public HackImageMediaTool() {
+            
+        }
+
+        @Override
+        public void onVideoPicture(IVideoPictureEvent event) {
+            imageNext += 1;            
+            
+            BufferedImage image = event.getImage();
+            
+            // get the graphics for the image
+            Graphics2D g = image.createGraphics();
+            
+            // compute the amount to inset the time stamp and 
+            // translate the image to that position
+            g.setFont(new Font("Arial",Font.PLAIN,42));
+            g.drawString("Hello world inside !", 300, 300);
+            vtd.draw(g, imageNext);
+            
+            // call parent which will pass the video onto next tool in chain
+            super.onVideoPicture(event);
+            
         }
         
     }

@@ -19,7 +19,11 @@ public class Scripting {
     
     private static String actualPath = null;
     private static List<Object> sobjectList = new ArrayList<>();
+    
     private static Graphics2D g2 = null;
+    private static float anchorX = 100f;
+    private static float anchorY = 100f;
+    private static int frame = -1;
     
     public Scripting(){
         
@@ -129,12 +133,36 @@ public class Scripting {
         Scripting.g2 = g2;
     }
     
+    public void setAnchoX(float anchorX){
+        Scripting.anchorX = anchorX;
+    }
+    
+    public void setAnchorY(float anchorY){
+        Scripting.anchorY = anchorY;
+    }
+    
+    public void setFrame(int frame){
+        Scripting.frame = frame;
+    }
+    
     //==========================================================================
     //==========================================================================
     //==========================================================================
     
     public static Graphics2D getGraphics(){
         return g2;
+    }
+    
+    public static float getAnchorX(){
+        return anchorX;
+    }
+    
+    public static float getAnchorY(){
+        return anchorY;
+    }
+    
+    public static int getFrame(){
+        return frame;
     }
     
 }

@@ -9,14 +9,15 @@ package encofx.lib.dialogs;
 import encofx.lib.IO;
 import encofx.lib.IO.EventLine;
 import encofx.lib.effects.Text;
+import encofx.lib.effects.TextArea;
+import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
+import encofx.lib.effects.VText;
 import encofx.lib.effects.VTextCollection;
 import encofx.lib.filefilter.SubtitleFilter;
-import encofx.lib.graphics.SyllableLocator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -169,6 +170,40 @@ public class AddTextDialog extends javax.swing.JDialog {
         return null;
     }
     
+    public List<TextAreaCollection> showDialogForTextArea(){
+        List<TextAreaCollection> tcs = new ArrayList<>();
+        setLocationRelativeTo(null);
+        setVisible(true);
+        
+        if(bp.equals(ButtonPressed.OK_BUTTON)){
+            if(rbNormalText.isSelected()){
+                TextAreaCollection tc = new TextAreaCollection();
+                tc.setText(tfNormalText.getText());
+                tcs.add(tc);
+                return tcs;
+            }else{
+                for(int i : subsTable.getSelectedRows()){
+                    TextAreaCollection tc = new TextAreaCollection();
+                    tc.setText((String)subsTable.getValueAt(i, 8));
+                    
+                    int start = Integer.parseInt(IO.getFrame((String)subsTable.getValueAt(i, 3), getFPS()));
+                    int end = Integer.parseInt(IO.getFrame((String)subsTable.getValueAt(i, 4), getFPS()));
+                    
+                    TextArea before = new TextArea();
+                    before.setFrame(start);
+                    tc.add(before);
+                    TextArea after = new TextArea();
+                    after.setFrame(end);
+                    tc.add(after);
+                    
+                    tcs.add(tc);
+                }
+                return tcs;
+            }
+        }
+        return null;
+    }
+    
     public void setFPS(double fps){
         if(fps!=0d){
             tfFPS.setText(fps+"");
@@ -212,6 +247,96 @@ public class AddTextDialog extends javax.swing.JDialog {
                         tc.add(before);
                         
                         Text after = new Text();
+                        ms_count += ms_syl;
+                        after.setFrame(Integer.parseInt(IO.getFrame(ms_count, getFPS())));
+                        after.setSyllable(true);
+                        after.setSyllableIndex(index);
+                        tc.add(after);
+                        
+                        ltc.add(tc);
+                        index += 1;
+                    }                    
+                }
+            }
+            return ltc;
+        }
+        return null;
+    }
+    
+    public List<VTextCollection> getSyllablesOnVTextCollection(){
+        if(rbSubsText.isSelected()){
+            List<VTextCollection> ltc = new ArrayList<>();
+            for(int i : subsTable.getSelectedRows()){
+                String text = (String)subsTable.getValueAt(i, 8);                
+                if(text.contains("{\\")==true){                    
+                    Pattern p = Pattern.compile("\\{([^\\}]+)\\}([A-Za-z0-9 ]+)");
+                    Matcher m = p.matcher(text);
+                    long ms_start = IO.getMilliseconds((String)subsTable.getValueAt(i, 3));
+                    long ms_end = IO.getMilliseconds((String)subsTable.getValueAt(i, 4));
+                    long ms_count = ms_start;
+                    
+                    int index = 0;
+                    while(m.find()){
+                        long ms_syl = IO.getSyllableMillisenconds(m.group(1).replace("\\k", ""));
+                        
+                        String syl = m.group(2);
+                        VTextCollection tc = new VTextCollection();
+                        tc.setNotStrippedSentence(text);
+                        tc.setText(syl);
+                        tc.setSyllableIndex(index);
+                        
+                        VText before = new VText();
+                        before.setFrame(Integer.parseInt(IO.getFrame(ms_count, getFPS())));
+                        before.setSyllable(true);
+                        before.setSyllableIndex(index);
+                        tc.add(before);
+                        
+                        VText after = new VText();
+                        ms_count += ms_syl;
+                        after.setFrame(Integer.parseInt(IO.getFrame(ms_count, getFPS())));
+                        after.setSyllable(true);
+                        after.setSyllableIndex(index);
+                        tc.add(after);
+                        
+                        ltc.add(tc);
+                        index += 1;
+                    }                    
+                }
+            }
+            return ltc;
+        }
+        return null;
+    }
+    
+    public List<TextAreaCollection> getSyllablesOnTextAreaCollection(){
+        if(rbSubsText.isSelected()){
+            List<TextAreaCollection> ltc = new ArrayList<>();
+            for(int i : subsTable.getSelectedRows()){
+                String text = (String)subsTable.getValueAt(i, 8);                
+                if(text.contains("{\\")==true){                    
+                    Pattern p = Pattern.compile("\\{([^\\}]+)\\}([A-Za-z0-9 ]+)");
+                    Matcher m = p.matcher(text);
+                    long ms_start = IO.getMilliseconds((String)subsTable.getValueAt(i, 3));
+                    long ms_end = IO.getMilliseconds((String)subsTable.getValueAt(i, 4));
+                    long ms_count = ms_start;
+                    
+                    int index = 0;
+                    while(m.find()){
+                        long ms_syl = IO.getSyllableMillisenconds(m.group(1).replace("\\k", ""));
+                        
+                        String syl = m.group(2);
+                        TextAreaCollection tc = new TextAreaCollection();
+                        tc.setNotStrippedSentence(text);
+                        tc.setText(syl);
+                        tc.setSyllableIndex(index);
+                        
+                        TextArea before = new TextArea();
+                        before.setFrame(Integer.parseInt(IO.getFrame(ms_count, getFPS())));
+                        before.setSyllable(true);
+                        before.setSyllableIndex(index);
+                        tc.add(before);
+                        
+                        TextArea after = new TextArea();
                         ms_count += ms_syl;
                         after.setFrame(Integer.parseInt(IO.getFrame(ms_count, getFPS())));
                         after.setSyllable(true);

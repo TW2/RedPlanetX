@@ -18,6 +18,8 @@ import encofx.lib.editors.ChangeSettings;
 import encofx.lib.effects.Parent;
 import encofx.lib.effects.ParentCollection;
 import encofx.lib.effects.Text;
+import encofx.lib.effects.TextArea;
+import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VText;
 import encofx.lib.effects.VTextCollection;
@@ -84,17 +86,24 @@ public class EncoFXFrame extends javax.swing.JFrame {
      * Creates new form EncoFXFrame
      */
     public EncoFXFrame() {
+        SplashFrame spf = new SplashFrame();
+        spf.setVisible(true);
         initComponents();        
-        init();
+        init(spf);
+        spf.setVisible(false);
+        spf.dispose();
     }
     
-    private void init(){
+    private void init(SplashFrame spf){
+        spf.setState("Starting...", 0);
         CONFIG_FOLDER = getApplicationDirectory()+File.separator+"settings";
         File configFolder = new File(CONFIG_FOLDER);
         if(configFolder.exists()==false){
             configFolder.mkdir();
         }
         configuration = new Configuration();
+        
+        spf.setState("Create the objects...", 10);
         
         objectsTree.setModel(treeModel);
         objectsTree.setCellRenderer(noderenderer);
@@ -137,6 +146,8 @@ public class EncoFXFrame extends javax.swing.JFrame {
         propTable.setDefaultRenderer(SetupObject.class, new DisplaySettingsDeluxe());
         propTable.setRowHeight(25);
         
+        spf.setState("Create the objects...", 20);
+        
         vtd.init();
         jPanel1.add(vtd);
         vtd.setComponentPopupMenu(vtdPopup);
@@ -151,6 +162,8 @@ public class EncoFXFrame extends javax.swing.JFrame {
                 }
             }
         });
+        
+        spf.setState("Look & feel...", 30);
         
 //        TextCollection col001 = new TextCollection();
 //        Text textAtStart = new Text();
@@ -185,7 +198,11 @@ public class EncoFXFrame extends javax.swing.JFrame {
 //        pc.setText("None");
 //        parents.add(pc);
         
-        createScriptsList();
+        spf.setState("Searching for scripts...", 40);
+        
+        createScriptsList(spf);
+        
+        spf.setState("Ready", 100);
     }
     
     private void forceUpdate(){
@@ -267,10 +284,15 @@ public class EncoFXFrame extends javax.swing.JFrame {
         objectsTree.updateUI();
     }
     
-    public void createScriptsList(){
+    public void createScriptsList(SplashFrame spf){
         Scripting sc = new Scripting();
         sc.searchForScript(CONFIG_FOLDER);
+        int count = 0;
         for(Object o : sc.getSObjectList()){
+            count += 1;
+            if(spf!=null){
+                spf.setState("Searching for scripts...", 40 + count*50/sc.getSObjectList().size());
+            }            
             ParentCollection existingParent = null;
             for(ParentCollection p : parents){
                 if(p.getText().equalsIgnoreCase(o.toString())){
@@ -328,6 +350,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
         fcSaveFolder = new javax.swing.JFileChooser();
         vtdPopup = new javax.swing.JPopupMenu();
         popmAlignSyllables = new javax.swing.JMenuItem();
+        bgShapes = new javax.swing.ButtonGroup();
         jSlider1 = new javax.swing.JSlider();
         jPanel1 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
@@ -341,6 +364,12 @@ public class EncoFXFrame extends javax.swing.JFrame {
         btnAddDrawing = new javax.swing.JButton();
         btnAddPicture = new javax.swing.JButton();
         btnAddVideo = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
+        jToggleButton1 = new javax.swing.JToggleButton();
+        jToggleButton2 = new javax.swing.JToggleButton();
+        jToggleButton3 = new javax.swing.JToggleButton();
+        jToggleButton4 = new javax.swing.JToggleButton();
+        jToggleButton5 = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         objectsTree = new javax.swing.JTree();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -484,6 +513,11 @@ public class EncoFXFrame extends javax.swing.JFrame {
         btnAddTextArea.setFocusable(false);
         btnAddTextArea.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAddTextArea.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAddTextArea.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddTextAreaActionPerformed(evt);
+            }
+        });
         jToolBar1.add(btnAddTextArea);
 
         btnAddRectangle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-rect-shape.png"))); // NOI18N
@@ -527,6 +561,44 @@ public class EncoFXFrame extends javax.swing.JFrame {
         btnAddVideo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAddVideo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(btnAddVideo);
+        jToolBar1.add(jSeparator4);
+
+        bgShapes.add(jToggleButton1);
+        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line2.png"))); // NOI18N
+        jToggleButton1.setSelected(true);
+        jToggleButton1.setToolTipText("");
+        jToggleButton1.setFocusable(false);
+        jToggleButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jToggleButton1);
+
+        bgShapes.add(jToggleButton2);
+        jToggleButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/curve2.png"))); // NOI18N
+        jToggleButton2.setFocusable(false);
+        jToggleButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jToggleButton2);
+
+        bgShapes.add(jToggleButton3);
+        jToggleButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/square.png"))); // NOI18N
+        jToggleButton3.setFocusable(false);
+        jToggleButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jToggleButton3);
+
+        bgShapes.add(jToggleButton4);
+        jToggleButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/roundsquare.png"))); // NOI18N
+        jToggleButton4.setFocusable(false);
+        jToggleButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jToggleButton4);
+
+        bgShapes.add(jToggleButton5);
+        jToggleButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/circle.png"))); // NOI18N
+        jToggleButton5.setFocusable(false);
+        jToggleButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jToggleButton5);
 
         objectsTree.setComponentPopupMenu(treePopup);
         objectsTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
@@ -807,7 +879,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
                     forceUpdate();
                 }
             }
-            createScriptsList();
+            createScriptsList(null);
             configureVTD();
             noderenderer.updateVideoInfo(videoInfo);
         }
@@ -975,6 +1047,60 @@ public class EncoFXFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_popmAlignSyllablesActionPerformed
 
+    private void btnAddTextAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTextAreaActionPerformed
+        AddTextDialog atd = new AddTextDialog(this, true);
+        atd.setFPS(videoInfo.getFPS());
+        List<TextAreaCollection> ltc = atd.showDialogForTextArea();
+        if(ltc!=null){
+            for(TextAreaCollection tc : ltc){
+                //If list is empty (normal text case)
+                if(tc.getList().isEmpty()){
+                    TextArea before = new TextArea();
+                    before.setFrame(0);
+                    tc.add(before);
+                    TextArea after = new TextArea();
+                    after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+                    tc.add(after);
+                }
+                
+                //Add the collection to the program
+                collection.add(tc);
+                
+                if(atd.getSyllablesOnTextCollection()!=null){
+                    int index = 0;
+                    for(TextAreaCollection tca : atd.getSyllablesOnTextAreaCollection()){
+                        if(tca.getNotStrippedSentence().equalsIgnoreCase(tc.getText())){
+                            
+                            SyllableLocator sloc = new SyllableLocator(videoInfo.getVideoWidth(), videoInfo.getVideoHeight());
+                            sloc.setFontname(tca.getFontname());
+                            sloc.setFontsize(tca.getList().get(0).getSize());
+                            sloc.setFontstyle(tca.getFontstyle().getStyle());
+                            sloc.setX((float) tca.getAnchor().getX());
+                            sloc.setString(tca.getNotStrippedSentence());
+                            Map<Integer, Float> locations = sloc.getSyllablesLocation();
+                            
+                            Point2D p2d = new Point2D.Float(
+                                    locations.get(index), 
+                                    (float) tca.getAnchor().getY());
+                            tca.setAnchor(p2d);
+                            
+                            //Add the collection to the program
+                            collection.add(tca);
+                        }
+                        index += 1;
+                    }
+                    tc.setText(IO.getStrippedElement(tc.getText()));
+                }
+            }
+            
+            //Refresh the VTD
+            vtd.setCollections(collection);
+            
+            updateTree();
+            expandTree();
+        }
+    }//GEN-LAST:event_btnAddTextAreaActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1006,6 +1132,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup bgShapes;
     private javax.swing.JButton btnAddDrawing;
     private javax.swing.JButton btnAddEllipse;
     private javax.swing.JButton btnAddFreeShape;
@@ -1027,7 +1154,13 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JSlider jSlider1;
+    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JToggleButton jToggleButton2;
+    private javax.swing.JToggleButton jToggleButton3;
+    private javax.swing.JToggleButton jToggleButton4;
+    private javax.swing.JToggleButton jToggleButton5;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lblFrame;
     private javax.swing.JMenuItem mnuEncodeVideo;

@@ -17,16 +17,15 @@ import java.util.List;
  *
  * @author Yves
  */
-public class VText extends FXObject {
-    
+public class Shape extends FXObject {
+
     //Objects for the table of properties and settings
     private final List<AbstractProperty> properties = new ArrayList<>();
     
     private boolean isSyllable = false;
     private int syllableIndex = -1;
     
-    public VText(){
-        properties.add(propFontsize);
+    public Shape(){
         properties.add(propX);
         properties.add(propY);
         properties.add(propColor);
@@ -36,6 +35,19 @@ public class VText extends FXObject {
         properties.add(propAngle);
         properties.add(propGradient);
         properties.add(propFourSidesGradient);
+    }
+    
+    @Override
+    public List<AbstractProperty> getProperties(){
+        return properties;
+    }
+    
+    @Override
+    public String toString(){
+        if(isSyllable==true){
+            return "Syllable at the frame "+frame;
+        }
+        return "At the frame "+frame;
     }
     
     public void setSyllable(boolean isSyllable){
@@ -54,17 +66,7 @@ public class VText extends FXObject {
         return syllableIndex;
     }
     
-    @Override
-    public List<AbstractProperty> getProperties(){
-        return properties;
-    }
-    
-    @Override
-    public String toString(){
-        return "At the frame "+frame;
-    }
-    
-    public static Color getActualColor(VText before, VText after, int actualframe){
+    public static Color getActualColor(Shape before, Shape after, int actualframe){
         
         if(before.getFrame()==actualframe){
             return before.getColor();
@@ -104,32 +106,7 @@ public class VText extends FXObject {
         return new Color(r, g ,b);
     }
     
-    public static float getActualSize(VText before, VText after, int actualframe){        
-        float bc = before.getSize();
-        int bc_FRAME = before.getFrame();
-        float ac = after.getSize();
-        int ac_FRAME = after.getFrame();
-        
-        if(before.getFrame()==actualframe){
-            return before.getSize();
-        }
-        
-        if(after.getFrame()==actualframe){
-            return after.getSize();
-        }
-        
-        if(bc_FRAME==0){ //Particular case
-            float diff = ac - bc;        
-            float delta = diff * actualframe / ac_FRAME;
-            return bc + delta;
-        }else{
-            float diff = ac - bc;        
-            float delta = diff * (actualframe-bc_FRAME) / (ac_FRAME-bc_FRAME);
-            return bc + delta;
-        }
-    }
-    
-    public static float getActualX(VText before, VText after, Point2D anchor, int actualframe){
+    public static float getActualX(Shape before, Shape after, Point2D anchor, int actualframe){
         float bc = Float.parseFloat(Double.toString(anchor.getX())) + before.getX();
         int bc_FRAME = before.getFrame();
         float ac = Float.parseFloat(Double.toString(anchor.getX())) + after.getX();
@@ -154,7 +131,7 @@ public class VText extends FXObject {
         }
     }
     
-    public static float getActualY(VText before, VText after, Point2D anchor, int actualframe){
+    public static float getActualY(Shape before, Shape after, Point2D anchor, int actualframe){
         float bc = Float.parseFloat(Double.toString(anchor.getY())) + before.getY();
         int bc_FRAME = before.getFrame();
         float ac = Float.parseFloat(Double.toString(anchor.getY())) + after.getY();
@@ -179,7 +156,7 @@ public class VText extends FXObject {
         }
     }
     
-    public static float getActualTransparency(VText before, VText after, int actualframe){        
+    public static float getActualTransparency(Shape before, Shape after, int actualframe){        
         float bc = before.getTransparency();
         int bc_FRAME = before.getFrame();
         float ac = after.getTransparency();
@@ -204,7 +181,7 @@ public class VText extends FXObject {
         }
     }
     
-    public static float getActualScaleX(VText before, VText after, int actualframe){        
+    public static float getActualScaleX(Shape before, Shape after, int actualframe){        
         float bc = before.getScaleX();
         int bc_FRAME = before.getFrame();
         float ac = after.getScaleX();
@@ -229,7 +206,7 @@ public class VText extends FXObject {
         }
     }
     
-    public static float getActualScaleY(VText before, VText after, int actualframe){        
+    public static float getActualScaleY(Shape before, Shape after, int actualframe){        
         float bc = before.getScaleY();
         int bc_FRAME = before.getFrame();
         float ac = after.getScaleY();
@@ -254,7 +231,7 @@ public class VText extends FXObject {
         }
     }
     
-    public static float getActualAngle(VText before, VText after, int actualframe){        
+    public static float getActualAngle(Shape before, Shape after, int actualframe){        
         float bc = before.getAngle();
         int bc_FRAME = before.getFrame();
         float ac = after.getAngle();
@@ -310,7 +287,7 @@ public class VText extends FXObject {
         return new Color(r, g ,b);
     }
     
-    public static Color[] getActualGradientColor(VText before, VText after, int actualframe){
+    public static Color[] getActualGradientColor(Shape before, Shape after, int actualframe){
         
         if(before.getFrame()==actualframe){
             return before.getGradient();
@@ -333,7 +310,7 @@ public class VText extends FXObject {
         return new Color[]{c0, c1};
     }
     
-    public static Color[] getActualFourSidesGradientColor(VText before, VText after, int actualframe){
+    public static Color[] getActualFourSidesGradientColor(Shape before, Shape after, int actualframe){
         
         if(before.getFrame()==actualframe){
             return before.getFourSidesGradient();

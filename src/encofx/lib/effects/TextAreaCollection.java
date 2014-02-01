@@ -12,6 +12,7 @@ import encofx.lib.SubObjects;
 import encofx.lib.graphics.GraphicsTextFX;
 import encofx.lib.properties.AbstractProperty;
 import encofx.lib.settings.SetupObject;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Point2D;
@@ -27,9 +28,9 @@ import java.util.logging.Logger;
  *
  * @author Yves
  */
-public class VTextCollection extends ObjectCollectionObject {
+public class TextAreaCollection extends ObjectCollectionObject {
     
-    List<VText> vtexts = new ArrayList<>();
+    List<TextArea> texts = new ArrayList<>();
     private Font font = new Font("Arial", Font.PLAIN, 50);
     //Objects for the table of properties and settings
     List<AbstractProperty> properties = new ArrayList<>();
@@ -37,7 +38,7 @@ public class VTextCollection extends ObjectCollectionObject {
     private String notStrippedSentence = "";
     private int syllableIndex = -1;
     
-    public VTextCollection(){
+    public TextAreaCollection(){
         properties.add(propChild);
         properties.add(propFontname);
         properties.add(propFontstyle);
@@ -65,23 +66,23 @@ public class VTextCollection extends ObjectCollectionObject {
     public int getSyllableIndex(){
         return syllableIndex;
     }
-
+    
     @Override
     public SubObjects getSubObjects() {
-        SubObjects<VText> so = new SubObjects();
-        so.addAllObjects(vtexts);
+        SubObjects<TextArea> so = new SubObjects();
+        so.addAllObjects(texts);
         return so;
     }
 
     @Override
     public void setSubObjects(SubObjects subs) {
-        vtexts = subs.getObjects();
+        texts = subs.getObjects();
     }
     
     public void sortByFrames(){
-        Collections.sort(vtexts, new Comparator<VText>() {
+        Collections.sort(texts, new Comparator<TextArea>() {
             @Override
-            public int compare(VText o1, VText o2) {
+            public int compare(TextArea o1, TextArea o2) {
                 if(o1.getFrame()==o2.getFrame()){
                     return 0;
                 }else if(o1.getFrame()>o2.getFrame()){
@@ -94,9 +95,9 @@ public class VTextCollection extends ObjectCollectionObject {
     }
     
     public void sortByFrames_Reverse(){
-        Collections.sort(vtexts, new Comparator<VText>() {
+        Collections.sort(texts, new Comparator<TextArea>() {
             @Override
-            public int compare(VText o1, VText o2) {
+            public int compare(TextArea o1, TextArea o2) {
                 if(o1.getFrame()==o2.getFrame()){
                     return 0;
                 }else if(o1.getFrame()>o2.getFrame()){
@@ -113,9 +114,9 @@ public class VTextCollection extends ObjectCollectionObject {
         return ObjectCollectionInterface.Type.Text;
     }
     
-    public VText getBefore(int frame){
-        VText before = null;
-        for(VText tx : vtexts){
+    public TextArea getBefore(int frame){
+        TextArea before = null;
+        for(TextArea tx : texts){
             if(tx.getFrame()<=frame){
                 before = tx;
             }
@@ -123,10 +124,10 @@ public class VTextCollection extends ObjectCollectionObject {
         return before;
     }
     
-    public VText getAfter(int frame){
-        VText after = null;
+    public TextArea getAfter(int frame){
+        TextArea after = null;
         sortByFrames_Reverse();
-        for(VText tx : vtexts){
+        for(TextArea tx : texts){
             if(tx.getFrame()>=frame){
                 after = tx;
             }
@@ -146,24 +147,24 @@ public class VTextCollection extends ObjectCollectionObject {
 //        return after;
 //    }
     
-    public void setList(List<VText> vtexts){
-        this.vtexts = vtexts;
+    public void setList(List<TextArea> texts){
+        this.texts = texts;
     }
     
-    public List<VText> getList(){
-        return vtexts;
+    public List<TextArea> getList(){
+        return texts;
     }
     
-    public void add(VText obj){
-        vtexts.add(obj);
+    public void add(TextArea obj){
+        texts.add(obj);
     }
     
-    public void remove(VText obj){
-        vtexts.remove(obj);
+    public void remove(TextArea obj){
+        texts.remove(obj);
     }
     
     public void clear(){
-        vtexts.clear();
+        texts.clear();
     }
     
     public void setFont(Font font){
@@ -180,8 +181,8 @@ public class VTextCollection extends ObjectCollectionObject {
         boolean isRelative = true;
         Object scriptObject = null;
         
-        VText before = getBefore(frame);
-        VText after = getAfter(frame);
+        TextArea before = getBefore(frame);
+        TextArea after = getAfter(frame);
         
         if(before==null | after == null){
             return graFX.getBlankImage();
@@ -193,41 +194,40 @@ public class VTextCollection extends ObjectCollectionObject {
         
         //Propiétés dynamiques        
         //Couleur
-        Color c = VText.getActualColor(before, after, frame);
+        Color c = TextArea.getActualColor(before, after, frame);
         //Taille de la fonte
-        float size = VText.getActualSize(before, after, frame);
+        float size = TextArea.getActualSize(before, after, frame);
         //Position des ancres X et Y
         SetupObject<Float> soAX = (SetupObject)propAnchorX.getObject();
         SetupObject<Float> soAY = (SetupObject)propAnchorY.getObject();
         Point2D anchor = new Point2D.Float(soAX.get(), soAY.get());
-        float x = VText.getActualX(before, after, anchor, frame);
-        float y = VText.getActualY(before, after, anchor, frame);
+        float x = TextArea.getActualX(before, after, anchor, frame);
+        float y = TextArea.getActualY(before, after, anchor, frame);
         //Transparence
-        float transparency = VText.getActualTransparency(before, after, frame);
+        float transparency = TextArea.getActualTransparency(before, after, frame);
         //Echelle X et Y
-        float scale_x = VText.getActualScaleX(before, after, frame);
-        float scale_y = VText.getActualScaleY(before, after, frame);
+        float scale_x = TextArea.getActualScaleX(before, after, frame);
+        float scale_y = TextArea.getActualScaleY(before, after, frame);
         //Angle
-        float angle = VText.getActualAngle(before, after, frame);
+        float angle = TextArea.getActualAngle(before, after, frame);
         //Dégradé (deux cotés)
-        Color[] twosidesgradient = VText.getActualGradientColor(before, after, frame);
+        Color[] twosidesgradient = TextArea.getActualGradientColor(before, after, frame);
         //Dégradé (quatre cotés)
-        Color[] foursidesgradient = VText.getActualFourSidesGradientColor(before, after, frame);
-        
-        
+        Color[] foursidesgradient = TextArea.getActualFourSidesGradientColor(before, after, frame);
+
         //Propiétés statiques
         //Nom de la fonte
         SetupObject<String> soFontname = (SetupObject)propFontname.getObject();
         String fontname = soFontname.get();
         //Style de la fonte
-        SetupObject<FontStyle> soFontstyle = (SetupObject)propFontstyle.getObject();
-        FontStyle fontstyle = soFontstyle.get();
+        SetupObject<ObjectCollectionObject.FontStyle> soFontstyle = (SetupObject)propFontstyle.getObject();
+        ObjectCollectionObject.FontStyle fontstyle = soFontstyle.get();
         //Chaine de caractère
         SetupObject<String> soString = (SetupObject)propString.getObject();
         String string = soString.get();
         //Position prédéfinit pour les ancres
-        SetupObject<AnchorPosition> soAP = (SetupObject)propAnchorPosition.getObject();
-        AnchorPosition anchorposition = soAP.get();
+        SetupObject<ObjectCollectionObject.AnchorPosition> soAP = (SetupObject)propAnchorPosition.getObject();
+        ObjectCollectionObject.AnchorPosition anchorposition = soAP.get();
         //Souligné
         SetupObject<Boolean> soUnderline = (SetupObject)propUnderline.getObject();
         boolean underline = soUnderline.get();
@@ -235,9 +235,8 @@ public class VTextCollection extends ObjectCollectionObject {
         SetupObject<Boolean> soStrikeOut = (SetupObject)propStrikeOut.getObject();
         boolean strikeout = soStrikeOut.get();
         //Type par défaut du  rendu
-        SetupObject<GradientType> soGradientType = (SetupObject)propGradientType.getObject();
-        GradientType gradienttype = soGradientType.get();
-        
+        SetupObject<ObjectCollectionObject.GradientType> soGradientType = (SetupObject)propGradientType.getObject();
+        ObjectCollectionObject.GradientType gradienttype = soGradientType.get();
         
         if(propChild!=null){
             SetupObject<ParentCollection> soChild = (SetupObject<ParentCollection>)propChild.getObject();
@@ -266,7 +265,7 @@ public class VTextCollection extends ObjectCollectionObject {
                 //Couleur
                 if(soChild.get().getColorUsage()){
                     c = Parent.getActualColor(parent_before, parent_after, frame);
-                    gradienttype = GradientType.None;
+                    gradienttype = ObjectCollectionObject.GradientType.None;
                 }
                 //Taille de la fonte
                 if(soChild.get().getFontsizeUsage()){
@@ -298,12 +297,12 @@ public class VTextCollection extends ObjectCollectionObject {
                 //Dégradé (deux cotés)
                 if(soChild.get().getGradientUsage()){
                     twosidesgradient = Parent.getActualGradientColor(parent_before, parent_after, frame);
-                    gradienttype = GradientType.TwoSides;
+                    gradienttype = ObjectCollectionObject.GradientType.TwoSides;
                 }
                 //Dégradé (quatre cotés)
                 if(soChild.get().getFourSidesUsage()){
                     foursidesgradient = Parent.getActualFourSidesGradientColor(parent_before, parent_after, frame);
-                    gradienttype = GradientType.FourSides;
+                    gradienttype = ObjectCollectionObject.GradientType.FourSides;
                 }
 
                 //Propiétés statiques
@@ -334,7 +333,7 @@ public class VTextCollection extends ObjectCollectionObject {
         }
         //Règles
         graFX.setRendering(encoding==true ? GraphicsTextFX.Rendering.Encoding : GraphicsTextFX.Rendering.Drawing);
-        graFX.setDirection(GraphicsTextFX.Direction.Vertical);
+        graFX.setDirection(GraphicsTextFX.Direction.Horizontal);
 
         //Assignations
         graFX.setColor(c);
@@ -360,7 +359,7 @@ public class VTextCollection extends ObjectCollectionObject {
             return graFX.getImageFromScript(scriptObject, frame);
         }
         
-        return graFX.getImageFromVerticalText();
+        return graFX.getImageFromTextArea();
     }
     
     @Override

@@ -12,13 +12,8 @@ import encofx.lib.SubObjects;
 import encofx.lib.properties.AbstractProperty;
 import encofx.lib.settings.SetupObject;
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -177,142 +172,6 @@ public class TextCollection extends ObjectCollectionObject {
     
     public Font getFont(){
         return font;
-    }
-    
-    public BufferedImage getFX_(int frame, int imageWidth, int imageHeight, boolean encoding) {
-        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-        
-        Text before = getBefore(frame);
-        Text after = getAfter(frame);
-        
-        Color c = Text.getActualColor(before, after, frame);
-        
-        float size = Text.getActualSize(before, after, frame);        
-        
-        SetupObject<Float> soAX = (SetupObject)propAnchorX.getObject();
-        SetupObject<Float> soAY = (SetupObject)propAnchorY.getObject();
-        Point2D anchor = new Point2D.Float(soAX.get(), soAY.get());
-        float x = Text.getActualX(before, after, anchor, frame);
-        float y = Text.getActualY(before, after, anchor, frame);
-        
-        float transparency = Text.getActualTransparency(before, after, frame);        
-        float scale_x = Text.getActualScaleX(before, after, frame);
-        float scale_y = Text.getActualScaleY(before, after, frame);
-        
-        Graphics2D g = image.createGraphics();
-        
-        if(c!=null){
-            //Fontname
-            SetupObject<String> soFontname = (SetupObject)propFontname.getObject();
-            String settingsfontname = soFontname.get();
-            Font saveFont = g.getFont();            
-            //Fontstyle
-            SetupObject<FontStyle> soFontstyle = (SetupObject)propFontstyle.getObject();
-            FontStyle settingsfontstyle = soFontstyle.get();
-            //Text
-            SetupObject<String> soString = (SetupObject)propString.getObject();
-            String settingsstring = soString.get();
-            //Anchor
-//            SetupObject<Float> soAX = (SetupObject)propAnchorX.getObject();
-//            SetupObject<Float> soAY = (SetupObject)propAnchorY.getObject();
-//            Point2D anchor = new Point2D.Float(soAX.get(), soAY.get());
-            //AnchorPosition
-            SetupObject<AnchorPosition> soAP = (SetupObject)propAnchorPosition.getObject();
-            AnchorPosition anchorposition = soAP.get();
-            //Underline
-            SetupObject<Boolean> soUnderline = (SetupObject)propUnderline.getObject();
-            boolean settingsunderline = soUnderline.get();
-            //Underline
-            SetupObject<Boolean> soStrikeOut = (SetupObject)propStrikeOut.getObject();
-            boolean settingsstrikeout = soStrikeOut.get();
-            
-            g.setFont(new Font(settingsfontname, saveFont.getStyle(), saveFont.getSize()));
-            g.setFont(g.getFont().deriveFont(settingsfontstyle.getStyle()));
-            g.setFont(g.getFont().deriveFont(size));
-            g.setColor(c);
-            
-            g.setComposite(makeComposite(transparency));
-            
-            //Scale X + Y
-            AffineTransform at = new AffineTransform();
-            at.setToScale(scale_x/100, scale_y/100);
-            g.setTransform(at);
-            
-            FontMetrics metrics = g.getFontMetrics(g.getFont());
-            int w = metrics.stringWidth(settingsstring);
-            int h = metrics.getHeight();
-            switch(anchorposition){
-                case CornerLeftBottom:
-                    //Do nothing x and y
-                    break;
-                case Bottom:
-                    x = x - w/2; //Do nothing y
-                    break;
-                case CornerRightBottom:
-                    x = x - w; //Do nothing y
-                    break;
-                case Right:
-                    x = x - w; y = y + h/2;
-                    break;
-                case CornerRightTop:
-                    x = x - w; y = y + h;
-                    break;
-                case Top:
-                    x = x - w/2; y = y + h;
-                    break;
-                case CornerLeftTop:
-                    y = y + h; // Do nothing x
-                    break;
-                case Left: 
-                    y = y + h/2; // Do nothing x
-                    break;
-                case Middle:
-                    x = x - w/2; y = y + h/2;
-                    break;
-            }
-            
-            
-            g.drawString(settingsstring, x, y);
-            
-            //Underline
-            if(settingsunderline == true){
-                Stroke stroke = g.getStroke();
-                g.setStroke(new BasicStroke(2f));
-                g.drawLine(Math.round(x), Math.round(y)+10, Math.round(x)+w, Math.round(y)+10);
-                g.setStroke(stroke);
-            }
-            
-            //StrikeOut
-            if(settingsstrikeout == true){
-                Stroke stroke = g.getStroke();
-                g.setStroke(new BasicStroke(2f));
-                g.drawLine(Math.round(x), Math.round(y)-h/2, Math.round(x)+w, Math.round(y)-h/2);
-                g.setStroke(stroke);
-            }
-            
-            //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
-            if(encoding==false){
-                g.setColor(Color.cyan);
-                g.drawRect(
-                        Math.round(Float.parseFloat(Double.toString(anchor.getX())))-5,
-                        Math.round(Float.parseFloat(Double.toString(anchor.getY())))-5,
-                        10,
-                        10);
-
-                if(isAnchorSelected()){
-                    g.setColor(Color.magenta);
-                    g.fillRect(
-                            Math.round(Float.parseFloat(Double.toString(anchor.getX())))-5,
-                            Math.round(Float.parseFloat(Double.toString(anchor.getY())))-5,
-                            10,
-                            10);
-                }
-            }
-            
-        }
-        
-        
-        return image;
     }
     
     public BufferedImage getFX(int frame, int imageWidth, int imageHeight, boolean encoding) {
@@ -496,10 +355,10 @@ public class TextCollection extends ObjectCollectionObject {
         graFX.setColorsForFourSidesGradientPaint(foursidesgradient);
         
         if(scriptObject!=null){
-            return graFX.getImage(scriptObject);
+            return graFX.getImageFromScript(scriptObject, frame);
         }
         
-        return graFX.getImage();
+        return graFX.getImageFromText();
     }
     
     @Override

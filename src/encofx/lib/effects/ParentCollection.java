@@ -237,7 +237,7 @@ public class ParentCollection extends ObjectCollectionObject {
         graFX.setColorsForGradientPaint(twosidesgradient);
         graFX.setColorsForFourSidesGradientPaint(foursidesgradient);
         
-        return graFX.getImage();
+        return graFX.getImageFromText();
     }
     
     @Override

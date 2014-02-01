@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -282,15 +283,17 @@ public class VTD2 extends JPanel{
             cframe = 0;
         }
         
-        g2.setColor(Color.black);
-        g2.fillRect(0, 0, width, height);
+//        g2.setColor(Color.black);
+//        g2.fillRect(0, 0, width, height);
+//        
+//        if(videoInfo!=null){
+//            try {
+//                g2.drawImage(videoInfo.getImage(cframe), null, 0, 0);
+//            } catch (IOException ex) {
+//            }
+//        }
         
-        if(videoInfo!=null){
-            try {
-                g2.drawImage(videoInfo.getImage(cframe), null, 0, 0);
-            } catch (IOException ex) {
-            }
-        }
+        
         
         if(collection!=null){
             for(ObjectCollectionInterface obj : collection){
