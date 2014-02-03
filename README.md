@@ -15,13 +15,15 @@ For a world access, RedPlanetX is only in english for the moment (I develop it i
 
 There are graphical objects which can be added to the video area into layers :
 
-Horizontal text (with normal text, text from subtitle with/without karaokes) - not complete
-Vertical text (with normal text, text from subtitle with/without karaokes) - not complete
-Text area (with normal text, text from subtitle with/without karaokes) - TODO
-Rectangle (and square) - TODO
-Round rectangle (and round square) - TODO
-Ellipse (and circle) - TODO
-Shape (working like Points And Curves) - TODO
-Drawing (paint mode) - TODO
-Image - TODO
-Video - TODO
+<ul>
+<li>Horizontal text (with normal text, text from subtitle with/without karaokes) - not complete</li>
+<li>Vertical text (with normal text, text from subtitle with/without karaokes) - not complete</li>
+<li>Text area (with normal text, text from subtitle with/without karaokes) - TODO</li>
+<li>Rectangle (and square) - TODO</li>
+<li>Round rectangle (and round square) - TODO</li>
+<li>Ellipse (and circle) - TODO</li>
+<li>Shape (working like Points And Curves) - TODO</li>
+<li>Drawing (paint mode) - TODO</li>
+<li>Image - TODO</li>
+<li>Video - TODO</li>
+</ul>
