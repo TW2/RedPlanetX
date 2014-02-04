@@ -13,7 +13,8 @@ package encofx.lib;
 public interface ObjectCollectionInterface {
     
     public enum Type{
-        Unknown, Text, VText, Parent, Shape;
+        Unknown, Text, VText, Parent, Shape, Rectangle, RoundRectangle, 
+        Ellipse, Drawing, Image, Video;
     }
     
     public Type getType();

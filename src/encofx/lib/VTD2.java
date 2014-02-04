@@ -6,6 +6,7 @@
 
 package encofx.lib;
 
+import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VTextCollection;
 import encofx.lib.xuggle.VideoInfo;
@@ -13,7 +14,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -95,6 +95,17 @@ public class VTD2 extends JPanel{
                         vtc.setAnchorSelection(false);
                     }
                 }
+                
+                if(obj instanceof TextAreaCollection){
+                    TextAreaCollection vtc = (TextAreaCollection)obj;
+                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                        vtc.setAnchorSelection(true);
+                        vtc.setAnchor(new Point2D.Double(xa, ya));
+                        repaint();
+                    }else{
+                        vtc.setAnchorSelection(false);
+                    }
+                }
 
             }
         }
@@ -126,6 +137,17 @@ public class VTD2 extends JPanel{
                         vtc.setAnchorSelection(false);
                     }
                 }
+                
+                if(obj instanceof TextAreaCollection){
+                    TextAreaCollection vtc = (TextAreaCollection)obj;
+                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                        vtc.setAnchorSelection(true);
+                        vtc.setAnchor(new Point2D.Double(xa, ya));
+                        repaint();
+                    }else{
+                        vtc.setAnchorSelection(false);
+                    }
+                }
 
             }
         }
@@ -149,6 +171,17 @@ public class VTD2 extends JPanel{
                 
                 if(obj instanceof VTextCollection){
                     VTextCollection vtc = (VTextCollection)obj;
+                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                        vtc.setAnchorSelection(true);
+                        vtc.setAnchor(new Point2D.Double(xa, ya));
+                        repaint();
+                    }else{
+                        vtc.setAnchorSelection(false);
+                    }
+                }
+                
+                if(obj instanceof TextAreaCollection){
+                    TextAreaCollection vtc = (TextAreaCollection)obj;
                     if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
                         vtc.setAnchorSelection(true);
                         vtc.setAnchor(new Point2D.Double(xa, ya));
@@ -265,6 +298,14 @@ public class VTD2 extends JPanel{
                     }  
                 }
                 
+                if(obj instanceof TextAreaCollection){
+                    TextAreaCollection vtc = (TextAreaCollection)obj;
+                    BufferedImage b2 = vtc.getFX(mainframe, width, height, false);
+                    if(b2!=null){
+                        gDT.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
             }
         }
         
@@ -307,6 +348,14 @@ public class VTD2 extends JPanel{
                 
                 if(obj instanceof VTextCollection){
                     VTextCollection vtc = (VTextCollection)obj;
+                    BufferedImage b2 = vtc.getFX(cframe, width, height, true);
+                    if(b2!=null){
+                        g2.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
+                if(obj instanceof TextAreaCollection){
+                    TextAreaCollection vtc = (TextAreaCollection)obj;
                     BufferedImage b2 = vtc.getFX(cframe, width, height, true);
                     if(b2!=null){
                         g2.drawImage(b2, null, 0, 0);

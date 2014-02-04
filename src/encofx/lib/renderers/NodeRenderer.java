@@ -9,6 +9,7 @@ package encofx.lib.renderers;
 import encofx.lib.FXObject;
 import encofx.lib.effects.ParentCollection;
 import encofx.lib.effects.Text;
+import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VTextCollection;
 import encofx.lib.xuggle.VideoInfo;
@@ -94,6 +95,15 @@ public class NodeRenderer extends DefaultTreeCellRenderer {
                 Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kcmdf.png"));
                 setIcon(icon);
             }            
+        }else if(node.getUserObject() instanceof TextAreaCollection){
+            TextAreaCollection vtc = (TextAreaCollection)node.getUserObject();
+            if(expanded){
+                Icon icon = new ImageIcon(getClass().getResource("16px-z-textj.png"));
+                setIcon(icon);
+            }else{
+                Icon icon = new ImageIcon(getClass().getResource("16px-z-text.png"));
+                setIcon(icon);
+            }
         }
         
         return this;

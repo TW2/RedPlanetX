@@ -795,6 +795,13 @@ public class EncoFXFrame extends javax.swing.JFrame {
                     Object[] row = new Object[]{p, p.getObject()};
                     tableModel.addRow(row);
                 }
+            }else if(tn.getUserObject() instanceof TextAreaCollection){
+                TextAreaCollection pc = (TextAreaCollection)tn.getUserObject();
+                List<AbstractProperty> properties = pc.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
             }
             if(tn.getUserObject() instanceof Text){
                 Text t = (Text)tn.getUserObject();
@@ -812,6 +819,13 @@ public class EncoFXFrame extends javax.swing.JFrame {
                 }
             }else if(tn.getUserObject() instanceof Parent){
                 Parent pr = (Parent)tn.getUserObject();
+                List<AbstractProperty> properties = pr.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
+            }else if(tn.getUserObject() instanceof TextArea){
+                TextArea pr = (TextArea)tn.getUserObject();
                 List<AbstractProperty> properties = pr.getProperties();
                 for(AbstractProperty p : properties){
                     Object[] row = new Object[]{p, p.getObject()};
@@ -899,6 +913,15 @@ public class EncoFXFrame extends javax.swing.JFrame {
         if(tn.getUserObject() instanceof VTextCollection){
             VTextCollection vtc = (VTextCollection)tn.getUserObject();
             VText text = new VText();
+            text.setFrame(jSlider1.getValue());
+            vtc.add(text);
+            vtc.sortByFrames();
+            updateTree();
+            expandTree();
+        }
+        if(tn.getUserObject() instanceof TextAreaCollection){
+            TextAreaCollection vtc = (TextAreaCollection)tn.getUserObject();
+            TextArea text = new TextArea();
             text.setFrame(jSlider1.getValue());
             vtc.add(text);
             vtc.sortByFrames();
@@ -1066,7 +1089,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
                 //Add the collection to the program
                 collection.add(tc);
                 
-                if(atd.getSyllablesOnTextCollection()!=null){
+                if(atd.getSyllablesOnTextAreaCollection()!=null){
                     int index = 0;
                     for(TextAreaCollection tca : atd.getSyllablesOnTextAreaCollection()){
                         if(tca.getNotStrippedSentence().equalsIgnoreCase(tc.getText())){

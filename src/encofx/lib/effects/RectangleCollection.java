@@ -12,6 +12,7 @@ import encofx.lib.SubObjects;
 import encofx.lib.graphics.GraphicsTextFX;
 import encofx.lib.properties.AbstractProperty;
 import encofx.lib.settings.SetupObject;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Point2D;
@@ -27,9 +28,9 @@ import java.util.logging.Logger;
  *
  * @author Yves
  */
-public class TextAreaCollection extends ObjectCollectionObject {
+public class RectangleCollection extends ObjectCollectionObject {
     
-    List<TextArea> texts = new ArrayList<>();
+    List<Rectangle> texts = new ArrayList<>();
     private Font font = new Font("Arial", Font.PLAIN, 50);
     //Objects for the table of properties and settings
     List<AbstractProperty> properties = new ArrayList<>();
@@ -37,16 +38,12 @@ public class TextAreaCollection extends ObjectCollectionObject {
     private String notStrippedSentence = "";
     private int syllableIndex = -1;
     
-    public TextAreaCollection(){
+    public RectangleCollection(){
         properties.add(propChild);
-        properties.add(propFontname);
-        properties.add(propFontstyle);
         properties.add(propString);
         properties.add(propAnchorX);
         properties.add(propAnchorY);
         properties.add(propAnchorPosition);
-        properties.add(propUnderline);
-        properties.add(propStrikeOut);
         properties.add(propGradientType);
     }
 
@@ -68,7 +65,7 @@ public class TextAreaCollection extends ObjectCollectionObject {
     
     @Override
     public SubObjects getSubObjects() {
-        SubObjects<TextArea> so = new SubObjects();
+        SubObjects<Rectangle> so = new SubObjects();
         so.addAllObjects(texts);
         return so;
     }
@@ -79,9 +76,9 @@ public class TextAreaCollection extends ObjectCollectionObject {
     }
     
     public void sortByFrames(){
-        Collections.sort(texts, new Comparator<TextArea>() {
+        Collections.sort(texts, new Comparator<Rectangle>() {
             @Override
-            public int compare(TextArea o1, TextArea o2) {
+            public int compare(Rectangle o1, Rectangle o2) {
                 if(o1.getFrame()==o2.getFrame()){
                     return 0;
                 }else if(o1.getFrame()>o2.getFrame()){
@@ -94,9 +91,9 @@ public class TextAreaCollection extends ObjectCollectionObject {
     }
     
     public void sortByFrames_Reverse(){
-        Collections.sort(texts, new Comparator<TextArea>() {
+        Collections.sort(texts, new Comparator<Rectangle>() {
             @Override
-            public int compare(TextArea o1, TextArea o2) {
+            public int compare(Rectangle o1, Rectangle o2) {
                 if(o1.getFrame()==o2.getFrame()){
                     return 0;
                 }else if(o1.getFrame()>o2.getFrame()){
@@ -110,12 +107,12 @@ public class TextAreaCollection extends ObjectCollectionObject {
 
     @Override
     public ObjectCollectionInterface.Type getType() {
-        return ObjectCollectionInterface.Type.Text;
+        return ObjectCollectionInterface.Type.Rectangle;
     }
     
-    public TextArea getBefore(int frame){
-        TextArea before = null;
-        for(TextArea tx : texts){
+    public Rectangle getBefore(int frame){
+        Rectangle before = null;
+        for(Rectangle tx : texts){
             if(tx.getFrame()<=frame){
                 before = tx;
             }
@@ -123,10 +120,10 @@ public class TextAreaCollection extends ObjectCollectionObject {
         return before;
     }
     
-    public TextArea getAfter(int frame){
-        TextArea after = null;
+    public Rectangle getAfter(int frame){
+        Rectangle after = null;
         sortByFrames_Reverse();
-        for(TextArea tx : texts){
+        for(Rectangle tx : texts){
             if(tx.getFrame()>=frame){
                 after = tx;
             }
@@ -135,10 +132,10 @@ public class TextAreaCollection extends ObjectCollectionObject {
         return after;
     }
     
-//    public Text getAfter(int frame){
-//        Text after = null;
+//    public Rectangle getAfter(int frame){
+//        Rectangle after = null;
 //        boolean afterHasBeenFound = false;
-//        for(Text tx : texts){
+//        for(Rectangle tx : texts){
 //            if(tx.getFrame()>=frame && afterHasBeenFound==false){
 //                after = tx; afterHasBeenFound = true;
 //            }
@@ -146,19 +143,19 @@ public class TextAreaCollection extends ObjectCollectionObject {
 //        return after;
 //    }
     
-    public void setList(List<TextArea> texts){
+    public void setList(List<Rectangle> texts){
         this.texts = texts;
     }
     
-    public List<TextArea> getList(){
+    public List<Rectangle> getList(){
         return texts;
     }
     
-    public void add(TextArea obj){
+    public void add(Rectangle obj){
         texts.add(obj);
     }
     
-    public void remove(TextArea obj){
+    public void remove(Rectangle obj){
         texts.remove(obj);
     }
     
@@ -180,8 +177,8 @@ public class TextAreaCollection extends ObjectCollectionObject {
         boolean isRelative = true;
         Object scriptObject = null;
         
-        TextArea before = getBefore(frame);
-        TextArea after = getAfter(frame);
+        Rectangle before = getBefore(frame);
+        Rectangle after = getAfter(frame);
         
         if(before==null | after == null){
             return graFX.getBlankImage();
@@ -193,34 +190,34 @@ public class TextAreaCollection extends ObjectCollectionObject {
         
         //Propiétés dynamiques        
         //Couleur
-        Color c = TextArea.getActualColor(before, after, frame);
+        Color c = Rectangle.getActualColor(before, after, frame);
         //Taille de la fonte
-        float size = TextArea.getActualSize(before, after, frame);
+        //float size = Rectangle.getActualSize(before, after, frame);
         //Position des ancres X et Y
         SetupObject<Float> soAX = (SetupObject)propAnchorX.getObject();
         SetupObject<Float> soAY = (SetupObject)propAnchorY.getObject();
         Point2D anchor = new Point2D.Float(soAX.get(), soAY.get());
-        float x = TextArea.getActualX(before, after, anchor, frame);
-        float y = TextArea.getActualY(before, after, anchor, frame);
+        float x = Rectangle.getActualX(before, after, anchor, frame);
+        float y = Rectangle.getActualY(before, after, anchor, frame);
         //Transparence
-        float transparency = TextArea.getActualTransparency(before, after, frame);
+        float transparency = Rectangle.getActualTransparency(before, after, frame);
         //Echelle X et Y
-        float scale_x = TextArea.getActualScaleX(before, after, frame);
-        float scale_y = TextArea.getActualScaleY(before, after, frame);
+        float scale_x = Rectangle.getActualScaleX(before, after, frame);
+        float scale_y = Rectangle.getActualScaleY(before, after, frame);
         //Angle
-        float angle = TextArea.getActualAngle(before, after, frame);
+        float angle = Rectangle.getActualAngle(before, after, frame);
         //Dégradé (deux cotés)
-        Color[] twosidesgradient = TextArea.getActualGradientColor(before, after, frame);
+        Color[] twosidesgradient = Rectangle.getActualGradientColor(before, after, frame);
         //Dégradé (quatre cotés)
-        Color[] foursidesgradient = TextArea.getActualFourSidesGradientColor(before, after, frame);
+        Color[] foursidesgradient = Rectangle.getActualFourSidesGradientColor(before, after, frame);
 
         //Propiétés statiques
         //Nom de la fonte
-        SetupObject<String> soFontname = (SetupObject)propFontname.getObject();
-        String fontname = soFontname.get();
+        //SetupObject<String> soFontname = (SetupObject)propFontname.getObject();
+        //String fontname = soFontname.get();
         //Style de la fonte
-        SetupObject<ObjectCollectionObject.FontStyle> soFontstyle = (SetupObject)propFontstyle.getObject();
-        ObjectCollectionObject.FontStyle fontstyle = soFontstyle.get();
+        //SetupObject<FontStyle> soFontstyle = (SetupObject)propFontstyle.getObject();
+        //FontStyle fontstyle = soFontstyle.get();
         //Chaine de caractère
         SetupObject<String> soString = (SetupObject)propString.getObject();
         String string = soString.get();
@@ -228,11 +225,11 @@ public class TextAreaCollection extends ObjectCollectionObject {
         SetupObject<ObjectCollectionObject.AnchorPosition> soAP = (SetupObject)propAnchorPosition.getObject();
         ObjectCollectionObject.AnchorPosition anchorposition = soAP.get();
         //Souligné
-        SetupObject<Boolean> soUnderline = (SetupObject)propUnderline.getObject();
-        boolean underline = soUnderline.get();
+        //SetupObject<Boolean> soUnderline = (SetupObject)propUnderline.getObject();
+        //boolean underline = soUnderline.get();
         //Barré
-        SetupObject<Boolean> soStrikeOut = (SetupObject)propStrikeOut.getObject();
-        boolean strikeout = soStrikeOut.get();
+        //SetupObject<Boolean> soStrikeOut = (SetupObject)propStrikeOut.getObject();
+        //boolean strikeout = soStrikeOut.get();
         //Type par défaut du  rendu
         SetupObject<ObjectCollectionObject.GradientType> soGradientType = (SetupObject)propGradientType.getObject();
         ObjectCollectionObject.GradientType gradienttype = soGradientType.get();
@@ -253,7 +250,7 @@ public class TextAreaCollection extends ObjectCollectionObject {
                         parent_before.setFrame(before.getFrame());
                         parent_after.setFrame(after.getFrame());                        
                     } catch (CloneNotSupportedException ex) {
-                        Logger.getLogger(TextCollection.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(RectangleCollection.class.getName()).log(Level.SEVERE, null, ex);
                         parent_before = soChild.get().getBefore(frame);
                         parent_after = soChild.get().getAfter(frame);
                     }                    
@@ -267,9 +264,9 @@ public class TextAreaCollection extends ObjectCollectionObject {
                     gradienttype = ObjectCollectionObject.GradientType.None;
                 }
                 //Taille de la fonte
-                if(soChild.get().getFontsizeUsage()){
-                    size = Parent.getActualSize(parent_before, parent_after, frame);
-                }
+                //if(soChild.get().getFontsizeUsage()){
+                //    size = Parent.getActualSize(parent_before, parent_after, frame);
+                //}
                 //Position des ancres X et Y
                 Point2D anchorXY = soChild.get().getAnchor();
                 if(soChild.get().getXUsage()){
@@ -306,27 +303,27 @@ public class TextAreaCollection extends ObjectCollectionObject {
 
                 //Propiétés statiques
                 //Nom de la fonte
-                if(soChild.get().getFontnameUsage()){
-                    fontname = soChild.get().getFontname();
-                }
+                //if(soChild.get().getFontnameUsage()){
+                //    fontname = soChild.get().getFontname();
+                //}
                 //Style de la fonte
-                if(soChild.get().getFontstyleUsage()){
-                    fontstyle = soChild.get().getFontstyle();
-                }
+                //if(soChild.get().getFontstyleUsage()){
+                //    fontstyle = soChild.get().getFontstyle();
+                //}
                 //Chaine de caractère
-                //String string = soChild.get().getText();
+                //String string = soChild.get().getRectangle();
                 //Position prédéfinit pour les ancres
                 if(soChild.get().getPositionUsage()){
                     anchorposition = soChild.get().getAnchorPosition();
                 }
                 //Souligné
-                if(soChild.get().getUnderlineUsage()){
-                    underline = soChild.get().getUnderline();
-                }
+                //if(soChild.get().getUnderlineUsage()){
+                //    underline = soChild.get().getUnderline();
+                //}
                 //Barré
-                if(soChild.get().getStrikeOutUsage()){
-                    strikeout = soChild.get().getStrikeOut();
-                }
+                //if(soChild.get().getStrikeOutUsage()){
+                //    strikeout = soChild.get().getStrikeOut();
+                //}
             }
             
         }
@@ -336,9 +333,9 @@ public class TextAreaCollection extends ObjectCollectionObject {
 
         //Assignations
         graFX.setColor(c);
-        graFX.setFontname(fontname);
-        graFX.setFontstyle(fontstyle.getStyle());
-        graFX.setFontsize(size);
+        //graFX.setFontname(fontname);
+        //graFX.setFontstyle(fontstyle.getStyle());
+        //graFX.setFontsize(size);
         graFX.setX(x);
         graFX.setY(y);
         graFX.setAnchorPosition(anchorposition);
@@ -347,8 +344,8 @@ public class TextAreaCollection extends ObjectCollectionObject {
         graFX.setTransparency(transparency);
         graFX.setScaleX(scale_x);
         graFX.setScaleY(scale_y);
-        graFX.setUnderline(underline);
-        graFX.setStrikeOut(strikeout);
+        //graFX.setUnderline(underline);
+        //graFX.setStrikeOut(strikeout);
         graFX.setAngle(angle);
         graFX.setGradientType(gradienttype);
         graFX.setColorsForGradientPaint(twosidesgradient);
@@ -358,7 +355,7 @@ public class TextAreaCollection extends ObjectCollectionObject {
             return graFX.getImageFromScript(scriptObject, frame);
         }
         
-        return graFX.getImageFromTextArea();
+        return graFX.getImageFromRectangle();
     }
     
     @Override
@@ -370,4 +367,9 @@ public class TextAreaCollection extends ObjectCollectionObject {
         return properties;
     }
     
+    // Gestion de la transparence
+    private AlphaComposite makeComposite(float alpha) {
+        int type = AlphaComposite.SRC_OVER;
+        return(AlphaComposite.getInstance(type, alpha));
+    }
 }
