@@ -8,6 +8,7 @@ package encofx.lib;
 
 import encofx.lib.effects.ParentCollection;
 import encofx.lib.properties.Child;
+import encofx.lib.properties.ShapeType;
 import encofx.lib.properties.TextAnchorPosition;
 import encofx.lib.properties.TextAnchorX;
 import encofx.lib.properties.TextAnchorY;
@@ -95,6 +96,7 @@ public abstract class ObjectCollectionObject implements ObjectCollectionInterfac
     protected final TextUnderline propUnderline = new TextUnderline();
     protected final TextStrikeOut propStrikeOut = new TextStrikeOut();
     protected final TextGradientType propGradientType = new TextGradientType();
+    protected final ShapeType propShapeType = new ShapeType();
     
     public enum AnchorPosition{
         CornerLeftBottom("Corner Left-Bottom"),
@@ -259,6 +261,16 @@ public abstract class ObjectCollectionObject implements ObjectCollectionInterfac
     
     public GradientType getGradientType(){
         SetupObject<GradientType> soGT = (SetupObject)propGradientType.getObject();
+        return soGT.get();
+    }
+    
+    public void setShapeType(ShapeType.ObjectShapeType ost){
+        SetupObject<ShapeType.ObjectShapeType> soGT = (SetupObject)propShapeType.getObject();
+        soGT.set(ost);
+    }
+    
+    public ShapeType.ObjectShapeType getShapeType(){
+        SetupObject<ShapeType.ObjectShapeType> soGT = (SetupObject)propShapeType.getObject();
         return soGT.get();
     }
 }

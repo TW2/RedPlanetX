@@ -17,6 +17,8 @@ import encofx.lib.dialogs.InputDialog;
 import encofx.lib.editors.ChangeSettings;
 import encofx.lib.effects.Parent;
 import encofx.lib.effects.ParentCollection;
+import encofx.lib.effects.Shape;
+import encofx.lib.effects.ShapeCollection;
 import encofx.lib.effects.Text;
 import encofx.lib.effects.TextArea;
 import encofx.lib.effects.TextAreaCollection;
@@ -68,7 +70,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private VideoInfo videoInfo = new VideoInfo();
     private String CONFIG_FOLDER = "";
     private Configuration configuration = null;
-    private List<ParentCollection> parents = new ArrayList<>();
+    private final List<ParentCollection> parents = new ArrayList<>();
     
     //For tree    
     private final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Objects");
@@ -162,6 +164,8 @@ public class EncoFXFrame extends javax.swing.JFrame {
                 }
             }
         });
+        
+        hideVectorTools();
         
         spf.setState("Look & feel...", 30);
         
@@ -325,6 +329,11 @@ public class EncoFXFrame extends javax.swing.JFrame {
         updateTree();
         expandTree();
     }
+    
+    private void hideVectorTools(){
+        tbLine.setEnabled(false);
+        tbCurve.setEnabled(false);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -357,19 +366,13 @@ public class EncoFXFrame extends javax.swing.JFrame {
         btnAddHText = new javax.swing.JButton();
         btnAddVText = new javax.swing.JButton();
         btnAddTextArea = new javax.swing.JButton();
-        btnAddRectangle = new javax.swing.JButton();
-        btnAddRoundRectangle = new javax.swing.JButton();
-        btnAddEllipse = new javax.swing.JButton();
         btnAddFreeShape = new javax.swing.JButton();
         btnAddDrawing = new javax.swing.JButton();
         btnAddPicture = new javax.swing.JButton();
         btnAddVideo = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jToggleButton2 = new javax.swing.JToggleButton();
-        jToggleButton3 = new javax.swing.JToggleButton();
-        jToggleButton4 = new javax.swing.JToggleButton();
-        jToggleButton5 = new javax.swing.JToggleButton();
+        tbLine = new javax.swing.JToggleButton();
+        tbCurve = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         objectsTree = new javax.swing.JTree();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -520,28 +523,15 @@ public class EncoFXFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(btnAddTextArea);
 
-        btnAddRectangle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-rect-shape.png"))); // NOI18N
-        btnAddRectangle.setFocusable(false);
-        btnAddRectangle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAddRectangle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(btnAddRectangle);
-
-        btnAddRoundRectangle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-rrect-shape.png"))); // NOI18N
-        btnAddRoundRectangle.setFocusable(false);
-        btnAddRoundRectangle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAddRoundRectangle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(btnAddRoundRectangle);
-
-        btnAddEllipse.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-ellipse-shape.png"))); // NOI18N
-        btnAddEllipse.setFocusable(false);
-        btnAddEllipse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAddEllipse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(btnAddEllipse);
-
-        btnAddFreeShape.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-free-shape.png"))); // NOI18N
+        btnAddFreeShape.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-Crystal_Clear_app_ksplash.png"))); // NOI18N
         btnAddFreeShape.setFocusable(false);
         btnAddFreeShape.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAddFreeShape.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAddFreeShape.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddFreeShapeActionPerformed(evt);
+            }
+        });
         jToolBar1.add(btnAddFreeShape);
 
         btnAddDrawing.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-Crystal_Clear_app_kcoloredit.png"))); // NOI18N
@@ -563,42 +553,21 @@ public class EncoFXFrame extends javax.swing.JFrame {
         jToolBar1.add(btnAddVideo);
         jToolBar1.add(jSeparator4);
 
-        bgShapes.add(jToggleButton1);
-        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line2.png"))); // NOI18N
-        jToggleButton1.setSelected(true);
-        jToggleButton1.setToolTipText("");
-        jToggleButton1.setFocusable(false);
-        jToggleButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jToggleButton1);
+        bgShapes.add(tbLine);
+        tbLine.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line2.png"))); // NOI18N
+        tbLine.setSelected(true);
+        tbLine.setToolTipText("");
+        tbLine.setFocusable(false);
+        tbLine.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbLine.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(tbLine);
 
-        bgShapes.add(jToggleButton2);
-        jToggleButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/curve2.png"))); // NOI18N
-        jToggleButton2.setFocusable(false);
-        jToggleButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jToggleButton2);
-
-        bgShapes.add(jToggleButton3);
-        jToggleButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/square.png"))); // NOI18N
-        jToggleButton3.setFocusable(false);
-        jToggleButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jToggleButton3);
-
-        bgShapes.add(jToggleButton4);
-        jToggleButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/roundsquare.png"))); // NOI18N
-        jToggleButton4.setFocusable(false);
-        jToggleButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jToggleButton4);
-
-        bgShapes.add(jToggleButton5);
-        jToggleButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/circle.png"))); // NOI18N
-        jToggleButton5.setFocusable(false);
-        jToggleButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jToggleButton5);
+        bgShapes.add(tbCurve);
+        tbCurve.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/curve2.png"))); // NOI18N
+        tbCurve.setFocusable(false);
+        tbCurve.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbCurve.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(tbCurve);
 
         objectsTree.setComponentPopupMenu(treePopup);
         objectsTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
@@ -802,7 +771,15 @@ public class EncoFXFrame extends javax.swing.JFrame {
                     Object[] row = new Object[]{p, p.getObject()};
                     tableModel.addRow(row);
                 }
+            }else if(tn.getUserObject() instanceof ShapeCollection){
+                ShapeCollection pc = (ShapeCollection)tn.getUserObject();
+                List<AbstractProperty> properties = pc.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
             }
+            
             if(tn.getUserObject() instanceof Text){
                 Text t = (Text)tn.getUserObject();
                 List<AbstractProperty> properties = t.getProperties();
@@ -826,6 +803,13 @@ public class EncoFXFrame extends javax.swing.JFrame {
                 }
             }else if(tn.getUserObject() instanceof TextArea){
                 TextArea pr = (TextArea)tn.getUserObject();
+                List<AbstractProperty> properties = pr.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
+            }else if(tn.getUserObject() instanceof Shape){
+                Shape pr = (Shape)tn.getUserObject();
                 List<AbstractProperty> properties = pr.getProperties();
                 for(AbstractProperty p : properties){
                     Object[] row = new Object[]{p, p.getObject()};
@@ -925,6 +909,15 @@ public class EncoFXFrame extends javax.swing.JFrame {
             text.setFrame(jSlider1.getValue());
             vtc.add(text);
             vtc.sortByFrames();
+            updateTree();
+            expandTree();
+        }
+        if(tn.getUserObject() instanceof ShapeCollection){
+            ShapeCollection rc = (ShapeCollection)tn.getUserObject();
+            Shape r = new Shape();
+            r.setFrame(jSlider1.getValue());
+            rc.add(r);
+            rc.sortByFrames();
             updateTree();
             expandTree();
         }
@@ -1124,6 +1117,30 @@ public class EncoFXFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnAddTextAreaActionPerformed
 
+    private void btnAddFreeShapeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddFreeShapeActionPerformed
+        hideVectorTools();
+        tbLine.setEnabled(true);
+        tbCurve.setEnabled(true);
+        tbLine.setSelected(true);
+        
+        ShapeCollection rc = new ShapeCollection();
+        Shape before = new Shape();
+        before.setFrame(0);
+        rc.add(before);
+        Shape after = new Shape();
+        after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+        rc.add(after);
+        
+        //Add the collection to the program
+        collection.add(rc);
+        
+        //Refresh the VTD
+        vtd.setCollections(collection);
+
+        updateTree();
+        expandTree();
+    }//GEN-LAST:event_btnAddFreeShapeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1157,12 +1174,9 @@ public class EncoFXFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgShapes;
     private javax.swing.JButton btnAddDrawing;
-    private javax.swing.JButton btnAddEllipse;
     private javax.swing.JButton btnAddFreeShape;
     private javax.swing.JButton btnAddHText;
     private javax.swing.JButton btnAddPicture;
-    private javax.swing.JButton btnAddRectangle;
-    private javax.swing.JButton btnAddRoundRectangle;
     private javax.swing.JButton btnAddTextArea;
     private javax.swing.JButton btnAddVText;
     private javax.swing.JButton btnAddVideo;
@@ -1179,11 +1193,6 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JSlider jSlider1;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton2;
-    private javax.swing.JToggleButton jToggleButton3;
-    private javax.swing.JToggleButton jToggleButton4;
-    private javax.swing.JToggleButton jToggleButton5;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lblFrame;
     private javax.swing.JMenuItem mnuEncodeVideo;
@@ -1199,6 +1208,8 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem popmParent;
     private javax.swing.JMenuItem popmRemoveEvent;
     private javax.swing.JTable propTable;
+    private javax.swing.JToggleButton tbCurve;
+    private javax.swing.JToggleButton tbLine;
     private javax.swing.JPopupMenu treePopup;
     private javax.swing.JPopupMenu vtdPopup;
     // End of variables declaration//GEN-END:variables

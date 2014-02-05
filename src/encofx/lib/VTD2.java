@@ -6,6 +6,7 @@
 
 package encofx.lib;
 
+import encofx.lib.effects.ShapeCollection;
 import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VTextCollection;
@@ -106,6 +107,17 @@ public class VTD2 extends JPanel{
                         vtc.setAnchorSelection(false);
                     }
                 }
+                
+                if(obj instanceof ShapeCollection){
+                    ShapeCollection vtc = (ShapeCollection)obj;
+                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                        vtc.setAnchorSelection(true);
+                        vtc.setAnchor(new Point2D.Double(xa, ya));
+                        repaint();
+                    }else{
+                        vtc.setAnchorSelection(false);
+                    }
+                }
 
             }
         }
@@ -148,6 +160,17 @@ public class VTD2 extends JPanel{
                         vtc.setAnchorSelection(false);
                     }
                 }
+                
+                if(obj instanceof ShapeCollection){
+                    ShapeCollection vtc = (ShapeCollection)obj;
+                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                        vtc.setAnchorSelection(true);
+                        vtc.setAnchor(new Point2D.Double(xa, ya));
+                        repaint();
+                    }else{
+                        vtc.setAnchorSelection(false);
+                    }
+                }
 
             }
         }
@@ -182,6 +205,17 @@ public class VTD2 extends JPanel{
                 
                 if(obj instanceof TextAreaCollection){
                     TextAreaCollection vtc = (TextAreaCollection)obj;
+                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                        vtc.setAnchorSelection(true);
+                        vtc.setAnchor(new Point2D.Double(xa, ya));
+                        repaint();
+                    }else{
+                        vtc.setAnchorSelection(false);
+                    }
+                }
+                
+                if(obj instanceof ShapeCollection){
+                    ShapeCollection vtc = (ShapeCollection)obj;
                     if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
                         vtc.setAnchorSelection(true);
                         vtc.setAnchor(new Point2D.Double(xa, ya));
@@ -306,6 +340,14 @@ public class VTD2 extends JPanel{
                     }  
                 }
                 
+                if(obj instanceof ShapeCollection){
+                    ShapeCollection vtc = (ShapeCollection)obj;
+                    BufferedImage b2 = vtc.getFX(mainframe, width, height, false);
+                    if(b2!=null){
+                        gDT.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
             }
         }
         
@@ -356,6 +398,14 @@ public class VTD2 extends JPanel{
                 
                 if(obj instanceof TextAreaCollection){
                     TextAreaCollection vtc = (TextAreaCollection)obj;
+                    BufferedImage b2 = vtc.getFX(cframe, width, height, true);
+                    if(b2!=null){
+                        g2.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
+                if(obj instanceof ShapeCollection){
+                    ShapeCollection vtc = (ShapeCollection)obj;
                     BufferedImage b2 = vtc.getFX(cframe, width, height, true);
                     if(b2!=null){
                         g2.drawImage(b2, null, 0, 0);

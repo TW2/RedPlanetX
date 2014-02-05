@@ -10,6 +10,7 @@ import encofx.lib.ObjectCollectionObject;
 import encofx.lib.SubObjects;
 import encofx.lib.graphics.GraphicsTextFX;
 import encofx.lib.properties.AbstractProperty;
+import encofx.lib.properties.ShapeType;
 import encofx.lib.settings.SetupObject;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -39,6 +40,7 @@ public class ShapeCollection extends ObjectCollectionObject {
     
     public ShapeCollection(){
         properties.add(propChild);
+        properties.add(propShapeType);
         properties.add(propString);
         properties.add(propAnchorX);
         properties.add(propAnchorY);
@@ -232,6 +234,9 @@ public class ShapeCollection extends ObjectCollectionObject {
         //Type par défaut du  rendu
         SetupObject<GradientType> soGradientType = (SetupObject)propGradientType.getObject();
         GradientType gradienttype = soGradientType.get();
+        //Type par défaut de la forme
+        SetupObject<ShapeType.ObjectShapeType> soShapeType = (SetupObject)propShapeType.getObject();
+        ShapeType.ObjectShapeType shapetype = soShapeType.get();
         
         if(propChild!=null){
             SetupObject<ParentCollection> soChild = (SetupObject<ParentCollection>)propChild.getObject();
@@ -349,6 +354,7 @@ public class ShapeCollection extends ObjectCollectionObject {
         graFX.setGradientType(gradienttype);
         graFX.setColorsForGradientPaint(twosidesgradient);
         graFX.setColorsForFourSidesGradientPaint(foursidesgradient);
+        graFX.setShapeType(shapetype);
         
         if(scriptObject!=null){
             return graFX.getImageFromScript(scriptObject, frame);

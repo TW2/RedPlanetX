@@ -7,6 +7,7 @@
 package encofx.lib.graphics;
 
 import encofx.lib.ObjectCollectionObject;
+import encofx.lib.properties.ShapeType;
 import encofx.lib.scripting.Scripting;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -20,7 +21,9 @@ import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
@@ -60,6 +63,7 @@ public class GraphicsTextFX {
     private ObjectCollectionObject.GradientType gradientType = ObjectCollectionObject.GradientType.None;
     private Color[] gradientColors = new Color[]{Color.black, Color.white};
     private Color[] fourSidesGradientColors = new Color[]{Color.black, Color.white, Color.blue, Color.red};
+    private ShapeType.ObjectShapeType oShapeType = ShapeType.ObjectShapeType.Free;
     
     /**
      * <p>Pour définir le rendu.<br />
@@ -814,9 +818,8 @@ public class GraphicsTextFX {
         
         g.setTransform(at);
         
-        FontMetrics metrics = g.getFontMetrics(g.getFont());
-        int w = metrics.stringWidth(string);
-        int h = metrics.getHeight();
+        int w = 100;
+        int h = 100;
         
         w = Math.round(w*(scale_x/100));
         h = Math.round(h*(scale_y/100));
@@ -852,84 +855,162 @@ public class GraphicsTextFX {
         }
         
         //Correction de la position de l'ancre
-        y = y - metrics.getMaxDescent();
+        y = y - h;
         
         if(gradientType==ObjectCollectionObject.GradientType.None){
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
-            }
+            g.fillRect((int)x, (int)y, w, h);
         }else if(gradientType==ObjectCollectionObject.GradientType.TwoSides){
             // Horizontal
             GradientPaint gp = new GradientPaint(
                     x, y, gradientColors[0],
                     x+w, y, gradientColors[1]);
             g.setPaint(gp);
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
-            }
+            g.fillRect((int)x, (int)y, w, h);
         }else if(gradientType==ObjectCollectionObject.GradientType.FourSides){
             // Horizontal
             GradientPaint gp2 = new GradientPaint(
                     x, y, fourSidesGradientColors[0],
                     x+w, y, fourSidesGradientColors[1]);
             g.setPaint(gp2);
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
-            }
+            g.fillRect((int)x, (int)y, w, h);
             // Vertical
             Color c3 = fourSidesGradientColors[2];
             Color c4 = fourSidesGradientColors[3];
             GradientPaint gp = new GradientPaint(
-                    x, y-h, new Color(c3.getRed(), c3.getGreen(), c3.getBlue(), 127),
-                    x, y, new Color(c4.getRed(), c4.getGreen(), c4.getBlue(), 127));
+                    x, y, new Color(c3.getRed(), c3.getGreen(), c3.getBlue(), 127),
+                    x, y+h, new Color(c4.getRed(), c4.getGreen(), c4.getBlue(), 127));
             g.setPaint(gp);
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
+            g.fillRect((int)x, (int)y, w, h);
+        }
+        
+        
+        //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
+        if(rendering == Rendering.Drawing){
+            g.setTransform(oldAT);
+            if(anchorSelected == true){
+                g.setColor(Color.magenta);
+                g.fillRect(
+                        Math.round(xa)-5,
+                        Math.round(ya)-5,
+                        10,
+                        10);
             }
+            g.setColor(Color.cyan);
+            g.drawRect(
+                    Math.round(xa)-5,
+                    Math.round(ya)-5,
+                    10,
+                    10);
+        }
+            
+//        BlurMatrix blurmatrix = new BlurMatrix();
+//        blurmatrix.set5x5Matrix(0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f);
+//        BufferedImage new_image = useBlur(image, blurmatrix);
+        
+        return image;
+    }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="===FORME RECTANGULAIRE ARRONDI AUX ANGLES===">
+    public BufferedImage getImageFromRoundRectangle(){
+        AffineTransform at = new AffineTransform();
+        AffineTransform oldAT = g.getTransform();
+        
+        //Fonte
+        g.setFont(new Font(fontname, fontstyle, 12).deriveFont(fontsize));
+        //Underline - Strikeout
+        Map<TextAttribute, Object> USmap = new HashMap<>();
+        if(underline == true && strikeout == true && direction == Direction.Horizontal){
+            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
+            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
+            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
+        }else if(underline == true && direction == Direction.Horizontal){
+            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
+            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
+        }else if(strikeout == true && direction == Direction.Horizontal){
+            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
+            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
+        }else{
+            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
+        }
+        g.setFont(g.getFont().deriveFont(USmap));
+        //Couleur
+        g.setColor(color);
+        //Transparence
+        g.setComposite(makeComposite(transparency));
+        //Echelle X et Y
+        at.setToScale(scale_x/100, scale_y/100);        
+        //Angle
+        at.setToRotation(Math.toRadians(angle), xa, ya);
+        
+        g.setTransform(at);
+        
+        int w = 100;
+        int h = 100;
+        
+        w = Math.round(w*(scale_x/100));
+        h = Math.round(h*(scale_y/100));
+        
+        switch(anchorPosition){
+            case CornerLeftBottom:
+                //Do nothing x and y                
+                break;
+            case Bottom:
+                x = x - w/2; //Do nothing y                
+                break;
+            case CornerRightBottom:
+                x = x - w; //Do nothing y
+                break;
+            case Right:
+                x = x - w; y = y + h/2;
+                break;
+            case CornerRightTop:
+                x = x - w; y = y + h;
+                break;
+            case Top:
+                x = x - w/2; y = y + h;
+                break;
+            case CornerLeftTop:
+                y = y + h; //Do nothing x
+                break;
+            case Left: 
+                y = y + h/2; //Do nothing x
+                break;
+            case Middle:
+                x = x - w/2; y = y + h/2;
+                break;
+        }
+        
+        //Correction de la position de l'ancre
+        y = y - h;
+        
+        if(gradientType==ObjectCollectionObject.GradientType.None){
+            RoundRectangle2D rr2d = new RoundRectangle2D.Float(x, y, w, h, 30, 30);
+            g.fill(rr2d);
+        }else if(gradientType==ObjectCollectionObject.GradientType.TwoSides){
+            // Horizontal
+            GradientPaint gp = new GradientPaint(
+                    x, y, gradientColors[0],
+                    x+w, y, gradientColors[1]);
+            g.setPaint(gp);
+            RoundRectangle2D rr2d = new RoundRectangle2D.Float(x, y, w, h, 30, 30);
+            g.fill(rr2d);
+        }else if(gradientType==ObjectCollectionObject.GradientType.FourSides){
+            RoundRectangle2D rr2d = new RoundRectangle2D.Float(x, y, w, h, 30, 30);
+            // Horizontal
+            GradientPaint gp2 = new GradientPaint(
+                    x, y, fourSidesGradientColors[0],
+                    x+w, y, fourSidesGradientColors[1]);
+            g.setPaint(gp2);            
+            g.fill(rr2d);
+            // Vertical
+            Color c3 = fourSidesGradientColors[2];
+            Color c4 = fourSidesGradientColors[3];
+            GradientPaint gp = new GradientPaint(
+                    x, y, new Color(c3.getRed(), c3.getGreen(), c3.getBlue(), 127),
+                    x, y+h, new Color(c4.getRed(), c4.getGreen(), c4.getBlue(), 127));
+            g.setPaint(gp);
+            g.fill(rr2d);
         }
         
         
@@ -969,24 +1050,6 @@ public class GraphicsTextFX {
         AffineTransform at = new AffineTransform();
         AffineTransform oldAT = g.getTransform();
         
-        //Fonte
-        g.setFont(new Font(fontname, fontstyle, 12).deriveFont(fontsize));
-        //Underline - Strikeout
-        Map<TextAttribute, Object> USmap = new HashMap<>();
-        if(underline == true && strikeout == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
-            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
-        }else if(underline == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
-        }else if(strikeout == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
-        }else{
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-        }
-        g.setFont(g.getFont().deriveFont(USmap));
         //Couleur
         g.setColor(color);
         //Transparence
@@ -998,9 +1061,8 @@ public class GraphicsTextFX {
         
         g.setTransform(at);
         
-        FontMetrics metrics = g.getFontMetrics(g.getFont());
-        int w = metrics.stringWidth(string);
-        int h = metrics.getHeight();
+        int w = 100;
+        int h = 100;
         
         w = Math.round(w*(scale_x/100));
         h = Math.round(h*(scale_y/100));
@@ -1036,85 +1098,46 @@ public class GraphicsTextFX {
         }
         
         //Correction de la position de l'ancre
-        y = y - metrics.getMaxDescent();
+        y = y - h;
         
-        if(gradientType==ObjectCollectionObject.GradientType.None){
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
-            }
-        }else if(gradientType==ObjectCollectionObject.GradientType.TwoSides){
-            // Horizontal
-            GradientPaint gp = new GradientPaint(
-                    x, y, gradientColors[0],
-                    x+w, y, gradientColors[1]);
-            g.setPaint(gp);
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
-            }
-        }else if(gradientType==ObjectCollectionObject.GradientType.FourSides){
-            // Horizontal
-            GradientPaint gp2 = new GradientPaint(
-                    x, y, fourSidesGradientColors[0],
-                    x+w, y, fourSidesGradientColors[1]);
-            g.setPaint(gp2);
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
-            }
-            // Vertical
-            Color c3 = fourSidesGradientColors[2];
-            Color c4 = fourSidesGradientColors[3];
-            GradientPaint gp = new GradientPaint(
-                    x, y-h, new Color(c3.getRed(), c3.getGreen(), c3.getBlue(), 127),
-                    x, y, new Color(c4.getRed(), c4.getGreen(), c4.getBlue(), 127));
-            g.setPaint(gp);
-            //Texte
-            if(direction == Direction.Horizontal){
-                //Correction dû à l'échelle
-                float tx = 1f/(scale_x/100f);
-                float ty = 1f/(scale_y/100f);            
-                //Ecriture du texte            
-                g.drawString(string, x*tx, y*ty);
-            }else{
-                int py = 0;
-                for(char ch : string.toCharArray()){
-                    g.drawString(Character.toString(ch), x, py+y);
-                    py += h;
-                }
-            }
+        Shape shape = null;
+        if(oShapeType==ShapeType.ObjectShapeType.Free){
+            //TODO getGeneralPath
+        }else if(oShapeType==ShapeType.ObjectShapeType.Rectangle){
+            shape = new Rectangle2D.Float(x, y, w, h);
+        }else if(oShapeType==ShapeType.ObjectShapeType.RoundRectangle){
+            shape = new RoundRectangle2D.Float(x, y, w, h, 30, 30);
+        }else if(oShapeType==ShapeType.ObjectShapeType.Ellipse){
+            shape = new Ellipse2D.Float(x, y, w, h);
         }
+        
+        if(shape!=null){
+            if(gradientType==ObjectCollectionObject.GradientType.None){
+                g.fill(shape);
+            }else if(gradientType==ObjectCollectionObject.GradientType.TwoSides){
+                // Horizontal
+                GradientPaint gp = new GradientPaint(
+                        x, y, gradientColors[0],
+                        x+w, y, gradientColors[1]);
+                g.setPaint(gp);
+                g.fill(shape);
+            }else if(gradientType==ObjectCollectionObject.GradientType.FourSides){
+                // Horizontal
+                GradientPaint gp2 = new GradientPaint(
+                        x, y, fourSidesGradientColors[0],
+                        x+w, y, fourSidesGradientColors[1]);
+                g.setPaint(gp2);
+                g.fill(shape);
+                // Vertical
+                Color c3 = fourSidesGradientColors[2];
+                Color c4 = fourSidesGradientColors[3];
+                GradientPaint gp = new GradientPaint(
+                        x, y, new Color(c3.getRed(), c3.getGreen(), c3.getBlue(), 127),
+                        x, y+h, new Color(c4.getRed(), c4.getGreen(), c4.getBlue(), 127));
+                g.setPaint(gp);
+                g.fill(shape);
+            }
+        }       
         
         
         //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
@@ -1261,6 +1284,10 @@ public class GraphicsTextFX {
     
     public void setColorsForFourSidesGradientPaint(Color[] fourSidesGradientColors){
         this.fourSidesGradientColors = fourSidesGradientColors;
+    }
+    
+    public void setShapeType(ShapeType.ObjectShapeType oShapeType){
+        this.oShapeType = oShapeType;
     }
     
     /**

@@ -28,7 +28,7 @@ public class SetupObject<T> {
         None, Fontname, Fontsize, Fontstyle, Text, PositionX, PositionY, 
         AnchorPosition, AnchorX, AnchorY, Color, Transparency, Underline,
         StrikeOut, ScaleX, ScaleY, Angle, BlurType, BlurValue, GradientType,
-        GradientPaint, FourSidesGradientPaint, Child;
+        GradientPaint, FourSidesGradientPaint, Child, ShapeType;
     }
     
     public void set(T setting){
@@ -60,7 +60,8 @@ public class SetupObject<T> {
                 type==Type.ScaleY | type==Type.Angle |
                 type==Type.BlurType | type==Type.BlurValue |
                 type==Type.GradientType | type==Type.GradientPaint |
-                type==Type.FourSidesGradientPaint | type==Type.Child){
+                type==Type.FourSidesGradientPaint | type==Type.Child |
+                type==Type.ShapeType){
             return setting.toString();
         }else{
             return "";

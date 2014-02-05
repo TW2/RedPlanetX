@@ -11,7 +11,7 @@ import encofx.lib.dialogs.ParentDialog;
 import encofx.lib.dialogs.SidesGradientDialog;
 import encofx.lib.effects.ParentCollection;
 import encofx.lib.effects.TextCollection;
-import encofx.lib.properties.Child;
+import encofx.lib.properties.ShapeType;
 import encofx.lib.settings.SetupObject;
 import java.awt.Color;
 import java.awt.Component;
@@ -282,6 +282,17 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
     }
     // ---------------------------------------------------------------------
     
+    // ===== SHAPETYPE ======================================================
+    private final JComboBox comboShapeType = new JComboBox();
+    private final DefaultComboBoxModel modelShapeType = new DefaultComboBoxModel();
+    private SetupObject SO_ShapeType = new SetupObject();
+    
+    public void comboShapeTypeActionPerformed(ActionEvent e){
+        SO_ShapeType.set(comboShapeType.getSelectedItem());
+        fireEditingStopped();
+    }
+    // ---------------------------------------------------------------------
+    
     
     public ChangeSettings(Frame frame) {
         this.frame = frame;
@@ -311,6 +322,7 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
         SwingUtilities.updateComponentTreeUI(buttonTwoSides);
         SwingUtilities.updateComponentTreeUI(buttonFourSides);
         SwingUtilities.updateComponentTreeUI(buttonChild);
+        SwingUtilities.updateComponentTreeUI(comboShapeType);
         
         // ===== FONTNAME ======================================================
         comboFontname.setModel(modelFontname);
@@ -544,6 +556,22 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
         });
         // ---------------------------------------------------------------------
         
+        // ===== SHAPETYPE ======================================================
+        comboShapeType.setModel(modelShapeType);
+        comboShapeType.setActionCommand(EDIT);
+        
+        for (ShapeType.ObjectShapeType ost : ShapeType.ObjectShapeType.values()){
+            modelShapeType.addElement(ost);
+        }
+        
+        comboShapeType.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                comboShapeTypeActionPerformed(e);
+            }
+        });
+        // ---------------------------------------------------------------------
+        
     }
 
     @Override
@@ -666,6 +694,12 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
         // ===== CHILD ======================================================
         if(indicator.getType()==SetupObject.Type.Child){
             return SO_Child;
+        }
+        // ---------------------------------------------------------------------
+        
+        // ===== SHAPETYPE ======================================================
+        if(indicator.getType()==SetupObject.Type.ShapeType){
+            return SO_ShapeType;
         }
         // ---------------------------------------------------------------------
         
@@ -841,6 +875,14 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
                 buttonChild.setBackground(Color.gray);
                 //htmlColor.setColor(SO_Color.get());
                 return buttonChild;
+            }
+            // ---------------------------------------------------------------------
+            
+            // ===== SHAPETYPE ======================================================            
+            if(indicator.getType()==SetupObject.Type.ShapeType){
+                SO_ShapeType = (SetupObject)value;
+                comboShapeType.setSelectedItem(SO_ShapeType.toString());
+                return comboShapeType;
             }
             // ---------------------------------------------------------------------
             
