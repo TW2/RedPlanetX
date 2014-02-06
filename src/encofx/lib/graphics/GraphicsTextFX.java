@@ -9,6 +9,7 @@ package encofx.lib.graphics;
 import encofx.lib.ObjectCollectionObject;
 import encofx.lib.properties.ShapeType;
 import encofx.lib.scripting.Scripting;
+import encofx.lib.vectordrawing.VectorDrawing;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -64,6 +65,7 @@ public class GraphicsTextFX {
     private Color[] gradientColors = new Color[]{Color.black, Color.white};
     private Color[] fourSidesGradientColors = new Color[]{Color.black, Color.white, Color.blue, Color.red};
     private ShapeType.ObjectShapeType oShapeType = ShapeType.ObjectShapeType.Free;
+    private VectorDrawing vd = new VectorDrawing(); // Pour dessiner des formes dans le mode Free de ObjectShapeType
     
     /**
      * <p>Pour définir le rendu.<br />
@@ -1102,7 +1104,16 @@ public class GraphicsTextFX {
         
         Shape shape = null;
         if(oShapeType==ShapeType.ObjectShapeType.Free){
-            //TODO getGeneralPath
+            try{
+                float xb = x - w;
+                shape = vd.getGeneralPath(); 
+                g.setColor(color);
+                AffineTransform atv = new AffineTransform();
+                atv.setToTranslation(xb, y);
+                g.setTransform(atv);
+            }catch(Exception e){
+                
+            }
         }else if(oShapeType==ShapeType.ObjectShapeType.Rectangle){
             shape = new Rectangle2D.Float(x, y, w, h);
         }else if(oShapeType==ShapeType.ObjectShapeType.RoundRectangle){
@@ -1137,7 +1148,17 @@ public class GraphicsTextFX {
                 g.setPaint(gp);
                 g.fill(shape);
             }
-        }       
+        }
+        
+        if(oShapeType==ShapeType.ObjectShapeType.Free){
+            try{
+                g.setTransform(oldAT);
+                float xb = x - w;
+                vd.drawLines(g, xb, y);
+            }catch(Exception e){
+                
+            }
+        }
         
         
         //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
@@ -1288,6 +1309,10 @@ public class GraphicsTextFX {
     
     public void setShapeType(ShapeType.ObjectShapeType oShapeType){
         this.oShapeType = oShapeType;
+    }
+    
+    public void setVectorDrawing(VectorDrawing vd){
+        this.vd = vd;
     }
     
     /**

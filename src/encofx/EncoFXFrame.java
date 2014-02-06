@@ -76,6 +76,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Objects");
     private final DefaultTreeModel treeModel = new DefaultTreeModel(root);
     private final NodeRenderer noderenderer = new NodeRenderer(videoInfo);
+    private DefaultMutableTreeNode lastSelected = null;
     
     //For table
     private DefaultTableModel tableModel;
@@ -371,6 +372,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
         btnAddPicture = new javax.swing.JButton();
         btnAddVideo = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
+        tbCursor = new javax.swing.JToggleButton();
         tbLine = new javax.swing.JToggleButton();
         tbCurve = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -553,6 +555,18 @@ public class EncoFXFrame extends javax.swing.JFrame {
         jToolBar1.add(btnAddVideo);
         jToolBar1.add(jSeparator4);
 
+        bgShapes.add(tbCursor);
+        tbCursor.setText("Cursor");
+        tbCursor.setFocusable(false);
+        tbCursor.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tbCursor.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tbCursor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbCursorActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(tbCursor);
+
         bgShapes.add(tbLine);
         tbLine.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line2.png"))); // NOI18N
         tbLine.setSelected(true);
@@ -560,6 +574,11 @@ public class EncoFXFrame extends javax.swing.JFrame {
         tbLine.setFocusable(false);
         tbLine.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         tbLine.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tbLine.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbLineActionPerformed(evt);
+            }
+        });
         jToolBar1.add(tbLine);
 
         bgShapes.add(tbCurve);
@@ -567,6 +586,11 @@ public class EncoFXFrame extends javax.swing.JFrame {
         tbCurve.setFocusable(false);
         tbCurve.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         tbCurve.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tbCurve.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbCurveActionPerformed(evt);
+            }
+        });
         jToolBar1.add(tbCurve);
 
         objectsTree.setComponentPopupMenu(treePopup);
@@ -743,6 +767,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
         //Fill
         try{
             DefaultMutableTreeNode tn = (DefaultMutableTreeNode)objectsTree.getSelectionPath().getLastPathComponent();
+            lastSelected = tn;
             if(tn.getUserObject() instanceof TextCollection){
                 TextCollection tc = (TextCollection)tn.getUserObject();
                 List<AbstractProperty> properties = tc.getProperties();
@@ -1141,6 +1166,39 @@ public class EncoFXFrame extends javax.swing.JFrame {
         expandTree();
     }//GEN-LAST:event_btnAddFreeShapeActionPerformed
 
+    private void tbCursorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbCursorActionPerformed
+        vtd.setSelectedShape(VTD2.ShapeSelection.None);
+        vtd.setShapeCollection(null);
+    }//GEN-LAST:event_tbCursorActionPerformed
+
+    private void tbLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbLineActionPerformed
+        vtd.setSelectedShape(VTD2.ShapeSelection.Line);
+        if(lastSelected!=null){
+            if(lastSelected.getUserObject() instanceof ShapeCollection){
+                ShapeCollection sc = (ShapeCollection)lastSelected.getUserObject();
+                vtd.setShapeCollection(sc);
+            }else{
+                JOptionPane.showMessageDialog(this, "You don't have selected a shape object of the tree !");
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "You don't have selected any object of the tree !");
+        }
+    }//GEN-LAST:event_tbLineActionPerformed
+
+    private void tbCurveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbCurveActionPerformed
+        vtd.setSelectedShape(VTD2.ShapeSelection.Curve);
+        if(lastSelected!=null){
+            if(lastSelected.getUserObject() instanceof ShapeCollection){
+                ShapeCollection sc = (ShapeCollection)lastSelected.getUserObject();
+                vtd.setShapeCollection(sc);
+            }else{
+                JOptionPane.showMessageDialog(this, "You don't have selected a shape object of the tree !");
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "You don't have selected any object of the tree !");
+        }
+    }//GEN-LAST:event_tbCurveActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1208,6 +1266,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem popmParent;
     private javax.swing.JMenuItem popmRemoveEvent;
     private javax.swing.JTable propTable;
+    private javax.swing.JToggleButton tbCursor;
     private javax.swing.JToggleButton tbCurve;
     private javax.swing.JToggleButton tbLine;
     private javax.swing.JPopupMenu treePopup;

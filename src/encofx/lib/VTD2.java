@@ -10,6 +10,11 @@ import encofx.lib.effects.ShapeCollection;
 import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VTextCollection;
+import encofx.lib.vectordrawing.AbstractShape;
+import encofx.lib.vectordrawing.Curve;
+import encofx.lib.vectordrawing.Line;
+import encofx.lib.vectordrawing.SharedPoint;
+import encofx.lib.vectordrawing.VectorDrawing;
 import encofx.lib.xuggle.VideoInfo;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -33,6 +38,9 @@ public class VTD2 extends JPanel{
     private int width = 1280, virtualWidth = 1280;
     private int height = 720, virtualHeight = 720;
     private VideoInfo videoInfo = null;
+    private ShapeSelection shapeSelected = ShapeSelection.None;
+    private ShapeCollection shapeCollection = null;
+    private SharedPoint lastSharedPoint = null;
     
     public VTD2(){        
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -61,172 +69,262 @@ public class VTD2 extends JPanel{
         });
     }
     
+    public enum ShapeSelection{
+        None, Line, Curve, Move, Point, ControlPoint;
+    }
+    
     public void setVideoInfo(VideoInfo vi){
         videoInfo = vi;
     }
     
     // <editor-fold defaultstate="collapsed" desc="-----<EVENTS>-----">
     public void vtdtMouseClicked(java.awt.event.MouseEvent evt){
-        
+        double xa = evt.getXOnScreen()-getLocationOnScreen().getX();
+        double ya = evt.getYOnScreen()-getLocationOnScreen().getY();
+        if(shapeSelected==ShapeSelection.None){
+            
+        }else if(shapeSelected==ShapeSelection.Line && shapeCollection!=null){
+            if(evt.getButton()==1){
+                VectorDrawing vd = shapeCollection.getVectorDrawing();
+                if(vd.getShapes().isEmpty()){
+                    vd.addShape(new SharedPoint(xa, ya));
+                }else{
+                    vd.addShape(new Line(
+                            vd.getLastPoint().getEndPoint().getX(),
+                            vd.getLastPoint().getEndPoint().getY(),
+                            xa,
+                            ya));
+                    vd.addShape(new SharedPoint(xa, ya));
+                }
+            }
+        }else if(shapeSelected==ShapeSelection.Curve && shapeCollection!=null){
+            if(evt.getButton()==1){
+                VectorDrawing vd = shapeCollection.getVectorDrawing();
+                if(vd.getShapes().isEmpty()){
+                    vd.addShape(new SharedPoint(xa, ya));
+                }else{
+                    Curve c = new Curve(
+                            vd.getLastPoint().getEndPoint().getX(),
+                            vd.getLastPoint().getEndPoint().getY(),
+                            xa,
+                            ya);
+                    vd.addShape(c);
+                    vd.addShape(c.getControl1());
+                    vd.addShape(c.getControl2());
+                    vd.addShape(new SharedPoint(xa, ya));
+                }
+            }
+        }
+        repaint();
     }
     
     public void vtdMousePressed(java.awt.event.MouseEvent evt){
         double xa = evt.getXOnScreen()-getLocationOnScreen().getX();
         double ya = evt.getYOnScreen()-getLocationOnScreen().getY();
-        if(evt.getButton()==1 && collection!=null){
-            for(ObjectCollectionInterface obj : collection){
-                if(obj instanceof TextCollection){
-                    TextCollection tc = (TextCollection)obj;
-                    if(tc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        tc.setAnchorSelection(true);
-                        tc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        tc.setAnchorSelection(false);
+        if(shapeSelected==ShapeSelection.None){
+            if(evt.getButton()==1 && collection!=null){
+                for(ObjectCollectionInterface obj : collection){
+                    if(obj instanceof TextCollection){
+                        TextCollection tc = (TextCollection)obj;
+                        if(tc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            tc.setAnchorSelection(true);
+                            tc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            tc.setAnchorSelection(false);
+                        }
                     }
-                }
-                
-                if(obj instanceof VTextCollection){
-                    VTextCollection vtc = (VTextCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
-                    }
-                }
-                
-                if(obj instanceof TextAreaCollection){
-                    TextAreaCollection vtc = (TextAreaCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
-                    }
-                }
-                
-                if(obj instanceof ShapeCollection){
-                    ShapeCollection vtc = (ShapeCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
-                    }
-                }
 
+                    if(obj instanceof VTextCollection){
+                        VTextCollection vtc = (VTextCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
+                    }
+
+                    if(obj instanceof TextAreaCollection){
+                        TextAreaCollection vtc = (TextAreaCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
+                    }
+
+                    if(obj instanceof ShapeCollection){
+                        ShapeCollection vtc = (ShapeCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
+                    }
+
+                }
+            }
+        }else if(shapeSelected==ShapeSelection.Line && shapeCollection!=null){
+            if(evt.getButton()==2){
+                VectorDrawing vd = shapeCollection.getVectorDrawing();
+                lastSharedPoint = vd.getSharedPointAt(evt.getX(), evt.getY());
+            }
+        }else if(shapeSelected==ShapeSelection.Curve && shapeCollection!=null){
+            if(evt.getButton()==2){
+                VectorDrawing vd = shapeCollection.getVectorDrawing();
+                lastSharedPoint = vd.getSharedPointAt(evt.getX(), evt.getY());
             }
         }
+        
     }
     
     public void vtdMouseReleased(java.awt.event.MouseEvent evt){
         double xa = evt.getXOnScreen()-getLocationOnScreen().getX();
         double ya = evt.getYOnScreen()-getLocationOnScreen().getY();
-        if(evt.getButton()==1 && collection!=null){
-            for(ObjectCollectionInterface obj : collection){
-                if(obj instanceof TextCollection){
-                    TextCollection tc = (TextCollection)obj;
-                    if(tc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        tc.setAnchorSelection(true);
-                        tc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        tc.setAnchorSelection(false);
+        if(shapeSelected==ShapeSelection.None){
+            if(evt.getButton()==1 && collection!=null){
+                for(ObjectCollectionInterface obj : collection){
+                    if(obj instanceof TextCollection){
+                        TextCollection tc = (TextCollection)obj;
+                        if(tc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            tc.setAnchorSelection(true);
+                            tc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            tc.setAnchorSelection(false);
+                        }
                     }
-                }
-                
-                if(obj instanceof VTextCollection){
-                    VTextCollection vtc = (VTextCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
-                    }
-                }
-                
-                if(obj instanceof TextAreaCollection){
-                    TextAreaCollection vtc = (TextAreaCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
-                    }
-                }
-                
-                if(obj instanceof ShapeCollection){
-                    ShapeCollection vtc = (ShapeCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
-                    }
-                }
 
+                    if(obj instanceof VTextCollection){
+                        VTextCollection vtc = (VTextCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
+                    }
+
+                    if(obj instanceof TextAreaCollection){
+                        TextAreaCollection vtc = (TextAreaCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
+                    }
+
+                    if(obj instanceof ShapeCollection){
+                        ShapeCollection vtc = (ShapeCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
+                    }
+
+                }
+            }
+        }else if(shapeSelected==ShapeSelection.Line && shapeCollection!=null){
+            if(evt.getButton()==2 && lastSharedPoint!=null){
+                lastSharedPoint.setStartPoint(new Point2D.Float(evt.getX(), evt.getY()));
+            }
+        }else if(shapeSelected==ShapeSelection.Curve && shapeCollection!=null){
+            if(evt.getButton()==2 && lastSharedPoint!=null){
+                lastSharedPoint.setStartPoint(new Point2D.Float(evt.getX(), evt.getY()));
             }
         }
+        
     }
     
     public void vtdMouseDragged(java.awt.event.MouseEvent evt){
         double xa = evt.getXOnScreen()-getLocationOnScreen().getX();
         double ya = evt.getYOnScreen()-getLocationOnScreen().getY();
-        if(collection!=null){
-            for(ObjectCollectionInterface obj : collection){
-                if(obj instanceof TextCollection){
-                    TextCollection tc = (TextCollection)obj;
-                    if(tc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        tc.setAnchorSelection(true);
-                        tc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        tc.setAnchorSelection(false);
+        if(shapeSelected==ShapeSelection.None){
+            if(collection!=null){
+                for(ObjectCollectionInterface obj : collection){
+                    if(obj instanceof TextCollection){
+                        TextCollection tc = (TextCollection)obj;
+                        if(tc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            tc.setAnchorSelection(true);
+                            tc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            tc.setAnchorSelection(false);
+                        }
                     }
-                }
-                
-                if(obj instanceof VTextCollection){
-                    VTextCollection vtc = (VTextCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
+
+                    if(obj instanceof VTextCollection){
+                        VTextCollection vtc = (VTextCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
                     }
-                }
-                
-                if(obj instanceof TextAreaCollection){
-                    TextAreaCollection vtc = (TextAreaCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
+
+                    if(obj instanceof TextAreaCollection){
+                        TextAreaCollection vtc = (TextAreaCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
                     }
-                }
-                
-                if(obj instanceof ShapeCollection){
-                    ShapeCollection vtc = (ShapeCollection)obj;
-                    if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
-                        vtc.setAnchorSelection(true);
-                        vtc.setAnchor(new Point2D.Double(xa, ya));
-                        repaint();
-                    }else{
-                        vtc.setAnchorSelection(false);
+
+                    if(obj instanceof ShapeCollection){
+                        ShapeCollection vtc = (ShapeCollection)obj;
+                        if(vtc.isNearOfAnchor(new Point2D.Double(xa, ya))){
+                            vtc.setAnchorSelection(true);
+                            vtc.setAnchor(new Point2D.Double(xa, ya));
+                            repaint();
+                        }else{
+                            vtc.setAnchorSelection(false);
+                        }
                     }
+
                 }
-                
             }
-        }
+        }else if(shapeSelected==ShapeSelection.Line && shapeCollection!=null){
+            if(lastSharedPoint!=null){
+                Point2D new_param = new Point2D.Float(evt.getX(), evt.getY());
+                VectorDrawing vd = shapeCollection.getVectorDrawing();
+                List<AbstractShape> shapes = vd.getClosestShapes(lastSharedPoint);
+                for(AbstractShape as : shapes){
+                    if(as instanceof Line | as instanceof Curve){
+                        vd.updatePoint2D(as, lastSharedPoint.getStartPoint(), new_param);
+                    }
+                }
+                lastSharedPoint.setStartPoint(new_param);
+            }
+        }else if(shapeSelected==ShapeSelection.Curve && shapeCollection!=null){
+            if(lastSharedPoint!=null){
+                Point2D new_param = new Point2D.Float(evt.getX(), evt.getY());
+                VectorDrawing vd = shapeCollection.getVectorDrawing();
+                List<AbstractShape> shapes = vd.getClosestShapes(lastSharedPoint);
+                for(AbstractShape as : shapes){
+                    if(as instanceof Line | as instanceof Curve){
+                        vd.updatePoint2D(as, lastSharedPoint.getStartPoint(), new_param);
+                    } 
+                }
+                lastSharedPoint.setStartPoint(new_param);
+            }
+        }      
     }
     
     public void vtdMouseMoved(java.awt.event.MouseEvent evt){
@@ -414,5 +512,13 @@ public class VTD2 extends JPanel{
                 
             }
         }
+    }
+    
+    public void setSelectedShape(ShapeSelection s){
+        shapeSelected = s;
+    }
+    
+    public void setShapeCollection(ShapeCollection sc){
+        shapeCollection = sc;
     }
 }

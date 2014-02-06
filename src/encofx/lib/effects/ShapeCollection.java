@@ -12,6 +12,7 @@ import encofx.lib.graphics.GraphicsTextFX;
 import encofx.lib.properties.AbstractProperty;
 import encofx.lib.properties.ShapeType;
 import encofx.lib.settings.SetupObject;
+import encofx.lib.vectordrawing.VectorDrawing;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -37,6 +38,9 @@ public class ShapeCollection extends ObjectCollectionObject {
     
     private String notStrippedSentence = "";
     private int syllableIndex = -1;
+    
+    //Pour le dessin style Points And Curves :
+    private final VectorDrawing vd = new VectorDrawing();
     
     public ShapeCollection(){
         properties.add(propChild);
@@ -355,6 +359,7 @@ public class ShapeCollection extends ObjectCollectionObject {
         graFX.setColorsForGradientPaint(twosidesgradient);
         graFX.setColorsForFourSidesGradientPaint(foursidesgradient);
         graFX.setShapeType(shapetype);
+        graFX.setVectorDrawing(vd); //Mode FreeDesign
         
         if(scriptObject!=null){
             return graFX.getImageFromScript(scriptObject, frame);
@@ -376,6 +381,10 @@ public class ShapeCollection extends ObjectCollectionObject {
     private AlphaComposite makeComposite(float alpha) {
         int type = AlphaComposite.SRC_OVER;
         return(AlphaComposite.getInstance(type, alpha));
+    }
+    
+    public VectorDrawing getVectorDrawing(){
+        return vd;
     }
     
 }
