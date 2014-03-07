@@ -66,6 +66,9 @@ public class GraphicsTextFX {
     private Color[] fourSidesGradientColors = new Color[]{Color.black, Color.white, Color.blue, Color.red};
     private ShapeType.ObjectShapeType oShapeType = ShapeType.ObjectShapeType.Free;
     private VectorDrawing vd = new VectorDrawing(); // Pour dessiner des formes dans le mode Free de ObjectShapeType
+    private BufferedImage paintedImage = new BufferedImage(1280,720, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage addedImage = new BufferedImage(1280,720, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage addedVideo = new BufferedImage(1280,720, BufferedImage.TYPE_INT_ARGB);
     
     /**
      * <p>Pour définir le rendu.<br />
@@ -786,263 +789,6 @@ public class GraphicsTextFX {
     }
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="===FORME RECTANGULAIRE===">
-    public BufferedImage getImageFromRectangle(){
-        AffineTransform at = new AffineTransform();
-        AffineTransform oldAT = g.getTransform();
-        
-        //Fonte
-        g.setFont(new Font(fontname, fontstyle, 12).deriveFont(fontsize));
-        //Underline - Strikeout
-        Map<TextAttribute, Object> USmap = new HashMap<>();
-        if(underline == true && strikeout == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
-            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
-        }else if(underline == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
-        }else if(strikeout == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
-        }else{
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-        }
-        g.setFont(g.getFont().deriveFont(USmap));
-        //Couleur
-        g.setColor(color);
-        //Transparence
-        g.setComposite(makeComposite(transparency));
-        //Echelle X et Y
-        at.setToScale(scale_x/100, scale_y/100);        
-        //Angle
-        at.setToRotation(Math.toRadians(angle), xa, ya);
-        
-        g.setTransform(at);
-        
-        int w = 100;
-        int h = 100;
-        
-        w = Math.round(w*(scale_x/100));
-        h = Math.round(h*(scale_y/100));
-        
-        switch(anchorPosition){
-            case CornerLeftBottom:
-                //Do nothing x and y                
-                break;
-            case Bottom:
-                x = x - w/2; //Do nothing y                
-                break;
-            case CornerRightBottom:
-                x = x - w; //Do nothing y
-                break;
-            case Right:
-                x = x - w; y = y + h/2;
-                break;
-            case CornerRightTop:
-                x = x - w; y = y + h;
-                break;
-            case Top:
-                x = x - w/2; y = y + h;
-                break;
-            case CornerLeftTop:
-                y = y + h; //Do nothing x
-                break;
-            case Left: 
-                y = y + h/2; //Do nothing x
-                break;
-            case Middle:
-                x = x - w/2; y = y + h/2;
-                break;
-        }
-        
-        //Correction de la position de l'ancre
-        y = y - h;
-        
-        if(gradientType==ObjectCollectionObject.GradientType.None){
-            g.fillRect((int)x, (int)y, w, h);
-        }else if(gradientType==ObjectCollectionObject.GradientType.TwoSides){
-            // Horizontal
-            GradientPaint gp = new GradientPaint(
-                    x, y, gradientColors[0],
-                    x+w, y, gradientColors[1]);
-            g.setPaint(gp);
-            g.fillRect((int)x, (int)y, w, h);
-        }else if(gradientType==ObjectCollectionObject.GradientType.FourSides){
-            // Horizontal
-            GradientPaint gp2 = new GradientPaint(
-                    x, y, fourSidesGradientColors[0],
-                    x+w, y, fourSidesGradientColors[1]);
-            g.setPaint(gp2);
-            g.fillRect((int)x, (int)y, w, h);
-            // Vertical
-            Color c3 = fourSidesGradientColors[2];
-            Color c4 = fourSidesGradientColors[3];
-            GradientPaint gp = new GradientPaint(
-                    x, y, new Color(c3.getRed(), c3.getGreen(), c3.getBlue(), 127),
-                    x, y+h, new Color(c4.getRed(), c4.getGreen(), c4.getBlue(), 127));
-            g.setPaint(gp);
-            g.fillRect((int)x, (int)y, w, h);
-        }
-        
-        
-        //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
-        if(rendering == Rendering.Drawing){
-            g.setTransform(oldAT);
-            if(anchorSelected == true){
-                g.setColor(Color.magenta);
-                g.fillRect(
-                        Math.round(xa)-5,
-                        Math.round(ya)-5,
-                        10,
-                        10);
-            }
-            g.setColor(Color.cyan);
-            g.drawRect(
-                    Math.round(xa)-5,
-                    Math.round(ya)-5,
-                    10,
-                    10);
-        }
-            
-//        BlurMatrix blurmatrix = new BlurMatrix();
-//        blurmatrix.set5x5Matrix(0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f);
-//        BufferedImage new_image = useBlur(image, blurmatrix);
-        
-        return image;
-    }
-    // </editor-fold>
-    
-    // <editor-fold defaultstate="collapsed" desc="===FORME RECTANGULAIRE ARRONDI AUX ANGLES===">
-    public BufferedImage getImageFromRoundRectangle(){
-        AffineTransform at = new AffineTransform();
-        AffineTransform oldAT = g.getTransform();
-        
-        //Fonte
-        g.setFont(new Font(fontname, fontstyle, 12).deriveFont(fontsize));
-        //Underline - Strikeout
-        Map<TextAttribute, Object> USmap = new HashMap<>();
-        if(underline == true && strikeout == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
-            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
-        }else if(underline == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON); //Souligné
-        }else if(strikeout == true && direction == Direction.Horizontal){
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-            USmap.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON); //Barré
-        }else{
-            USmap.put(TextAttribute.KERNING, TextAttribute.KERNING_ON); //Mode Normal
-        }
-        g.setFont(g.getFont().deriveFont(USmap));
-        //Couleur
-        g.setColor(color);
-        //Transparence
-        g.setComposite(makeComposite(transparency));
-        //Echelle X et Y
-        at.setToScale(scale_x/100, scale_y/100);        
-        //Angle
-        at.setToRotation(Math.toRadians(angle), xa, ya);
-        
-        g.setTransform(at);
-        
-        int w = 100;
-        int h = 100;
-        
-        w = Math.round(w*(scale_x/100));
-        h = Math.round(h*(scale_y/100));
-        
-        switch(anchorPosition){
-            case CornerLeftBottom:
-                //Do nothing x and y                
-                break;
-            case Bottom:
-                x = x - w/2; //Do nothing y                
-                break;
-            case CornerRightBottom:
-                x = x - w; //Do nothing y
-                break;
-            case Right:
-                x = x - w; y = y + h/2;
-                break;
-            case CornerRightTop:
-                x = x - w; y = y + h;
-                break;
-            case Top:
-                x = x - w/2; y = y + h;
-                break;
-            case CornerLeftTop:
-                y = y + h; //Do nothing x
-                break;
-            case Left: 
-                y = y + h/2; //Do nothing x
-                break;
-            case Middle:
-                x = x - w/2; y = y + h/2;
-                break;
-        }
-        
-        //Correction de la position de l'ancre
-        y = y - h;
-        
-        if(gradientType==ObjectCollectionObject.GradientType.None){
-            RoundRectangle2D rr2d = new RoundRectangle2D.Float(x, y, w, h, 30, 30);
-            g.fill(rr2d);
-        }else if(gradientType==ObjectCollectionObject.GradientType.TwoSides){
-            // Horizontal
-            GradientPaint gp = new GradientPaint(
-                    x, y, gradientColors[0],
-                    x+w, y, gradientColors[1]);
-            g.setPaint(gp);
-            RoundRectangle2D rr2d = new RoundRectangle2D.Float(x, y, w, h, 30, 30);
-            g.fill(rr2d);
-        }else if(gradientType==ObjectCollectionObject.GradientType.FourSides){
-            RoundRectangle2D rr2d = new RoundRectangle2D.Float(x, y, w, h, 30, 30);
-            // Horizontal
-            GradientPaint gp2 = new GradientPaint(
-                    x, y, fourSidesGradientColors[0],
-                    x+w, y, fourSidesGradientColors[1]);
-            g.setPaint(gp2);            
-            g.fill(rr2d);
-            // Vertical
-            Color c3 = fourSidesGradientColors[2];
-            Color c4 = fourSidesGradientColors[3];
-            GradientPaint gp = new GradientPaint(
-                    x, y, new Color(c3.getRed(), c3.getGreen(), c3.getBlue(), 127),
-                    x, y+h, new Color(c4.getRed(), c4.getGreen(), c4.getBlue(), 127));
-            g.setPaint(gp);
-            g.fill(rr2d);
-        }
-        
-        
-        //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
-        if(rendering == Rendering.Drawing){
-            g.setTransform(oldAT);
-            if(anchorSelected == true){
-                g.setColor(Color.magenta);
-                g.fillRect(
-                        Math.round(xa)-5,
-                        Math.round(ya)-5,
-                        10,
-                        10);
-            }
-            g.setColor(Color.cyan);
-            g.drawRect(
-                    Math.round(xa)-5,
-                    Math.round(ya)-5,
-                    10,
-                    10);
-        }
-            
-//        BlurMatrix blurmatrix = new BlurMatrix();
-//        blurmatrix.set5x5Matrix(0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f);
-//        BufferedImage new_image = useBlur(image, blurmatrix);
-        
-        return image;
-    }
-    // </editor-fold>
-    
     // <editor-fold defaultstate="collapsed" desc="===FORME QUELCONQUE===">
     /**
      * Obtient une image avec les modifications voulues.
@@ -1188,6 +934,246 @@ public class GraphicsTextFX {
     }
     // </editor-fold>
     
+    // <editor-fold defaultstate="collapsed" desc="===DESSIN===">
+    public BufferedImage getImageFromDrawing(){
+        AffineTransform at = new AffineTransform();
+        AffineTransform oldAT = g.getTransform();
+        
+        //Couleur
+        //g.setColor(color);
+        //Transparence
+        g.setComposite(makeComposite(transparency));
+        //Echelle X et Y
+        at.setToScale(scale_x/100, scale_y/100);        
+        //Angle
+        at.setToRotation(Math.toRadians(angle), xa, ya);
+        
+        g.setTransform(at);
+        
+        int w = paintedImage.getWidth();
+        int h = paintedImage.getHeight();
+        
+        w = Math.round(w*(scale_x/100));
+        h = Math.round(h*(scale_y/100));
+        
+        switch(anchorPosition){
+            case CornerLeftBottom:
+                //Do nothing x and y                
+                break;
+            case Bottom:
+                x = x - w/2; //Do nothing y                
+                break;
+            case CornerRightBottom:
+                x = x - w; //Do nothing y
+                break;
+            case Right:
+                x = x - w; y = y + h/2;
+                break;
+            case CornerRightTop:
+                x = x - w; y = y + h;
+                break;
+            case Top:
+                x = x - w/2; y = y + h;
+                break;
+            case CornerLeftTop:
+                y = y + h; //Do nothing x
+                break;
+            case Left: 
+                y = y + h/2; //Do nothing x
+                break;
+            case Middle:
+                x = x - w/2; y = y + h/2;
+                break;
+        }
+        
+        //Correction de la position de l'ancre
+        y = y - h;
+        
+//        g.drawImage(paintedImage, Math.round(x), Math.round(y), null);
+        g.drawImage(paintedImage, 0, 0, null);
+        
+        //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
+        if(rendering == Rendering.Drawing){
+            g.setTransform(oldAT);
+            if(anchorSelected == true){
+                g.setColor(Color.magenta);
+                g.fillRect(
+                        Math.round(xa)-5,
+                        Math.round(ya)-5,
+                        10,
+                        10);
+            }
+            g.setColor(Color.cyan);
+            g.drawRect(
+                    Math.round(xa)-5,
+                    Math.round(ya)-5,
+                    10,
+                    10);
+        }
+        
+        return image;
+    }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="===IMAGE===">
+    public BufferedImage getImageFromImage(){
+        AffineTransform at = new AffineTransform();
+        AffineTransform oldAT = g.getTransform();
+        
+        //Couleur
+        //g.setColor(color);
+        //Transparence
+        g.setComposite(makeComposite(transparency));
+        //Echelle X et Y
+        at.setToScale(scale_x/100, scale_y/100);        
+        //Angle
+        at.setToRotation(Math.toRadians(angle), xa, ya);
+        
+        g.setTransform(at);
+        
+        int w = addedImage.getWidth();
+        int h = addedImage.getHeight();
+        
+        w = Math.round(w*(scale_x/100));
+        h = Math.round(h*(scale_y/100));
+        
+        switch(anchorPosition){
+            case CornerLeftBottom:
+                //Do nothing x and y                
+                break;
+            case Bottom:
+                x = x - w/2; //Do nothing y                
+                break;
+            case CornerRightBottom:
+                x = x - w; //Do nothing y
+                break;
+            case Right:
+                x = x - w; y = y + h/2;
+                break;
+            case CornerRightTop:
+                x = x - w; y = y + h;
+                break;
+            case Top:
+                x = x - w/2; y = y + h;
+                break;
+            case CornerLeftTop:
+                y = y + h; //Do nothing x
+                break;
+            case Left: 
+                y = y + h/2; //Do nothing x
+                break;
+            case Middle:
+                x = x - w/2; y = y + h/2;
+                break;
+        }
+        
+        //Correction de la position de l'ancre
+        y = y - h;
+        
+        g.drawImage(addedImage, (int)x,(int)y, null);
+        
+        //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
+        if(rendering == Rendering.Drawing){
+            g.setTransform(oldAT);
+            if(anchorSelected == true){
+                g.setColor(Color.magenta);
+                g.fillRect(
+                        Math.round(xa)-5,
+                        Math.round(ya)-5,
+                        10,
+                        10);
+            }
+            g.setColor(Color.cyan);
+            g.drawRect(
+                    Math.round(xa)-5,
+                    Math.round(ya)-5,
+                    10,
+                    10);
+        }
+        
+        return image;
+    }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="===VIDEO===">
+    public BufferedImage getImageFromVideo(){
+        AffineTransform at = new AffineTransform();
+        AffineTransform oldAT = g.getTransform();
+        
+        //Couleur
+        //g.setColor(color);
+        //Transparence
+        g.setComposite(makeComposite(transparency));
+        //Echelle X et Y
+        at.setToScale(scale_x/100, scale_y/100);        
+        //Angle
+        at.setToRotation(Math.toRadians(angle), xa, ya);
+        
+        g.setTransform(at);
+        
+        int w = addedVideo.getWidth();
+        int h = addedVideo.getHeight();
+        
+        w = Math.round(w*(scale_x/100));
+        h = Math.round(h*(scale_y/100));
+        
+        switch(anchorPosition){
+            case CornerLeftBottom:
+                //Do nothing x and y                
+                break;
+            case Bottom:
+                x = x - w/2; //Do nothing y                
+                break;
+            case CornerRightBottom:
+                x = x - w; //Do nothing y
+                break;
+            case Right:
+                x = x - w; y = y + h/2;
+                break;
+            case CornerRightTop:
+                x = x - w; y = y + h;
+                break;
+            case Top:
+                x = x - w/2; y = y + h;
+                break;
+            case CornerLeftTop:
+                y = y + h; //Do nothing x
+                break;
+            case Left: 
+                y = y + h/2; //Do nothing x
+                break;
+            case Middle:
+                x = x - w/2; y = y + h/2;
+                break;
+        }
+        
+        //Correction de la position de l'ancre
+        y = y - h;
+        
+        g.drawImage(addedVideo, (int)x,(int)y, null);
+        
+        //On cache l'ancre à l'encodage mais on ne la cache pas pour l'édition.
+        if(rendering == Rendering.Drawing){
+            g.setTransform(oldAT);
+            if(anchorSelected == true){
+                g.setColor(Color.magenta);
+                g.fillRect(
+                        Math.round(xa)-5,
+                        Math.round(ya)-5,
+                        10,
+                        10);
+            }
+            g.setColor(Color.cyan);
+            g.drawRect(
+                    Math.round(xa)-5,
+                    Math.round(ya)-5,
+                    10,
+                    10);
+        }
+        
+        return image;
+    }
+    // </editor-fold>
     
     public BufferedImage getBlankImage(){
         return image;
@@ -1313,6 +1299,18 @@ public class GraphicsTextFX {
     
     public void setVectorDrawing(VectorDrawing vd){
         this.vd = vd;
+    }
+    
+    public void setImageOnFrames(BufferedImage paintedImage){
+        this.paintedImage = paintedImage;
+    }
+    
+    public void setImageOntoFrames(BufferedImage addedImage){
+        this.addedImage = addedImage;
+    }
+    
+    public void setVideoOntoFrames(BufferedImage addedVideo){
+        this.addedVideo = addedVideo;
     }
     
     /**

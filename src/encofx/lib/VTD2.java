@@ -6,10 +6,15 @@
 
 package encofx.lib;
 
+import encofx.lib.effects.Drawing;
+import encofx.lib.effects.DrawingCollection;
+import encofx.lib.effects.ImageCollection;
 import encofx.lib.effects.ShapeCollection;
 import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VTextCollection;
+import encofx.lib.effects.VideoCollection;
+import encofx.lib.paintdrawing.PaintTool;
 import encofx.lib.vectordrawing.AbstractShape;
 import encofx.lib.vectordrawing.Curve;
 import encofx.lib.vectordrawing.Line;
@@ -41,6 +46,8 @@ public class VTD2 extends JPanel{
     private ShapeSelection shapeSelected = ShapeSelection.None;
     private ShapeCollection shapeCollection = null;
     private SharedPoint lastSharedPoint = null;
+    private PaintTool.Tool dTool = PaintTool.Tool.Pen;
+    private DrawingCollection drawingCollection = null;
     
     public VTD2(){        
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -324,7 +331,17 @@ public class VTD2 extends JPanel{
                 }
                 lastSharedPoint.setStartPoint(new_param);
             }
-        }      
+        }
+        
+        if(drawingCollection != null){
+            
+            Drawing drawing = drawingCollection.getBefore(mainframe);
+            if(drawing.getPaintDrawing()==null){
+                drawing.setupImage();
+            }
+            drawing.getPaintDrawing().getPainter().setTool(dTool);            
+            drawing.getPaintDrawing().draw((int)xa, (int)ya);
+        }
     }
     
     public void vtdMouseMoved(java.awt.event.MouseEvent evt){
@@ -446,6 +463,30 @@ public class VTD2 extends JPanel{
                     }  
                 }
                 
+                
+                if(obj instanceof DrawingCollection){
+                    DrawingCollection vtc = (DrawingCollection)obj;
+                    BufferedImage b2 = vtc.getFX(mainframe, width, height, false);
+                    if(b2!=null){
+                        gDT.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
+                if(obj instanceof ImageCollection){
+                    ImageCollection vtc = (ImageCollection)obj;
+                    BufferedImage b2 = vtc.getFX(mainframe, width, height, false);
+                    if(b2!=null){
+                        gDT.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
+                if(obj instanceof VideoCollection){
+                    VideoCollection vtc = (VideoCollection)obj;
+                    BufferedImage b2 = vtc.getFX(mainframe, width, height, false);
+                    if(b2!=null){
+                        gDT.drawImage(b2, null, 0, 0);
+                    }  
+                }
             }
         }
         
@@ -510,6 +551,29 @@ public class VTD2 extends JPanel{
                     }  
                 }
                 
+                if(obj instanceof DrawingCollection){
+                    DrawingCollection vtc = (DrawingCollection)obj;
+                    BufferedImage b2 = vtc.getFX(cframe, width, height, true);
+                    if(b2!=null){
+                        g2.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
+                if(obj instanceof ImageCollection){
+                    ImageCollection vtc = (ImageCollection)obj;
+                    BufferedImage b2 = vtc.getFX(cframe, width, height, true);
+                    if(b2!=null){
+                        g2.drawImage(b2, null, 0, 0);
+                    }  
+                }
+                
+                if(obj instanceof VideoCollection){
+                    VideoCollection vtc = (VideoCollection)obj;
+                    BufferedImage b2 = vtc.getFX(cframe, width, height, true);
+                    if(b2!=null){
+                        g2.drawImage(b2, null, 0, 0);
+                    }  
+                }
             }
         }
     }
@@ -520,5 +584,13 @@ public class VTD2 extends JPanel{
     
     public void setShapeCollection(ShapeCollection sc){
         shapeCollection = sc;
+    }
+    
+    public void setDrawingTool(PaintTool.Tool tool){
+        dTool = tool;
+    }
+    
+    public void setDrawingCollection(DrawingCollection dc){
+        drawingCollection = dc;
     }
 }

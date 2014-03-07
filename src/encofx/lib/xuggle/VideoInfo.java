@@ -273,4 +273,8 @@ public class VideoInfo {
         }
     }
     
+    public Extract getExtract(){
+        return extract;
+    }
+    
 }

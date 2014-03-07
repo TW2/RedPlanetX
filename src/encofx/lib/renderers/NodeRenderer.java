@@ -7,11 +7,15 @@
 package encofx.lib.renderers;
 
 import encofx.lib.FXObject;
+import encofx.lib.effects.DrawingCollection;
+import encofx.lib.effects.ImageCollection;
 import encofx.lib.effects.ParentCollection;
+import encofx.lib.effects.ShapeCollection;
 import encofx.lib.effects.Text;
 import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VTextCollection;
+import encofx.lib.effects.VideoCollection;
 import encofx.lib.xuggle.VideoInfo;
 import java.awt.Component;
 import javax.swing.Icon;
@@ -102,6 +106,42 @@ public class NodeRenderer extends DefaultTreeCellRenderer {
                 setIcon(icon);
             }else{
                 Icon icon = new ImageIcon(getClass().getResource("16px-z-text.png"));
+                setIcon(icon);
+            }
+        }else if(node.getUserObject() instanceof ShapeCollection){
+            ShapeCollection vtc = (ShapeCollection)node.getUserObject();
+            if(expanded){
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_ksplash.png"));
+                setIcon(icon);
+            }else{
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_ksplash.png"));
+                setIcon(icon);
+            }
+        }else if(node.getUserObject() instanceof DrawingCollection){
+            DrawingCollection vtc = (DrawingCollection)node.getUserObject();
+            if(expanded){
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kcoloredit.png"));
+                setIcon(icon);
+            }else{
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kcoloredit.png"));
+                setIcon(icon);
+            }
+        }else if(node.getUserObject() instanceof ImageCollection){
+            ImageCollection vtc = (ImageCollection)node.getUserObject();
+            if(expanded){
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kpaint.png"));
+                setIcon(icon);
+            }else{
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_kpaint.png"));
+                setIcon(icon);
+            }
+        }else if(node.getUserObject() instanceof VideoCollection){
+            VideoCollection vtc = (VideoCollection)node.getUserObject();
+            if(expanded){
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_camera.png"));
+                setIcon(icon);
+            }else{
+                Icon icon = new ImageIcon(getClass().getResource("16px-Crystal_Clear_app_camera.png"));
                 setIcon(icon);
             }
         }

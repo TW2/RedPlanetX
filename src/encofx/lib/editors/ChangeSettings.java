@@ -6,25 +6,35 @@
 
 package encofx.lib.editors;
 
+import encofx.lib.Configuration;
 import encofx.lib.dialogs.HTMLColorDialog;
 import encofx.lib.dialogs.ParentDialog;
 import encofx.lib.dialogs.SidesGradientDialog;
 import encofx.lib.effects.ParentCollection;
 import encofx.lib.effects.TextCollection;
+import encofx.lib.filefilter.VideoFilter;
 import encofx.lib.properties.ShapeType;
 import encofx.lib.settings.SetupObject;
+import encofx.lib.xuggle.VideoEmulation;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -34,8 +44,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.TableCellEditor;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -48,9 +60,19 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
     private Frame frame = null;
     
     private List<ParentCollection> parents = null;
+    private String CONFIG_FOLDER = null;
+    private Configuration configuration = null;
     
     public void setParents(List<ParentCollection> parents){
         this.parents = parents;
+    }
+    
+    public void setConfigPath(String configPath){
+        CONFIG_FOLDER = configPath;
+    }
+    
+    public void setConfiguration(Configuration c){
+        configuration = c;
     }
     
     // ===== FONTNAME ======================================================
@@ -293,6 +315,42 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
     }
     // ---------------------------------------------------------------------
     
+    // ===== IMAGE ======================================================
+    private final JButton buttonImage = new JButton();
+    private final JFileChooser fcImage;
+    private SetupObject<BufferedImage> SO_Image = new SetupObject();
+    
+    public void buttonImageActionPerformed(ActionEvent e){
+        buttonColor.setBackground(Color.yellow.darker());
+        int z = fcImage.showOpenDialog(frame);
+        if(z == JFileChooser.APPROVE_OPTION){
+            try {                
+                BufferedImage bi = ImageIO.read(fcImage.getSelectedFile());
+                SO_Image.set(bi);
+            } catch (IOException ex) {
+                Logger.getLogger(ChangeSettings.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        fireEditingStopped();
+    }
+    // ---------------------------------------------------------------------
+    
+    // ===== VIDEO ======================================================
+    private final JButton buttonVideo = new JButton();
+    private final JFileChooser fcVideo;
+    private SetupObject<VideoEmulation> SO_Video = new SetupObject();
+    
+    public void buttonVideoActionPerformed(ActionEvent e){
+        buttonVideo.setBackground(Color.yellow.darker());
+        try {
+            setupVideo();
+        } catch (ParseException | IOException ex) {
+            Logger.getLogger(ChangeSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        fireEditingStopped();
+    }
+    // ---------------------------------------------------------------------
+    
     
     public ChangeSettings(Frame frame) {
         this.frame = frame;
@@ -323,6 +381,8 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
         SwingUtilities.updateComponentTreeUI(buttonFourSides);
         SwingUtilities.updateComponentTreeUI(buttonChild);
         SwingUtilities.updateComponentTreeUI(comboShapeType);
+        SwingUtilities.updateComponentTreeUI(buttonImage);
+        SwingUtilities.updateComponentTreeUI(buttonVideo);
         
         // ===== FONTNAME ======================================================
         comboFontname.setModel(modelFontname);
@@ -572,6 +632,30 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
         });
         // ---------------------------------------------------------------------
         
+        // ===== IMAGE ======================================================
+        fcImage = new JFileChooser();
+        buttonImage.setActionCommand(EDIT);
+        buttonImage.setBorderPainted(true);
+        buttonImage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buttonImageActionPerformed(e);
+            }
+        });
+        // ---------------------------------------------------------------------
+        
+        // ===== VIDEO ======================================================
+        fcVideo = new JFileChooser();
+        buttonVideo.setActionCommand(EDIT);
+        buttonVideo.setBorderPainted(true);
+        buttonVideo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buttonVideoActionPerformed(e);
+            }
+        });
+        // ---------------------------------------------------------------------
+        
     }
 
     @Override
@@ -700,6 +784,18 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
         // ===== SHAPETYPE ======================================================
         if(indicator.getType()==SetupObject.Type.ShapeType){
             return SO_ShapeType;
+        }
+        // ---------------------------------------------------------------------
+        
+        // ===== IMAGE ======================================================
+        if(indicator.getType()==SetupObject.Type.ImageOntoFrames){
+            return SO_Image;
+        }
+        // ---------------------------------------------------------------------
+        
+        // ===== VIDEO ======================================================
+        if(indicator.getType()==SetupObject.Type.VideoOntoFrames){
+            return SO_Video;
         }
         // ---------------------------------------------------------------------
         
@@ -886,9 +982,65 @@ public class ChangeSettings extends AbstractCellEditor implements TableCellEdito
             }
             // ---------------------------------------------------------------------
             
+            // ===== IMAGE ======================================================            
+            if(indicator.getType()==SetupObject.Type.ImageOntoFrames){
+                SO_Image = (SetupObject)value;
+                buttonImage.setBackground(Color.gray);
+                return buttonImage;
+            }
+            // ---------------------------------------------------------------------  
+            
+            // ===== VIDEO ======================================================            
+            if(indicator.getType()==SetupObject.Type.VideoOntoFrames){
+                SO_Video = (SetupObject)value;
+                buttonVideo.setBackground(Color.gray);
+                return buttonVideo;
+            }
+            // ---------------------------------------------------------------------   
+            
         }
         
         return null;
+    }
+    
+    private void setupVideo() throws ParseException, IOException{
+        for (FileFilter f : fcVideo.getChoosableFileFilters()){
+            fcVideo.removeChoosableFileFilter(f);
+        }
+        fcVideo.addChoosableFileFilter(new VideoFilter());
+        fcVideo.setDialogTitle("Choose the video...");
+        SwingUtilities.updateComponentTreeUI(fcVideo);
+        int z = fcVideo.showOpenDialog(frame);
+        if (z == JFileChooser.APPROVE_OPTION){
+            VideoEmulation ve = SO_Video.get();
+            ve.setVideo(fcVideo.getSelectedFile().getAbsolutePath());
+            
+            File configFolder = new File(CONFIG_FOLDER);
+            File searchFor = new File(configFolder,fcVideo.getSelectedFile().getName()+".json");
+            boolean isInConf = configuration.isInConfigFolder(searchFor);
+            if(isInConf==true){
+                ve.setVideoInfo(configuration.fromJSON(searchFor));
+            }
+            
+            File savePath = new File(ve.getVideoInfo().getSaveFolder());
+            JFileChooser fcSaveFolder = new JFileChooser();
+            if(isInConf==false || savePath.listFiles().length == 0){
+                for (FileFilter f : fcSaveFolder.getChoosableFileFilters()){
+                    fcSaveFolder.removeChoosableFileFilter(f);
+                }
+                fcSaveFolder.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                fcSaveFolder.setDialogTitle("Choose the save folder...");
+                SwingUtilities.updateComponentTreeUI(fcSaveFolder);
+                int y = fcSaveFolder.showSaveDialog(frame);
+                if (y == JFileChooser.APPROVE_OPTION){
+                    ve.getVideoInfo().setSaveFolder(fcSaveFolder.getSelectedFile().getAbsolutePath());
+                    ve.getVideoInfo().extractVideo();
+                    configuration.createJSON(ve.getVideoInfo());
+                }
+            }
+            ve.setVideoEmulation(savePath, fcVideo.getSelectedFile());
+            ve.setFrames(ve.getVideoInfo().getFrames());
+        }
     }
     
 }

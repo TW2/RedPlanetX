@@ -6,6 +6,8 @@
 
 package encofx.lib;
 
+import encofx.lib.properties.ImageOnFrames;
+import encofx.lib.properties.ImageOntoFrames;
 import encofx.lib.properties.TextAngle;
 import encofx.lib.properties.TextColor;
 import encofx.lib.properties.TextFontsize;
@@ -16,8 +18,11 @@ import encofx.lib.properties.TextPositionY;
 import encofx.lib.properties.TextScaleX;
 import encofx.lib.properties.TextScaleY;
 import encofx.lib.properties.TextTransparency;
+import encofx.lib.properties.VideoOntoFrames;
 import encofx.lib.settings.SetupObject;
+import encofx.lib.xuggle.VideoEmulation;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -88,6 +93,9 @@ public abstract class FXObject implements FXInterface {
     protected final TextAngle propAngle = new TextAngle();
     protected final TextGradientPaint propGradient = new TextGradientPaint();
     protected final TextFourSidesGradientPaint propFourSidesGradient = new TextFourSidesGradientPaint();
+    protected ImageOnFrames propImageOnFrames = new ImageOnFrames();
+    protected ImageOntoFrames propImageOntoFrames = new ImageOntoFrames();
+    protected VideoOntoFrames propVideoOntoFrames = new VideoOntoFrames();
     
     public void setColor(Color color){
         SetupObject<Color> so = (SetupObject)propColor.getObject();
@@ -186,6 +194,36 @@ public abstract class FXObject implements FXInterface {
     
     public Color[] getFourSidesGradient(){
         SetupObject<Color[]> so = (SetupObject)propFourSidesGradient.getObject();
+        return so.get();
+    }
+    
+    public void setImageOnFrames(BufferedImage image){
+        SetupObject<BufferedImage> so = (SetupObject)propImageOnFrames.getObject();
+        so.set(image);
+    }
+    
+    public BufferedImage getImageOnFrames(){
+        SetupObject<BufferedImage> so = (SetupObject)propImageOnFrames.getObject();
+        return so.get();
+    }
+    
+    public void setImageOntoFrames(BufferedImage image){
+        SetupObject<BufferedImage> so = (SetupObject)propImageOntoFrames.getObject();
+        so.set(image);
+    }
+    
+    public BufferedImage getImageOntoFrames(){
+        SetupObject<BufferedImage> so = (SetupObject)propImageOntoFrames.getObject();
+        return so.get();
+    }
+    
+    public void setVideoOntoFrames(VideoEmulation video){
+        SetupObject<VideoEmulation> so = (SetupObject)propVideoOntoFrames.getObject();
+        so.set(video);
+    }
+    
+    public VideoEmulation getVideoOntoFrames(){
+        SetupObject<VideoEmulation> so = (SetupObject)propVideoOntoFrames.getObject();
         return so.get();
     }
 }

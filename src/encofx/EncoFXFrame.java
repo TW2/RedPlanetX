@@ -12,9 +12,13 @@ import encofx.lib.IO;
 import encofx.lib.ObjectCollectionInterface;
 import encofx.lib.SubObjects;
 import encofx.lib.VTD2;
+import encofx.lib.dialogs.AboutDialog;
 import encofx.lib.dialogs.AddTextDialog;
 import encofx.lib.dialogs.InputDialog;
 import encofx.lib.editors.ChangeSettings;
+import encofx.lib.effects.Drawing;
+import encofx.lib.effects.DrawingCollection;
+import encofx.lib.effects.ImageCollection;
 import encofx.lib.effects.Parent;
 import encofx.lib.effects.ParentCollection;
 import encofx.lib.effects.Shape;
@@ -25,15 +29,20 @@ import encofx.lib.effects.TextAreaCollection;
 import encofx.lib.effects.TextCollection;
 import encofx.lib.effects.VText;
 import encofx.lib.effects.VTextCollection;
+import encofx.lib.effects.VideoCollection;
 import encofx.lib.filefilter.VideoFilter;
 import encofx.lib.graphics.SyllableLocator;
+import encofx.lib.paintdrawing.PaintTool;
 import encofx.lib.properties.AbstractProperty;
 import encofx.lib.renderers.DisplaySettingsDeluxe;
 import encofx.lib.renderers.NodeRenderer;
 import encofx.lib.scripting.Scripting;
 import encofx.lib.settings.SetupObject;
+import encofx.lib.toolscombobox.ToolsComboBox;
 import encofx.lib.xuggle.VideoInfo;
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -71,6 +80,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private String CONFIG_FOLDER = "";
     private Configuration configuration = null;
     private final List<ParentCollection> parents = new ArrayList<>();
+    private final ToolsComboBox tcb = new ToolsComboBox();
     
     //For tree    
     private final DefaultMutableTreeNode root = new DefaultMutableTreeNode("Objects");
@@ -107,7 +117,15 @@ public class EncoFXFrame extends javax.swing.JFrame {
         configuration = new Configuration();
         
         spf.setState("Create the objects...", 10);
-        
+                
+        jToolBar1.add(tcb);
+        tcb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                prepareToolAction();
+            }
+        });
+                
         objectsTree.setModel(treeModel);
         objectsTree.setCellRenderer(noderenderer);
         
@@ -144,6 +162,8 @@ public class EncoFXFrame extends javax.swing.JFrame {
         
         changeSettings = new ChangeSettings(this);
         changeSettings.setParents(parents);
+        changeSettings.setConfigPath(CONFIG_FOLDER);
+        changeSettings.setConfiguration(configuration);
         
         propTable.setDefaultEditor(SetupObject.class, changeSettings);
         propTable.setDefaultRenderer(SetupObject.class, new DisplaySettingsDeluxe());
@@ -165,8 +185,6 @@ public class EncoFXFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
-        hideVectorTools();
         
         spf.setState("Look & feel...", 30);
         
@@ -331,9 +349,40 @@ public class EncoFXFrame extends javax.swing.JFrame {
         expandTree();
     }
     
-    private void hideVectorTools(){
-        tbLine.setEnabled(false);
-        tbCurve.setEnabled(false);
+    private void prepareToolAction(){
+        Object obj = tcb.getFromSelectedItem();
+        vtd.setSelectedShape(VTD2.ShapeSelection.None);
+        vtd.setShapeCollection(null);
+        
+        if(obj instanceof VTD2.ShapeSelection){
+            VTD2.ShapeSelection shsel = (VTD2.ShapeSelection)obj;
+            vtd.setSelectedShape(shsel);
+            if(lastSelected!=null){
+                if(lastSelected.getUserObject() instanceof ShapeCollection){
+                    ShapeCollection sc = (ShapeCollection)lastSelected.getUserObject();
+                    vtd.setShapeCollection(sc);
+                }else{
+                    JOptionPane.showMessageDialog(this, "You don't have selected a shape object of the tree !");
+                }
+            }else{
+                JOptionPane.showMessageDialog(this, "You don't have selected any object of the tree !");
+            }
+        }
+        
+        if(obj instanceof PaintTool.Tool){
+            PaintTool.Tool ptool = (PaintTool.Tool)obj;
+            vtd.setDrawingTool(ptool);
+            if(lastSelected!=null){
+                if(lastSelected.getUserObject() instanceof DrawingCollection){
+                    DrawingCollection dc = (DrawingCollection)lastSelected.getUserObject();
+                    vtd.setDrawingCollection(dc);                
+                }else{
+                    JOptionPane.showMessageDialog(this, "You don't have selected a drawing object of the tree !");
+                }
+            }else{
+                JOptionPane.showMessageDialog(this, "You don't have selected any object of the tree !");
+            }
+        }
     }
 
     /**
@@ -372,9 +421,6 @@ public class EncoFXFrame extends javax.swing.JFrame {
         btnAddPicture = new javax.swing.JButton();
         btnAddVideo = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
-        tbCursor = new javax.swing.JToggleButton();
-        tbLine = new javax.swing.JToggleButton();
-        tbCurve = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         objectsTree = new javax.swing.JTree();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -383,9 +429,13 @@ public class EncoFXFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         mnuOpenVideo = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         mnuGoToSaveFolder = new javax.swing.JMenuItem();
         mnuEncodeVideo = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
+        mnuQuit = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        mnuAbout = new javax.swing.JMenuItem();
 
         popmExpandAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/20px-Crystal_Clear_action_forward.png"))); // NOI18N
         popmExpandAll.setText("Expand all");
@@ -540,58 +590,35 @@ public class EncoFXFrame extends javax.swing.JFrame {
         btnAddDrawing.setFocusable(false);
         btnAddDrawing.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAddDrawing.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAddDrawing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddDrawingActionPerformed(evt);
+            }
+        });
         jToolBar1.add(btnAddDrawing);
 
         btnAddPicture.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-Crystal_Clear_app_kpaint.png"))); // NOI18N
         btnAddPicture.setFocusable(false);
         btnAddPicture.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAddPicture.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAddPicture.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddPictureActionPerformed(evt);
+            }
+        });
         jToolBar1.add(btnAddPicture);
 
         btnAddVideo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/32px-Crystal_Clear_app_camera.png"))); // NOI18N
         btnAddVideo.setFocusable(false);
         btnAddVideo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAddVideo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAddVideo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddVideoActionPerformed(evt);
+            }
+        });
         jToolBar1.add(btnAddVideo);
         jToolBar1.add(jSeparator4);
-
-        bgShapes.add(tbCursor);
-        tbCursor.setText("Cursor");
-        tbCursor.setFocusable(false);
-        tbCursor.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tbCursor.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tbCursor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tbCursorActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(tbCursor);
-
-        bgShapes.add(tbLine);
-        tbLine.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line2.png"))); // NOI18N
-        tbLine.setSelected(true);
-        tbLine.setToolTipText("");
-        tbLine.setFocusable(false);
-        tbLine.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tbLine.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tbLine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tbLineActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(tbLine);
-
-        bgShapes.add(tbCurve);
-        tbCurve.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/curve2.png"))); // NOI18N
-        tbCurve.setFocusable(false);
-        tbCurve.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tbCurve.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tbCurve.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tbCurveActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(tbCurve);
 
         objectsTree.setComponentPopupMenu(treePopup);
         objectsTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
@@ -634,6 +661,7 @@ public class EncoFXFrame extends javax.swing.JFrame {
             }
         });
         jMenu1.add(mnuOpenVideo);
+        jMenu1.add(jSeparator5);
 
         mnuGoToSaveFolder.setText("Go to save folder");
         mnuGoToSaveFolder.setEnabled(false);
@@ -652,10 +680,28 @@ public class EncoFXFrame extends javax.swing.JFrame {
             }
         });
         jMenu1.add(mnuEncodeVideo);
+        jMenu1.add(jSeparator6);
+
+        mnuQuit.setText("Quit");
+        mnuQuit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuQuitActionPerformed(evt);
+            }
+        });
+        jMenu1.add(mnuQuit);
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("?");
+
+        mnuAbout.setText("About...");
+        mnuAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuAboutActionPerformed(evt);
+            }
+        });
+        jMenu2.add(mnuAbout);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -803,6 +849,27 @@ public class EncoFXFrame extends javax.swing.JFrame {
                     Object[] row = new Object[]{p, p.getObject()};
                     tableModel.addRow(row);
                 }
+            }else if(tn.getUserObject() instanceof DrawingCollection){
+                DrawingCollection pc = (DrawingCollection)tn.getUserObject();
+                List<AbstractProperty> properties = pc.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
+            }else if(tn.getUserObject() instanceof ImageCollection){
+                ImageCollection pc = (ImageCollection)tn.getUserObject();
+                List<AbstractProperty> properties = pc.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
+            }else if(tn.getUserObject() instanceof VideoCollection){
+                VideoCollection pc = (VideoCollection)tn.getUserObject();
+                List<AbstractProperty> properties = pc.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
             }
             
             if(tn.getUserObject() instanceof Text){
@@ -835,6 +902,27 @@ public class EncoFXFrame extends javax.swing.JFrame {
                 }
             }else if(tn.getUserObject() instanceof Shape){
                 Shape pr = (Shape)tn.getUserObject();
+                List<AbstractProperty> properties = pr.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
+            }else if(tn.getUserObject() instanceof Drawing){
+                Drawing pr = (Drawing)tn.getUserObject();
+                List<AbstractProperty> properties = pr.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
+            }else if(tn.getUserObject() instanceof encofx.lib.effects.Image){
+                encofx.lib.effects.Image pr = (encofx.lib.effects.Image)tn.getUserObject();
+                List<AbstractProperty> properties = pr.getProperties();
+                for(AbstractProperty p : properties){
+                    Object[] row = new Object[]{p, p.getObject()};
+                    tableModel.addRow(row);
+                }
+            }else if(tn.getUserObject() instanceof encofx.lib.effects.Video){
+                encofx.lib.effects.Video pr = (encofx.lib.effects.Video)tn.getUserObject();
                 List<AbstractProperty> properties = pr.getProperties();
                 for(AbstractProperty p : properties){
                     Object[] row = new Object[]{p, p.getObject()};
@@ -946,6 +1034,43 @@ public class EncoFXFrame extends javax.swing.JFrame {
             updateTree();
             expandTree();
         }
+        if(tn.getUserObject() instanceof DrawingCollection){
+            DrawingCollection dc = (DrawingCollection)tn.getUserObject();
+            Drawing d = new Drawing();
+            d.setFrame(jSlider1.getValue());
+            dc.add(d);
+            dc.sortByFrames();
+            updateTree();
+            expandTree();
+        }
+        if(tn.getUserObject() instanceof ImageCollection){
+            ImageCollection ic = (ImageCollection)tn.getUserObject();
+            encofx.lib.effects.Image i = new encofx.lib.effects.Image();
+            i.setFrame(jSlider1.getValue());
+            ic.add(i);
+            ic.sortByFrames();
+            updateTree();
+            expandTree();
+        }
+        if(tn.getUserObject() instanceof VideoCollection){
+            VideoCollection vc = (VideoCollection)tn.getUserObject();
+            encofx.lib.effects.Video v = new encofx.lib.effects.Video();
+            v.setFrame(jSlider1.getValue());
+            v.setRefFrame(jSlider1.getValue());
+            vc.add(v);
+            vc.sortByFrames();
+            updateTree();
+            expandTree();
+        }
+//        if(tn.getUserObject() instanceof ParentCollection){
+//            ParentCollection pc = (ParentCollection)tn.getUserObject();
+//            Parent p = new Parent();
+//            p.setFrame(jSlider1.getValue());
+//            pc.add(p);
+//            pc.sortByFrames();
+//            updateTree();
+//            expandTree();
+//        }
     }//GEN-LAST:event_popmAddEventActionPerformed
 
     private void popmRemoveEventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popmRemoveEventActionPerformed
@@ -1143,11 +1268,6 @@ public class EncoFXFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddTextAreaActionPerformed
 
     private void btnAddFreeShapeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddFreeShapeActionPerformed
-        hideVectorTools();
-        tbLine.setEnabled(true);
-        tbCurve.setEnabled(true);
-        tbLine.setSelected(true);
-        
         ShapeCollection rc = new ShapeCollection();
         Shape before = new Shape();
         before.setFrame(0);
@@ -1155,6 +1275,11 @@ public class EncoFXFrame extends javax.swing.JFrame {
         Shape after = new Shape();
         after.setFrame(Integer.parseInt(Long.toString(end_frame)));
         rc.add(after);
+        
+        //Obtient un nom
+        InputDialog id = new InputDialog(this, true);
+        String name = id.showDialog();
+        rc.setText(name==null ? "SC "+rc.hashCode() : name);
         
         //Add the collection to the program
         collection.add(rc);
@@ -1166,38 +1291,88 @@ public class EncoFXFrame extends javax.swing.JFrame {
         expandTree();
     }//GEN-LAST:event_btnAddFreeShapeActionPerformed
 
-    private void tbCursorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbCursorActionPerformed
-        vtd.setSelectedShape(VTD2.ShapeSelection.None);
-        vtd.setShapeCollection(null);
-    }//GEN-LAST:event_tbCursorActionPerformed
+    private void btnAddDrawingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddDrawingActionPerformed
+        DrawingCollection dc = new DrawingCollection();
+        Drawing before = new Drawing();
+        before.setFrame(0);
+        dc.add(before);
+        Drawing after = new Drawing();
+        after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+        dc.add(after);
+        
+        //Obtient un nom
+        InputDialog id = new InputDialog(this, true);
+        String name = id.showDialog();
+        dc.setText(name==null ? "DC "+dc.hashCode() : name);
+        
+        //Add the collection to the program
+        collection.add(dc);
+        
+        //Refresh the VTD
+        vtd.setCollections(collection);
 
-    private void tbLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbLineActionPerformed
-        vtd.setSelectedShape(VTD2.ShapeSelection.Line);
-        if(lastSelected!=null){
-            if(lastSelected.getUserObject() instanceof ShapeCollection){
-                ShapeCollection sc = (ShapeCollection)lastSelected.getUserObject();
-                vtd.setShapeCollection(sc);
-            }else{
-                JOptionPane.showMessageDialog(this, "You don't have selected a shape object of the tree !");
-            }
-        }else{
-            JOptionPane.showMessageDialog(this, "You don't have selected any object of the tree !");
-        }
-    }//GEN-LAST:event_tbLineActionPerformed
+        updateTree();
+        expandTree();
+    }//GEN-LAST:event_btnAddDrawingActionPerformed
 
-    private void tbCurveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tbCurveActionPerformed
-        vtd.setSelectedShape(VTD2.ShapeSelection.Curve);
-        if(lastSelected!=null){
-            if(lastSelected.getUserObject() instanceof ShapeCollection){
-                ShapeCollection sc = (ShapeCollection)lastSelected.getUserObject();
-                vtd.setShapeCollection(sc);
-            }else{
-                JOptionPane.showMessageDialog(this, "You don't have selected a shape object of the tree !");
-            }
-        }else{
-            JOptionPane.showMessageDialog(this, "You don't have selected any object of the tree !");
-        }
-    }//GEN-LAST:event_tbCurveActionPerformed
+    private void btnAddPictureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPictureActionPerformed
+        ImageCollection ic = new ImageCollection();
+        encofx.lib.effects.Image before = new encofx.lib.effects.Image();
+        before.setFrame(0);
+        ic.add(before);
+        encofx.lib.effects.Image after = new encofx.lib.effects.Image();
+        after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+        ic.add(after);
+        
+        //Obtient un nom
+        InputDialog id = new InputDialog(this, true);
+        String name = id.showDialog();
+        ic.setText(name==null ? "IC "+ic.hashCode() : name);
+        
+        //Add the collection to the program
+        collection.add(ic);
+        
+        //Refresh the VTD
+        vtd.setCollections(collection);
+
+        updateTree();
+        expandTree();
+    }//GEN-LAST:event_btnAddPictureActionPerformed
+
+    private void btnAddVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddVideoActionPerformed
+        VideoCollection vc = new VideoCollection();
+        encofx.lib.effects.Video before = new encofx.lib.effects.Video();
+        before.setFrame(0);
+        before.setRefFrame(0);
+        vc.add(before);
+        encofx.lib.effects.Video after = new encofx.lib.effects.Video();
+        after.setFrame(Integer.parseInt(Long.toString(end_frame)));
+        after.setRefFrame(Integer.parseInt(Long.toString(end_frame)));
+        vc.add(after);
+        
+        //Obtient un nom
+        InputDialog id = new InputDialog(this, true);
+        String name = id.showDialog();
+        vc.setText(name==null ? "VC "+vc.hashCode() : name);
+        
+        //Add the collection to the program
+        collection.add(vc);
+        
+        //Refresh the VTD
+        vtd.setCollections(collection);
+
+        updateTree();
+        expandTree();
+    }//GEN-LAST:event_btnAddVideoActionPerformed
+
+    private void mnuQuitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuQuitActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_mnuQuitActionPerformed
+
+    private void mnuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAboutActionPerformed
+        AboutDialog ad = new AboutDialog(this, true);
+        ad.setVisible(true);
+    }//GEN-LAST:event_mnuAboutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1250,12 +1425,16 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lblFrame;
+    private javax.swing.JMenuItem mnuAbout;
     private javax.swing.JMenuItem mnuEncodeVideo;
     private javax.swing.JMenuItem mnuGoToSaveFolder;
     private javax.swing.JMenuItem mnuOpenVideo;
+    private javax.swing.JMenuItem mnuQuit;
     private javax.swing.JTree objectsTree;
     private javax.swing.JMenuItem popmAddEvent;
     private javax.swing.JMenuItem popmAlignSyllables;
@@ -1266,9 +1445,6 @@ public class EncoFXFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem popmParent;
     private javax.swing.JMenuItem popmRemoveEvent;
     private javax.swing.JTable propTable;
-    private javax.swing.JToggleButton tbCursor;
-    private javax.swing.JToggleButton tbCurve;
-    private javax.swing.JToggleButton tbLine;
     private javax.swing.JPopupMenu treePopup;
     private javax.swing.JPopupMenu vtdPopup;
     // End of variables declaration//GEN-END:variables
