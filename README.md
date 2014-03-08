@@ -20,7 +20,7 @@ There are graphical objects which can be added to the video area into layers :
 <li>Vertical text (with normal text, text from subtitle with/without karaokes) - not complete</li>
 <li>Text area (with normal text, text from subtitle with/without karaokes) - not complete</li>
 <li>Shape (including a shape mode and a free design mode working like Points And Curves) - not complete</li>
-<li>Drawing (paint mode) - TODO</li>
-<li>Image - TODO</li>
-<li>Video - TODO</li>
+<li>Drawing (paint mode) - not complete</li>
+<li>Image - not complete</li>
+<li>Video - not complete</li>
 </ul>
