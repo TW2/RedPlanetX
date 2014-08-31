@@ -7,7 +7,7 @@ Here is the fourth concept version of RedPlanet. RedPlanetX (RedPlanet Xpress) i
 
 Written in C# and designed to be a tool for Windows (for the moment), it uses ffmpeg to extract images and encode them. A save in JSON is made at the opening of a new video and reloads the files for the next time. At this time, you cannot save or load a project. In the future, we could also use scripting in Python maybe.
 
-If you want to download an alpha release, it's <a href="http://www.redarchive.hol.es/">available in an external site</a>. Otherwise, the whole project is in this site. So have fun with source.
+If you want to download an alpha release, it will be <a href="http://www.redarchive.hol.es/">available in an external site</a> in the future. Otherwise, the whole project is in this site. So have fun with source.
 
 For a world access, RedPlanetX is only in english for the moment !
 
