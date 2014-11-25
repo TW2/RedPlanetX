@@ -1715,5 +1715,13 @@ namespace RedPlanetX
             return rawLines;
         }
 
+        public static Color GetColorFrom(string c)
+        {
+            if (c.Contains("["))
+            {
+
+            }
+        }
+
     }
 }

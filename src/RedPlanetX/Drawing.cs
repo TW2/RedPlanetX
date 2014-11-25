@@ -2008,6 +2008,7 @@ namespace RedPlanetX
             List<PointF> poly = new List<PointF>(); 
             PointF p = new PointF(0, 0);
             Point lastp = new Point(-1, -1);
+            bool hasChanged = false;
 
             foreach (GeometryObject go in co.Array)
             {
@@ -2059,6 +2060,22 @@ namespace RedPlanetX
             {
                 accumulatedArea *= 3f;
                 p = new PointF(centerX / accumulatedArea, centerY / accumulatedArea);
+                hasChanged = true;
+            }
+
+            // source @ http://mathcentral.uregina.ca/QQ/database/QQ.09.07/h/david7.html
+            // source @ http://mathworld.wolfram.com/GeometricCentroid.html
+            if (hasChanged == false)
+            {
+                float cumulX = 0f, cumulY = 0f, X = 0f, Y = 0f;
+                for (int i = 0; i < poly.Count; i++)
+                {
+                    cumulX += poly[i].X;
+                    cumulY += poly[i].Y;
+                }
+                X = cumulX / poly.Count;
+                Y = cumulY / poly.Count;
+                p = new PointF(X, Y);
             }
 
             return p;
