@@ -10,3 +10,4 @@ c:\users\yves\documents\visual studio 2013\Projects\RedPlanetXv4\RedPlanetX\obj\
 c:\users\yves\documents\visual studio 2013\Projects\RedPlanetXv4\RedPlanetX\bin\Debug\PropertyGridEx.dll
 C:\Users\Yves\documents\visual studio 2013\Projects\RedPlanetXv4\RedPlanetX\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Yves\documents\visual studio 2013\Projects\RedPlanetXv4\RedPlanetX\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Yves\documents\visual studio 2013\Projects\RedPlanetXv4\RedPlanetX\obj\Debug\RedPlanetX.ChooseParticle.resources

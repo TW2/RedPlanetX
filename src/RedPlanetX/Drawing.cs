@@ -5,11 +5,14 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RedPlanetX
 {
     class Drawing
     {
+        public static double FPM { get; set; }
+
         //===============================================================================
         //EN : Draw a landmark for volumes or particles
         //FR : Dessine un repère pour les volumes ou les particules
@@ -629,12 +632,1133 @@ namespace RedPlanetX
 
         }
 
+        //===============================================================================
+        //EN : Draw a volume without the view of its structure and with insert point
+        //FR : Dessine un volume en ne montrant pas sa structure et montrant l'insert point
+        //===============================================================================
+        public static void DrawVolumeAndInsertPoint(Graphics g, Volume v, int frame, int maxFrame)
+        {
+            int anchorX = 0, anchorY = 0;
+            bool front_rainbow = false, back_rainbow = false, thickness_rainbow = false, border_rainbow = false, shadow_rainbow = false;
+
+            foreach (Parameter p in v.Parameters.GetValues())
+            {
+                if (p.Name == "Parent") { }
+                if (p.Name == "Use front rainbow") { front_rainbow = (bool)p.Object; }
+                if (p.Name == "Use back rainbow") { back_rainbow = (bool)p.Object; }
+                if (p.Name == "Use thickness rainbow") { thickness_rainbow = (bool)p.Object; }
+                if (p.Name == "Use border rainbow") { border_rainbow = (bool)p.Object; }
+                if (p.Name == "Use shadow rainbow") { shadow_rainbow = (bool)p.Object; }
+                if (p.Name == "Anchor X") { anchorX = (int)p.Object; }
+                if (p.Name == "Anchor Y") { anchorY = (int)p.Object; }
+                if (p.Name == "Position") { }
+            }
+
+
+            float posX = 0f, posY = 0f, posZ = 0f;
+            float scaleX = 100f, scaleY = 100f;
+            float angleX = 0f, angleY = 0f, angleZ = 0f;
+            float quakeX = 0f, quakeY = 0f, quakeZ = 0f;
+            int thickness = 0, border = 1, shadow = 0;
+            Color front_c = Color.Pink, back_c = Color.Pink, thickness_c = Color.Pink, border_c = Color.Pink, shadow_c = Color.Pink;
+            Event evt = Volume.GetCurrentEvent(v, anchorX, anchorY, frame);
+
+            foreach (Parameter p in evt.Parameters.GetValues())
+            {
+                if (p.Name == "Position X") { posX = (float)p.Object; }
+                if (p.Name == "Position Y") { posY = (float)p.Object; }
+                if (p.Name == "Position Z") { posZ = (float)p.Object; }
+                if (p.Name == "Scale X") { scaleX = (float)p.Object; }
+                if (p.Name == "Scale Y") { scaleY = (float)p.Object; }
+                if (p.Name == "Angle X") { angleX = (float)p.Object; }
+                if (p.Name == "Angle Y") { angleY = (float)p.Object; }
+                if (p.Name == "Angle Z") { angleZ = (float)p.Object; }
+                if (p.Name == "Center X") { }
+                if (p.Name == "Center Y") { }
+                if (p.Name == "Quake X") { quakeX = (float)p.Object; }
+                if (p.Name == "Quake Y") { quakeY = (float)p.Object; }
+                if (p.Name == "Quake Z") { quakeZ = (float)p.Object; }
+                if (p.Name == "Thickness") { thickness = (int)p.Object; }
+                if (p.Name == "Border") { border = (int)p.Object; }
+                if (p.Name == "Shadow") { shadow = (int)p.Object; }
+                if (p.Name == "Front color") { front_c = (Color)p.Object; }
+                if (p.Name == "Back color") { back_c = (Color)p.Object; }
+                if (p.Name == "Thickness color") { thickness_c = (Color)p.Object; }
+                if (p.Name == "Border color") { border_c = (Color)p.Object; }
+                if (p.Name == "Shadow color") { shadow_c = (Color)p.Object; }
+                if (p.Name == "Front rainbow") { }
+                if (p.Name == "Back rainbow") { }
+                if (p.Name == "Thickness rainbow") { }
+                if (p.Name == "Border rainbow") { }
+                if (p.Name == "Shadow rainbow") { }
+            }
+
+            foreach (InsertPoint ip in v.GettInsertPoints())
+            {
+                float ip_posX = 0f, ip_posY = 0f, ip_size = 100f;
+                Color ip_c = Color.Red;
+
+                foreach (Parameter p in ip.Parameters.GetValues())
+                {
+                    if (p.Name == "Position X") { ip_posX = (float)p.Object; }
+                    if (p.Name == "Position Y") { ip_posY = (float)p.Object; }
+                    if (p.Name == "Color") { ip_c = (Color)p.Object; }
+                    if (p.Name == "Size") { ip_size = (float)p.Object; }
+                }
+
+                foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                {
+                    if (go.GetType() == typeof(LineObject))
+                    {
+                        //Main drawing of trajectory
+                        LineObject l = (LineObject)go;
+                        g.FillRectangle(new SolidBrush(Color.Blue), l.Start.X - 2, l.Start.Y - 2, 4, 4);
+                        g.FillRectangle(new SolidBrush(Color.Blue), l.Stop.X - 2, l.Stop.Y - 2, 4, 4);
+                        g.DrawLine(new Pen(Color.Red), l.Start, l.Stop);
+
+                    }
+                    else if (go.GetType() == typeof(BezierObject))
+                    {
+                        //Main drawing of trajectory
+                        BezierObject b = (BezierObject)go;
+                        g.FillRectangle(new SolidBrush(Color.Blue), b.Start.X - 2, b.Start.Y - 2, 4, 4);
+                        g.FillRectangle(new SolidBrush(Color.Blue), b.Stop.X - 2, b.Stop.Y - 2, 4, 4);
+                        g.FillEllipse(new SolidBrush(Color.Orange), b.CP1.X - 2, b.CP1.Y - 2, 4, 4);
+                        g.FillEllipse(new SolidBrush(Color.Orange), b.CP2.X - 2, b.CP2.Y - 2, 4, 4);
+                        g.DrawBezier(new Pen(Color.Red), b.Start, b.CP1, b.CP2, b.Stop);
+                        Pen dashed = new Pen(Brushes.Black, 1f);
+                        dashed.DashStyle = DashStyle.Dash;
+                        g.DrawLine(dashed, b.Start.X, b.Start.Y, b.CP1.X, b.CP1.Y);
+                        g.DrawLine(dashed, b.CP1.X, b.CP1.Y, b.CP2.X, b.CP2.Y);
+                        g.DrawLine(dashed, b.CP2.X, b.CP2.Y, b.Stop.X, b.Stop.Y);
+                    }
+                }
+
+                PathObject path = new PathObject();
+
+                foreach (CreationObject cro in v.Objects)
+                {
+
+                    PointF center = GetVolumeGravityCenter(cro);
+                    GraphicsPath gp = path.FromArray(cro.Array, (int)center.X, (int)center.Y);
+
+                    JPoint Start = null;
+
+                    // Drawing of the trajectory =========================================================
+                    foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                    {
+                        if (go.GetType() == typeof(LineObject))
+                        {
+                            LineObject l = (LineObject)go;
+
+                            if (Start == null)
+                            {
+                                Start = new JPoint(l.Start);
+                            }
+
+                            //Real trajectory
+                            g.ResetTransform();
+                            g.TranslateTransform(center.X, center.Y);
+                            g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                            g.TranslateTransform(posX, posY);
+                            float diffX = Start.ToPointF().X;
+                            float diffY = Start.ToPointF().Y;
+                            g.FillRectangle(new SolidBrush(ip_c), l.Start.X - 2 - diffX, l.Start.Y - 2 - diffY, 4, 4);
+                            g.FillRectangle(new SolidBrush(ip_c), l.Stop.X - 2 - diffX, l.Stop.Y - 2 - diffY, 4, 4);
+                            g.DrawLine(new Pen(ip_c), l.Start.X - diffX, l.Start.Y - diffY, l.Stop.X - diffX, l.Stop.Y - diffY);
+                        }
+                        else if (go.GetType() == typeof(BezierObject))
+                        {
+                            BezierObject b = (BezierObject)go;
+
+                            if (Start == null)
+                            {
+                                Start = new JPoint(b.Start);
+                            }
+
+                            //Real trajectory
+                            g.ResetTransform();
+                            g.TranslateTransform(center.X, center.Y);
+                            g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                            g.TranslateTransform(posX, posY);
+                            float diffX = Start.ToPointF().X;
+                            float diffY = Start.ToPointF().Y;
+                            g.FillRectangle(new SolidBrush(ip_c), b.Start.X - 2 - diffX, b.Start.Y - 2 - diffY, 4, 4);
+                            g.FillRectangle(new SolidBrush(ip_c), b.Stop.X - 2 - diffX, b.Stop.Y - 2 - diffY, 4, 4);
+                            g.FillEllipse(new SolidBrush(ip_c), b.CP1.X - 2 - diffX, b.CP1.Y - 2 - diffY, 4, 4);
+                            g.FillEllipse(new SolidBrush(ip_c), b.CP2.X - 2 - diffX, b.CP2.Y - 2 - diffY, 4, 4);
+                            g.DrawBezier(new Pen(ip_c), b.Start.X - diffX, b.Start.Y - diffY, b.CP1.X - diffX, b.CP1.Y - diffY, b.CP2.X - diffX, b.CP2.Y - diffY, b.Stop.X - diffX, b.Stop.Y - diffY);
+                            //Pen dashed = new Pen(Brushes.Black, 1f);
+                            //dashed.DashStyle = DashStyle.Dash;
+                            //g.DrawLine(dashed, b.Start.X - diffX, b.Start.Y - diffY, b.CP1.X - diffX, b.CP1.Y - diffY);
+                            //g.DrawLine(dashed, b.CP1.X - diffX, b.CP1.Y - diffY, b.CP2.X - diffX, b.CP2.Y - diffY);
+                            //g.DrawLine(dashed, b.CP2.X - diffX, b.CP2.Y - diffY, b.Stop.X - diffX, b.Stop.Y - diffY);
+                        }
+                    }
+                    // End - Drawing of the trajectory ===================================================
+
+                    // Position on trajectory ============================================================
+                    double xPiece = 0f, yPiece = 0f;
+                    try
+                    {
+                        int loops = 0;
+                        int pieces = ip.GetTrajectorySpline().GetTrajectory().Count;
+                        //double fraction = 1 / pieces * (loops + 1);
+                        double current = Convert.ToDouble(pieces) * Convert.ToDouble(frame) / Convert.ToDouble(maxFrame);
+                        //double realCurrent = current / fraction;
+                        //double realPiece = Math.Ceiling(current);
+                        //double pieceCurrent = realCurrent - realPiece;
+
+                        int currentPhase = 0;
+                        while (current > 1d)
+                        {
+                            current = current - 1d;
+                            currentPhase++;
+                        }
+
+                        if (currentPhase >= 0)
+                        {
+                            GeometryObject goo = ip.GetTrajectorySpline().GetTrajectory()[currentPhase];
+                            if (goo.GetType() == typeof(LineObject))
+                            {
+                                LineObject l = (LineObject)goo;
+
+                            }
+                            else if (goo.GetType() == typeof(BezierObject))
+                            {
+                                BezierObject b = (BezierObject)goo;
+                                xPiece =
+                                    Math.Pow((1 - current), 3) * (b.Start.X - Start.ToPointF().X) +
+                                    3 * current * Math.Pow((1 - current), 2) * (b.CP1.X - Start.ToPointF().X) +
+                                    3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.X - Start.ToPointF().X) +
+                                    Math.Pow(current, 3) * (b.Stop.X - Start.ToPointF().X);
+                                yPiece =
+                                    Math.Pow((1 - current), 3) * (b.Start.Y - Start.ToPointF().Y) +
+                                    3 * current * Math.Pow((1 - current), 2) * (b.CP1.Y - Start.ToPointF().Y) +
+                                    3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.Y - Start.ToPointF().Y) +
+                                    Math.Pow(current, 3) * (b.Stop.Y - Start.ToPointF().Y);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    // End - Position on trajectory ======================================================
+
+                    if (gp != null)
+                    {
+                        g.ResetTransform();
+                        g.TranslateTransform(center.X, center.Y);
+
+                        g.TranslateTransform(ip_posX + (float)xPiece, ip_posY + (float)yPiece); //InsertPoint//Trajectory
+                        g.ScaleTransform(ip_size / 100, ip_size / 100); //InsertPoint
+
+                        Random random = new Random();
+                        if (quakeX > 0)
+                        {
+                            quakeX = random.Next(-(int)quakeX, (int)quakeX + 1);
+                        }
+
+                        if (quakeY > 0)
+                        {
+                            quakeY = random.Next(-(int)quakeY, (int)quakeY + 1);
+                        }
+
+                        g.TranslateTransform(posX + quakeX, posY + quakeY);
+
+                        g.RotateTransform(angleZ);
+                        g.ScaleTransform(scaleX / 100, scaleY / 100);
+
+                        GraphicsPath gp_2 = GetRotationXY(cro.Array, center, angleX, angleY);
+
+
+
+                        if (shadow > 0)
+                        {
+                            g.TranslateTransform(shadow, shadow);
+                            g.FillPath(new SolidBrush(shadow_c), gp_2);
+                            g.TranslateTransform(-shadow, -shadow);
+                        }
+
+                        g.FillPath(new SolidBrush(front_c), gp_2);
+
+                        if (border > 0)
+                        {
+                            g.DrawPath(new Pen(border_c, border), gp_2);
+                        }
+
+                        g.FillEllipse(new SolidBrush(ip_c), -10f, -10f, 20f, 20f);
+                    }
+                }
+
+            }
+
+        }
+
+        public static void DrawParticleInVideoMode(Graphics g, GenericParticle _gp, AssLine al, long milliseconds)
+        {
+            if (_gp.GetType() == typeof(ParamTypeParticle))
+            {
+                ParamTypeParticle ptp = (ParamTypeParticle)_gp;
+
+                foreach (TreeNode tntp in ptp.GetVolmuesNode().Nodes)
+                {
+                    if (ptp.GetVolumes().ContainsKey(tntp))
+                    {
+                        Volume v = (Volume)ptp.GetVolumes()[tntp];
+
+                        int frameStart = Convert.ToInt32(al.Line.StartTime * FPM);
+                        int frameEnd = Convert.ToInt32((al.Line.StartTime + al.Line.Duration) * FPM);
+                        int frameDuration = frameEnd - frameStart;
+                        int frameCurrent = Convert.ToInt32(milliseconds * FPM);
+                        int frame = frameCurrent - frameStart;
+
+                        int anchorX = 0, anchorY = 0;
+                        bool front_rainbow = false, back_rainbow = false, thickness_rainbow = false, border_rainbow = false, shadow_rainbow = false;
+
+                        foreach (Parameter p in v.Parameters.GetValues())
+                        {
+                            if (p.Name == "Parent") { }
+                            if (p.Name == "Use front rainbow") { front_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use back rainbow") { back_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use thickness rainbow") { thickness_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use border rainbow") { border_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use shadow rainbow") { shadow_rainbow = (bool)p.Object; }
+                            if (p.Name == "Anchor X") { anchorX = (int)p.Object; }
+                            if (p.Name == "Anchor Y") { anchorY = (int)p.Object; }
+                            if (p.Name == "Position") { }
+                        }
+
+
+                        float posX = 0f, posY = 0f, posZ = 0f;
+                        float scaleX = 100f, scaleY = 100f;
+                        float angleX = 0f, angleY = 0f, angleZ = 0f;
+                        float quakeX = 0f, quakeY = 0f, quakeZ = 0f;
+                        int thickness = 0, border = 1, shadow = 0;
+                        Color front_c = Color.Pink, back_c = Color.Pink, thickness_c = Color.Pink, border_c = Color.Pink, shadow_c = Color.Pink;
+                        Event evt = Volume.GetCurrentEvent(v, anchorX, anchorY, frame);
+
+                        foreach (Parameter p in evt.Parameters.GetValues())
+                        {
+                            if (p.Name == "Position X") { posX = (float)p.Object; }
+                            if (p.Name == "Position Y") { posY = (float)p.Object; }
+                            if (p.Name == "Position Z") { posZ = (float)p.Object; }
+                            if (p.Name == "Scale X") { scaleX = (float)p.Object; }
+                            if (p.Name == "Scale Y") { scaleY = (float)p.Object; }
+                            if (p.Name == "Angle X") { angleX = (float)p.Object; }
+                            if (p.Name == "Angle Y") { angleY = (float)p.Object; }
+                            if (p.Name == "Angle Z") { angleZ = (float)p.Object; }
+                            if (p.Name == "Center X") { }
+                            if (p.Name == "Center Y") { }
+                            if (p.Name == "Quake X") { quakeX = (float)p.Object; }
+                            if (p.Name == "Quake Y") { quakeY = (float)p.Object; }
+                            if (p.Name == "Quake Z") { quakeZ = (float)p.Object; }
+                            if (p.Name == "Thickness") { thickness = (int)p.Object; }
+                            if (p.Name == "Border") { border = (int)p.Object; }
+                            if (p.Name == "Shadow") { shadow = (int)p.Object; }
+                            if (p.Name == "Front color") { front_c = (Color)p.Object; }
+                            if (p.Name == "Back color") { back_c = (Color)p.Object; }
+                            if (p.Name == "Thickness color") { thickness_c = (Color)p.Object; }
+                            if (p.Name == "Border color") { border_c = (Color)p.Object; }
+                            if (p.Name == "Shadow color") { shadow_c = (Color)p.Object; }
+                            if (p.Name == "Front rainbow") { }
+                            if (p.Name == "Back rainbow") { }
+                            if (p.Name == "Thickness rainbow") { }
+                            if (p.Name == "Border rainbow") { }
+                            if (p.Name == "Shadow rainbow") { }
+                        }
+
+                        foreach (InsertPoint ip in v.GettInsertPoints())
+                        {
+                            float ip_posX = 0f, ip_posY = 0f, ip_size = 100f;
+                            Color ip_c = Color.Red;
+
+                            foreach (Parameter p in ip.Parameters.GetValues())
+                            {
+                                if (p.Name == "Position X") { ip_posX = (float)p.Object; }
+                                if (p.Name == "Position Y") { ip_posY = (float)p.Object; }
+                                if (p.Name == "Color") { ip_c = (Color)p.Object; }
+                                if (p.Name == "Size") { ip_size = (float)p.Object; }
+                            }
+
+                            //foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                            //{
+                            //    if (go.GetType() == typeof(LineObject))
+                            //    {
+                            //        //Main drawing of trajectory
+                            //        LineObject l = (LineObject)go;
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), l.Start.X - 2, l.Start.Y - 2, 4, 4);
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), l.Stop.X - 2, l.Stop.Y - 2, 4, 4);
+                            //        g.DrawLine(new Pen(Color.Red), l.Start, l.Stop);
+
+                            //    }
+                            //    else if (go.GetType() == typeof(BezierObject))
+                            //    {
+                            //        //Main drawing of trajectory
+                            //        BezierObject b = (BezierObject)go;
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), b.Start.X - 2, b.Start.Y - 2, 4, 4);
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), b.Stop.X - 2, b.Stop.Y - 2, 4, 4);
+                            //        g.FillEllipse(new SolidBrush(Color.Orange), b.CP1.X - 2, b.CP1.Y - 2, 4, 4);
+                            //        g.FillEllipse(new SolidBrush(Color.Orange), b.CP2.X - 2, b.CP2.Y - 2, 4, 4);
+                            //        g.DrawBezier(new Pen(Color.Red), b.Start, b.CP1, b.CP2, b.Stop);
+                            //        Pen dashed = new Pen(Brushes.Black, 1f);
+                            //        dashed.DashStyle = DashStyle.Dash;
+                            //        g.DrawLine(dashed, b.Start.X, b.Start.Y, b.CP1.X, b.CP1.Y);
+                            //        g.DrawLine(dashed, b.CP1.X, b.CP1.Y, b.CP2.X, b.CP2.Y);
+                            //        g.DrawLine(dashed, b.CP2.X, b.CP2.Y, b.Stop.X, b.Stop.Y);
+                            //    }
+                            //}
+
+                            PathObject path = new PathObject();
+
+                            foreach (CreationObject cro in v.Objects)
+                            {
+
+                                PointF center = GetVolumeGravityCenter(cro);
+                                GraphicsPath gp = path.FromArray(cro.Array, (int)center.X, (int)center.Y);
+
+                                JPoint Start = null;
+
+                                // Drawing of the trajectory =========================================================
+                                foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                                {
+                                    if (go.GetType() == typeof(LineObject))
+                                    {
+                                        LineObject l = (LineObject)go;
+
+                                        if (Start == null)
+                                        {
+                                            Start = new JPoint(l.Start);
+                                        }
+
+                                        //Real trajectory
+                                        g.ResetTransform();
+                                        g.TranslateTransform(center.X, center.Y);
+                                        g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                                        g.TranslateTransform(posX, posY);
+                                        float diffX = Start.ToPointF().X;
+                                        float diffY = Start.ToPointF().Y;
+                                        //g.FillRectangle(new SolidBrush(ip_c), l.Start.X - 2 - diffX, l.Start.Y - 2 - diffY, 4, 4);
+                                        //g.FillRectangle(new SolidBrush(ip_c), l.Stop.X - 2 - diffX, l.Stop.Y - 2 - diffY, 4, 4);
+                                        //g.DrawLine(new Pen(ip_c), l.Start.X - diffX, l.Start.Y - diffY, l.Stop.X - diffX, l.Stop.Y - diffY);
+                                    }
+                                    else if (go.GetType() == typeof(BezierObject))
+                                    {
+                                        BezierObject b = (BezierObject)go;
+
+                                        if (Start == null)
+                                        {
+                                            Start = new JPoint(b.Start);
+                                        }
+
+                                        //Real trajectory
+                                        g.ResetTransform();
+                                        g.TranslateTransform(center.X, center.Y);
+                                        g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                                        g.TranslateTransform(posX, posY);
+                                        float diffX = Start.ToPointF().X;
+                                        float diffY = Start.ToPointF().Y;
+                                        //g.FillRectangle(new SolidBrush(ip_c), b.Start.X - 2 - diffX, b.Start.Y - 2 - diffY, 4, 4);
+                                        //g.FillRectangle(new SolidBrush(ip_c), b.Stop.X - 2 - diffX, b.Stop.Y - 2 - diffY, 4, 4);
+                                        //g.FillEllipse(new SolidBrush(ip_c), b.CP1.X - 2 - diffX, b.CP1.Y - 2 - diffY, 4, 4);
+                                        //g.FillEllipse(new SolidBrush(ip_c), b.CP2.X - 2 - diffX, b.CP2.Y - 2 - diffY, 4, 4);
+                                        //g.DrawBezier(new Pen(ip_c), b.Start.X - diffX, b.Start.Y - diffY, b.CP1.X - diffX, b.CP1.Y - diffY, b.CP2.X - diffX, b.CP2.Y - diffY, b.Stop.X - diffX, b.Stop.Y - diffY);
+                                    }
+                                }
+                                // End - Drawing of the trajectory ===================================================
+
+                                // Position on trajectory ============================================================
+                                double xPiece = 0f, yPiece = 0f;
+                                try
+                                {
+                                    int loops = 0;
+                                    int pieces = ip.GetTrajectorySpline().GetTrajectory().Count;
+                                    //double fraction = 1 / pieces * (loops + 1);
+                                    double current = Convert.ToDouble(pieces) * Convert.ToDouble(frame) / Convert.ToDouble(frameDuration);
+                                    //double realCurrent = current / fraction;
+                                    //double realPiece = Math.Ceiling(current);
+                                    //double pieceCurrent = realCurrent - realPiece;
+
+                                    int currentPhase = 0;
+                                    while (current > 1d)
+                                    {
+                                        current = current - 1d;
+                                        currentPhase++;
+                                    }
+
+                                    if (currentPhase >= 0)
+                                    {
+                                        GeometryObject goo = ip.GetTrajectorySpline().GetTrajectory()[currentPhase];
+                                        if (goo.GetType() == typeof(LineObject))
+                                        {
+                                            LineObject l = (LineObject)goo;
+
+                                        }
+                                        else if (goo.GetType() == typeof(BezierObject))
+                                        {
+                                            BezierObject b = (BezierObject)goo;
+                                            xPiece =
+                                                Math.Pow((1 - current), 3) * (b.Start.X - Start.ToPointF().X) +
+                                                3 * current * Math.Pow((1 - current), 2) * (b.CP1.X - Start.ToPointF().X) +
+                                                3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.X - Start.ToPointF().X) +
+                                                Math.Pow(current, 3) * (b.Stop.X - Start.ToPointF().X);
+                                            yPiece =
+                                                Math.Pow((1 - current), 3) * (b.Start.Y - Start.ToPointF().Y) +
+                                                3 * current * Math.Pow((1 - current), 2) * (b.CP1.Y - Start.ToPointF().Y) +
+                                                3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.Y - Start.ToPointF().Y) +
+                                                Math.Pow(current, 3) * (b.Stop.Y - Start.ToPointF().Y);
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
+                                // End - Position on trajectory ======================================================
+
+                                if (gp != null)
+                                {
+                                    g.ResetTransform();
+
+                                    g.TranslateTransform(al.Line.X, al.Line.Y);
+                                    float scale = al.Line.Font.Size / 72f;
+                                    g.ScaleTransform(scale, scale);
+                                    g.TranslateTransform(-256, -256);
+
+                                    g.TranslateTransform(center.X, center.Y);
+
+                                    g.TranslateTransform(ip_posX + (float)xPiece, ip_posY + (float)yPiece); //InsertPoint//Trajectory
+                                    g.ScaleTransform(ip_size / 100, ip_size / 100); //InsertPoint
+
+                                    Random random = new Random();
+                                    if (quakeX > 0)
+                                    {
+                                        quakeX = random.Next(-(int)quakeX, (int)quakeX + 1);
+                                    }
+
+                                    if (quakeY > 0)
+                                    {
+                                        quakeY = random.Next(-(int)quakeY, (int)quakeY + 1);
+                                    }
+
+                                    g.TranslateTransform(posX + quakeX, posY + quakeY);
+
+                                    g.RotateTransform(angleZ);
+                                    g.ScaleTransform(scaleX / 100, scaleY / 100);
+
+                                    GraphicsPath gp_2 = GetRotationXY(cro.Array, center, angleX, angleY);
+
+                                    if (shadow > 0)
+                                    {
+                                        g.TranslateTransform(shadow, shadow);
+                                        g.FillPath(new SolidBrush(shadow_c), gp_2);
+                                        g.TranslateTransform(-shadow, -shadow);
+                                    }
+
+                                    g.FillPath(new SolidBrush(front_c), gp_2);
+
+                                    if (border > 0)
+                                    {
+                                        g.DrawPath(new Pen(border_c, border), gp_2);
+                                    }
+
+                                    g.FillEllipse(new SolidBrush(ip_c), -10f, -10f, 20f, 20f);
+                                    g.ResetTransform();
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            else if (_gp.GetType() == typeof(ScriptTypeParticle))
+            {
+
+            }
+        }
+
+        public static void DrawParticleInVideoMode(Graphics g, GenericParticle _gp, AssAllSyllables aas, long milliseconds)
+        {
+            if (_gp.GetType() == typeof(ParamTypeParticle))
+            {
+                ParamTypeParticle ptp = (ParamTypeParticle)_gp;
+
+                foreach (TreeNode tntp in ptp.GetVolmuesNode().Nodes)
+                {
+                    if (ptp.GetVolumes().ContainsKey(tntp))
+                    {
+                        Volume v = (Volume)ptp.GetVolumes()[tntp];
+
+                        int frameStart = Convert.ToInt32(aas.Line.StartTime * FPM);
+                        int frameEnd = Convert.ToInt32((aas.Line.StartTime + aas.Line.Duration) * FPM);
+                        int frameDuration = frameEnd - frameStart;
+                        int frameCurrent = Convert.ToInt32(milliseconds * FPM);
+                        int frame = frameCurrent - frameStart;
+
+                        int anchorX = 0, anchorY = 0;
+                        bool front_rainbow = false, back_rainbow = false, thickness_rainbow = false, border_rainbow = false, shadow_rainbow = false;
+
+                        foreach (Parameter p in v.Parameters.GetValues())
+                        {
+                            if (p.Name == "Parent") { }
+                            if (p.Name == "Use front rainbow") { front_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use back rainbow") { back_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use thickness rainbow") { thickness_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use border rainbow") { border_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use shadow rainbow") { shadow_rainbow = (bool)p.Object; }
+                            if (p.Name == "Anchor X") { anchorX = (int)p.Object; }
+                            if (p.Name == "Anchor Y") { anchorY = (int)p.Object; }
+                            if (p.Name == "Position") { }
+                        }
+
+
+                        float posX = 0f, posY = 0f, posZ = 0f;
+                        float scaleX = 100f, scaleY = 100f;
+                        float angleX = 0f, angleY = 0f, angleZ = 0f;
+                        float quakeX = 0f, quakeY = 0f, quakeZ = 0f;
+                        int thickness = 0, border = 1, shadow = 0;
+                        Color front_c = Color.Pink, back_c = Color.Pink, thickness_c = Color.Pink, border_c = Color.Pink, shadow_c = Color.Pink;
+                        Event evt = Volume.GetCurrentEvent(v, anchorX, anchorY, frame);
+
+                        foreach (Parameter p in evt.Parameters.GetValues())
+                        {
+                            if (p.Name == "Position X") { posX = (float)p.Object; }
+                            if (p.Name == "Position Y") { posY = (float)p.Object; }
+                            if (p.Name == "Position Z") { posZ = (float)p.Object; }
+                            if (p.Name == "Scale X") { scaleX = (float)p.Object; }
+                            if (p.Name == "Scale Y") { scaleY = (float)p.Object; }
+                            if (p.Name == "Angle X") { angleX = (float)p.Object; }
+                            if (p.Name == "Angle Y") { angleY = (float)p.Object; }
+                            if (p.Name == "Angle Z") { angleZ = (float)p.Object; }
+                            if (p.Name == "Center X") { }
+                            if (p.Name == "Center Y") { }
+                            if (p.Name == "Quake X") { quakeX = (float)p.Object; }
+                            if (p.Name == "Quake Y") { quakeY = (float)p.Object; }
+                            if (p.Name == "Quake Z") { quakeZ = (float)p.Object; }
+                            if (p.Name == "Thickness") { thickness = (int)p.Object; }
+                            if (p.Name == "Border") { border = (int)p.Object; }
+                            if (p.Name == "Shadow") { shadow = (int)p.Object; }
+                            if (p.Name == "Front color") { front_c = (Color)p.Object; }
+                            if (p.Name == "Back color") { back_c = (Color)p.Object; }
+                            if (p.Name == "Thickness color") { thickness_c = (Color)p.Object; }
+                            if (p.Name == "Border color") { border_c = (Color)p.Object; }
+                            if (p.Name == "Shadow color") { shadow_c = (Color)p.Object; }
+                            if (p.Name == "Front rainbow") { }
+                            if (p.Name == "Back rainbow") { }
+                            if (p.Name == "Thickness rainbow") { }
+                            if (p.Name == "Border rainbow") { }
+                            if (p.Name == "Shadow rainbow") { }
+                        }
+
+                        foreach (InsertPoint ip in v.GettInsertPoints())
+                        {
+                            float ip_posX = 0f, ip_posY = 0f, ip_size = 100f;
+                            Color ip_c = Color.Red;
+
+                            foreach (Parameter p in ip.Parameters.GetValues())
+                            {
+                                if (p.Name == "Position X") { ip_posX = (float)p.Object; }
+                                if (p.Name == "Position Y") { ip_posY = (float)p.Object; }
+                                if (p.Name == "Color") { ip_c = (Color)p.Object; }
+                                if (p.Name == "Size") { ip_size = (float)p.Object; }
+                            }
+
+                            //foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                            //{
+                            //    if (go.GetType() == typeof(LineObject))
+                            //    {
+                            //        //Main drawing of trajectory
+                            //        LineObject l = (LineObject)go;
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), l.Start.X - 2, l.Start.Y - 2, 4, 4);
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), l.Stop.X - 2, l.Stop.Y - 2, 4, 4);
+                            //        g.DrawLine(new Pen(Color.Red), l.Start, l.Stop);
+
+                            //    }
+                            //    else if (go.GetType() == typeof(BezierObject))
+                            //    {
+                            //        //Main drawing of trajectory
+                            //        BezierObject b = (BezierObject)go;
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), b.Start.X - 2, b.Start.Y - 2, 4, 4);
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), b.Stop.X - 2, b.Stop.Y - 2, 4, 4);
+                            //        g.FillEllipse(new SolidBrush(Color.Orange), b.CP1.X - 2, b.CP1.Y - 2, 4, 4);
+                            //        g.FillEllipse(new SolidBrush(Color.Orange), b.CP2.X - 2, b.CP2.Y - 2, 4, 4);
+                            //        g.DrawBezier(new Pen(Color.Red), b.Start, b.CP1, b.CP2, b.Stop);
+                            //        Pen dashed = new Pen(Brushes.Black, 1f);
+                            //        dashed.DashStyle = DashStyle.Dash;
+                            //        g.DrawLine(dashed, b.Start.X, b.Start.Y, b.CP1.X, b.CP1.Y);
+                            //        g.DrawLine(dashed, b.CP1.X, b.CP1.Y, b.CP2.X, b.CP2.Y);
+                            //        g.DrawLine(dashed, b.CP2.X, b.CP2.Y, b.Stop.X, b.Stop.Y);
+                            //    }
+                            //}
+
+                            PathObject path = new PathObject();
+
+                            foreach (CreationObject cro in v.Objects)
+                            {
+
+                                PointF center = GetVolumeGravityCenter(cro);
+                                GraphicsPath gp = path.FromArray(cro.Array, (int)center.X, (int)center.Y);
+
+                                JPoint Start = null;
+
+                                // Drawing of the trajectory =========================================================
+                                foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                                {
+                                    if (go.GetType() == typeof(LineObject))
+                                    {
+                                        LineObject l = (LineObject)go;
+
+                                        if (Start == null)
+                                        {
+                                            Start = new JPoint(l.Start);
+                                        }
+
+                                        //Real trajectory
+                                        g.ResetTransform();
+                                        g.TranslateTransform(center.X, center.Y);
+                                        g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                                        g.TranslateTransform(posX, posY);
+                                        float diffX = Start.ToPointF().X;
+                                        float diffY = Start.ToPointF().Y;
+                                        //g.FillRectangle(new SolidBrush(ip_c), l.Start.X - 2 - diffX, l.Start.Y - 2 - diffY, 4, 4);
+                                        //g.FillRectangle(new SolidBrush(ip_c), l.Stop.X - 2 - diffX, l.Stop.Y - 2 - diffY, 4, 4);
+                                        //g.DrawLine(new Pen(ip_c), l.Start.X - diffX, l.Start.Y - diffY, l.Stop.X - diffX, l.Stop.Y - diffY);
+                                    }
+                                    else if (go.GetType() == typeof(BezierObject))
+                                    {
+                                        BezierObject b = (BezierObject)go;
+
+                                        if (Start == null)
+                                        {
+                                            Start = new JPoint(b.Start);
+                                        }
+
+                                        //Real trajectory
+                                        g.ResetTransform();
+                                        g.TranslateTransform(center.X, center.Y);
+                                        g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                                        g.TranslateTransform(posX, posY);
+                                        float diffX = Start.ToPointF().X;
+                                        float diffY = Start.ToPointF().Y;
+                                        //g.FillRectangle(new SolidBrush(ip_c), b.Start.X - 2 - diffX, b.Start.Y - 2 - diffY, 4, 4);
+                                        //g.FillRectangle(new SolidBrush(ip_c), b.Stop.X - 2 - diffX, b.Stop.Y - 2 - diffY, 4, 4);
+                                        //g.FillEllipse(new SolidBrush(ip_c), b.CP1.X - 2 - diffX, b.CP1.Y - 2 - diffY, 4, 4);
+                                        //g.FillEllipse(new SolidBrush(ip_c), b.CP2.X - 2 - diffX, b.CP2.Y - 2 - diffY, 4, 4);
+                                        //g.DrawBezier(new Pen(ip_c), b.Start.X - diffX, b.Start.Y - diffY, b.CP1.X - diffX, b.CP1.Y - diffY, b.CP2.X - diffX, b.CP2.Y - diffY, b.Stop.X - diffX, b.Stop.Y - diffY);
+                                    }
+                                }
+                                // End - Drawing of the trajectory ===================================================
+
+                                // Position on trajectory ============================================================
+                                double xPiece = 0f, yPiece = 0f;
+                                try
+                                {
+                                    int loops = 0;
+                                    int pieces = ip.GetTrajectorySpline().GetTrajectory().Count;
+                                    //double fraction = 1 / pieces * (loops + 1);
+                                    double current = Convert.ToDouble(pieces) * Convert.ToDouble(frame) / Convert.ToDouble(frameDuration);
+                                    //double realCurrent = current / fraction;
+                                    //double realPiece = Math.Ceiling(current);
+                                    //double pieceCurrent = realCurrent - realPiece;
+
+                                    int currentPhase = 0;
+                                    while (current > 1d)
+                                    {
+                                        current = current - 1d;
+                                        currentPhase++;
+                                    }
+
+                                    if (currentPhase >= 0)
+                                    {
+                                        GeometryObject goo = ip.GetTrajectorySpline().GetTrajectory()[currentPhase];
+                                        if (goo.GetType() == typeof(LineObject))
+                                        {
+                                            LineObject l = (LineObject)goo;
+
+                                        }
+                                        else if (goo.GetType() == typeof(BezierObject))
+                                        {
+                                            BezierObject b = (BezierObject)goo;
+                                            xPiece =
+                                                Math.Pow((1 - current), 3) * (b.Start.X - Start.ToPointF().X) +
+                                                3 * current * Math.Pow((1 - current), 2) * (b.CP1.X - Start.ToPointF().X) +
+                                                3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.X - Start.ToPointF().X) +
+                                                Math.Pow(current, 3) * (b.Stop.X - Start.ToPointF().X);
+                                            yPiece =
+                                                Math.Pow((1 - current), 3) * (b.Start.Y - Start.ToPointF().Y) +
+                                                3 * current * Math.Pow((1 - current), 2) * (b.CP1.Y - Start.ToPointF().Y) +
+                                                3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.Y - Start.ToPointF().Y) +
+                                                Math.Pow(current, 3) * (b.Stop.Y - Start.ToPointF().Y);
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
+                                // End - Position on trajectory ======================================================
+
+                                if (gp != null)
+                                {
+                                    foreach (TString syl in aas.GetSyllables())
+                                    {
+                                        g.ResetTransform();
+
+                                        g.TranslateTransform(syl.X, syl.Y);
+                                        float scale = syl.Font.Size / 72f;
+                                        g.ScaleTransform(scale, scale);
+                                        g.TranslateTransform(-256, -256);
+
+                                        g.TranslateTransform(center.X, center.Y);
+
+                                        g.TranslateTransform(ip_posX + (float)xPiece, ip_posY + (float)yPiece); //InsertPoint//Trajectory
+                                        g.ScaleTransform(ip_size / 100, ip_size / 100); //InsertPoint
+
+                                        Random random = new Random();
+                                        if (quakeX > 0)
+                                        {
+                                            quakeX = random.Next(-(int)quakeX, (int)quakeX + 1);
+                                        }
+
+                                        if (quakeY > 0)
+                                        {
+                                            quakeY = random.Next(-(int)quakeY, (int)quakeY + 1);
+                                        }
+
+                                        g.TranslateTransform(posX + quakeX, posY + quakeY);
+
+                                        g.RotateTransform(angleZ);
+                                        g.ScaleTransform(scaleX / 100, scaleY / 100);
+
+                                        GraphicsPath gp_2 = GetRotationXY(cro.Array, center, angleX, angleY);
+
+                                        if (shadow > 0)
+                                        {
+                                            g.TranslateTransform(shadow, shadow);
+                                            g.FillPath(new SolidBrush(shadow_c), gp_2);
+                                            g.TranslateTransform(-shadow, -shadow);
+                                        }
+
+                                        g.FillPath(new SolidBrush(front_c), gp_2);
+
+                                        if (border > 0)
+                                        {
+                                            g.DrawPath(new Pen(border_c, border), gp_2);
+                                        }
+
+                                        g.FillEllipse(new SolidBrush(ip_c), -10f, -10f, 20f, 20f);
+                                        g.ResetTransform();
+                                    }
+                                    
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            else if (_gp.GetType() == typeof(ScriptTypeParticle))
+            {
+
+            }
+        }
+
+        public static void DrawParticleInVideoMode(Graphics g, GenericParticle _gp, AssSyllable _as, long milliseconds)
+        {
+            if (_gp.GetType() == typeof(ParamTypeParticle))
+            {
+                ParamTypeParticle ptp = (ParamTypeParticle)_gp;
+
+                foreach (TreeNode tntp in ptp.GetVolmuesNode().Nodes)
+                {
+                    if (ptp.GetVolumes().ContainsKey(tntp))
+                    {
+                        Volume v = (Volume)ptp.GetVolumes()[tntp];
+
+                        int frameStart = Convert.ToInt32(_as.Syllable.StartTime * FPM);
+                        int frameEnd = Convert.ToInt32((_as.Syllable.StartTime + _as.Syllable.Duration) * FPM);
+                        int frameDuration = frameEnd - frameStart;
+                        int frameCurrent = Convert.ToInt32(milliseconds * FPM);
+                        int frame = frameCurrent - frameStart;
+
+                        int anchorX = 0, anchorY = 0;
+                        bool front_rainbow = false, back_rainbow = false, thickness_rainbow = false, border_rainbow = false, shadow_rainbow = false;
+
+                        foreach (Parameter p in v.Parameters.GetValues())
+                        {
+                            if (p.Name == "Parent") { }
+                            if (p.Name == "Use front rainbow") { front_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use back rainbow") { back_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use thickness rainbow") { thickness_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use border rainbow") { border_rainbow = (bool)p.Object; }
+                            if (p.Name == "Use shadow rainbow") { shadow_rainbow = (bool)p.Object; }
+                            if (p.Name == "Anchor X") { anchorX = (int)p.Object; }
+                            if (p.Name == "Anchor Y") { anchorY = (int)p.Object; }
+                            if (p.Name == "Position") { }
+                        }
+
+
+                        float posX = 0f, posY = 0f, posZ = 0f;
+                        float scaleX = 100f, scaleY = 100f;
+                        float angleX = 0f, angleY = 0f, angleZ = 0f;
+                        float quakeX = 0f, quakeY = 0f, quakeZ = 0f;
+                        int thickness = 0, border = 1, shadow = 0;
+                        Color front_c = Color.Pink, back_c = Color.Pink, thickness_c = Color.Pink, border_c = Color.Pink, shadow_c = Color.Pink;
+                        Event evt = Volume.GetCurrentEvent(v, anchorX, anchorY, frame);
+
+                        foreach (Parameter p in evt.Parameters.GetValues())
+                        {
+                            if (p.Name == "Position X") { posX = (float)p.Object; }
+                            if (p.Name == "Position Y") { posY = (float)p.Object; }
+                            if (p.Name == "Position Z") { posZ = (float)p.Object; }
+                            if (p.Name == "Scale X") { scaleX = (float)p.Object; }
+                            if (p.Name == "Scale Y") { scaleY = (float)p.Object; }
+                            if (p.Name == "Angle X") { angleX = (float)p.Object; }
+                            if (p.Name == "Angle Y") { angleY = (float)p.Object; }
+                            if (p.Name == "Angle Z") { angleZ = (float)p.Object; }
+                            if (p.Name == "Center X") { }
+                            if (p.Name == "Center Y") { }
+                            if (p.Name == "Quake X") { quakeX = (float)p.Object; }
+                            if (p.Name == "Quake Y") { quakeY = (float)p.Object; }
+                            if (p.Name == "Quake Z") { quakeZ = (float)p.Object; }
+                            if (p.Name == "Thickness") { thickness = (int)p.Object; }
+                            if (p.Name == "Border") { border = (int)p.Object; }
+                            if (p.Name == "Shadow") { shadow = (int)p.Object; }
+                            if (p.Name == "Front color") { front_c = (Color)p.Object; }
+                            if (p.Name == "Back color") { back_c = (Color)p.Object; }
+                            if (p.Name == "Thickness color") { thickness_c = (Color)p.Object; }
+                            if (p.Name == "Border color") { border_c = (Color)p.Object; }
+                            if (p.Name == "Shadow color") { shadow_c = (Color)p.Object; }
+                            if (p.Name == "Front rainbow") { }
+                            if (p.Name == "Back rainbow") { }
+                            if (p.Name == "Thickness rainbow") { }
+                            if (p.Name == "Border rainbow") { }
+                            if (p.Name == "Shadow rainbow") { }
+                        }
+
+                        foreach (InsertPoint ip in v.GettInsertPoints())
+                        {
+                            float ip_posX = 0f, ip_posY = 0f, ip_size = 100f;
+                            Color ip_c = Color.Red;
+
+                            foreach (Parameter p in ip.Parameters.GetValues())
+                            {
+                                if (p.Name == "Position X") { ip_posX = (float)p.Object; }
+                                if (p.Name == "Position Y") { ip_posY = (float)p.Object; }
+                                if (p.Name == "Color") { ip_c = (Color)p.Object; }
+                                if (p.Name == "Size") { ip_size = (float)p.Object; }
+                            }
+
+                            //foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                            //{
+                            //    if (go.GetType() == typeof(LineObject))
+                            //    {
+                            //        //Main drawing of trajectory
+                            //        LineObject l = (LineObject)go;
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), l.Start.X - 2, l.Start.Y - 2, 4, 4);
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), l.Stop.X - 2, l.Stop.Y - 2, 4, 4);
+                            //        g.DrawLine(new Pen(Color.Red), l.Start, l.Stop);
+
+                            //    }
+                            //    else if (go.GetType() == typeof(BezierObject))
+                            //    {
+                            //        //Main drawing of trajectory
+                            //        BezierObject b = (BezierObject)go;
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), b.Start.X - 2, b.Start.Y - 2, 4, 4);
+                            //        g.FillRectangle(new SolidBrush(Color.Blue), b.Stop.X - 2, b.Stop.Y - 2, 4, 4);
+                            //        g.FillEllipse(new SolidBrush(Color.Orange), b.CP1.X - 2, b.CP1.Y - 2, 4, 4);
+                            //        g.FillEllipse(new SolidBrush(Color.Orange), b.CP2.X - 2, b.CP2.Y - 2, 4, 4);
+                            //        g.DrawBezier(new Pen(Color.Red), b.Start, b.CP1, b.CP2, b.Stop);
+                            //        Pen dashed = new Pen(Brushes.Black, 1f);
+                            //        dashed.DashStyle = DashStyle.Dash;
+                            //        g.DrawLine(dashed, b.Start.X, b.Start.Y, b.CP1.X, b.CP1.Y);
+                            //        g.DrawLine(dashed, b.CP1.X, b.CP1.Y, b.CP2.X, b.CP2.Y);
+                            //        g.DrawLine(dashed, b.CP2.X, b.CP2.Y, b.Stop.X, b.Stop.Y);
+                            //    }
+                            //}
+
+                            PathObject path = new PathObject();
+
+                            foreach (CreationObject cro in v.Objects)
+                            {
+
+                                PointF center = GetVolumeGravityCenter(cro);
+                                GraphicsPath gp = path.FromArray(cro.Array, (int)center.X, (int)center.Y);
+
+                                JPoint Start = null;
+
+                                // Drawing of the trajectory =========================================================
+                                foreach (GeometryObject go in ip.GetTrajectorySpline().GetTrajectory())
+                                {
+                                    if (go.GetType() == typeof(LineObject))
+                                    {
+                                        LineObject l = (LineObject)go;
+
+                                        if (Start == null)
+                                        {
+                                            Start = new JPoint(l.Start);
+                                        }
+
+                                        //Real trajectory
+                                        g.ResetTransform();
+                                        g.TranslateTransform(center.X, center.Y);
+                                        g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                                        g.TranslateTransform(posX, posY);
+                                        float diffX = Start.ToPointF().X;
+                                        float diffY = Start.ToPointF().Y;
+                                        //g.FillRectangle(new SolidBrush(ip_c), l.Start.X - 2 - diffX, l.Start.Y - 2 - diffY, 4, 4);
+                                        //g.FillRectangle(new SolidBrush(ip_c), l.Stop.X - 2 - diffX, l.Stop.Y - 2 - diffY, 4, 4);
+                                        //g.DrawLine(new Pen(ip_c), l.Start.X - diffX, l.Start.Y - diffY, l.Stop.X - diffX, l.Stop.Y - diffY);
+                                    }
+                                    else if (go.GetType() == typeof(BezierObject))
+                                    {
+                                        BezierObject b = (BezierObject)go;
+
+                                        if (Start == null)
+                                        {
+                                            Start = new JPoint(b.Start);
+                                        }
+
+                                        //Real trajectory
+                                        g.ResetTransform();
+                                        g.TranslateTransform(center.X, center.Y);
+                                        g.TranslateTransform(ip_posX, ip_posY); //InsertPoint
+                                        g.TranslateTransform(posX, posY);
+                                        float diffX = Start.ToPointF().X;
+                                        float diffY = Start.ToPointF().Y;
+                                        //g.FillRectangle(new SolidBrush(ip_c), b.Start.X - 2 - diffX, b.Start.Y - 2 - diffY, 4, 4);
+                                        //g.FillRectangle(new SolidBrush(ip_c), b.Stop.X - 2 - diffX, b.Stop.Y - 2 - diffY, 4, 4);
+                                        //g.FillEllipse(new SolidBrush(ip_c), b.CP1.X - 2 - diffX, b.CP1.Y - 2 - diffY, 4, 4);
+                                        //g.FillEllipse(new SolidBrush(ip_c), b.CP2.X - 2 - diffX, b.CP2.Y - 2 - diffY, 4, 4);
+                                        //g.DrawBezier(new Pen(ip_c), b.Start.X - diffX, b.Start.Y - diffY, b.CP1.X - diffX, b.CP1.Y - diffY, b.CP2.X - diffX, b.CP2.Y - diffY, b.Stop.X - diffX, b.Stop.Y - diffY);
+                                    }
+                                }
+                                // End - Drawing of the trajectory ===================================================
+
+                                // Position on trajectory ============================================================
+                                double xPiece = 0f, yPiece = 0f;
+                                try
+                                {
+                                    int loops = 0;
+                                    int pieces = ip.GetTrajectorySpline().GetTrajectory().Count;
+                                    //double fraction = 1 / pieces * (loops + 1);
+                                    double current = Convert.ToDouble(pieces) * Convert.ToDouble(frame) / Convert.ToDouble(frameDuration);
+                                    //double realCurrent = current / fraction;
+                                    //double realPiece = Math.Ceiling(current);
+                                    //double pieceCurrent = realCurrent - realPiece;
+
+                                    int currentPhase = 0;
+                                    while (current > 1d)
+                                    {
+                                        current = current - 1d;
+                                        currentPhase++;
+                                    }
+
+                                    if (currentPhase >= 0)
+                                    {
+                                        GeometryObject goo = ip.GetTrajectorySpline().GetTrajectory()[currentPhase];
+                                        if (goo.GetType() == typeof(LineObject))
+                                        {
+                                            LineObject l = (LineObject)goo;
+
+                                        }
+                                        else if (goo.GetType() == typeof(BezierObject))
+                                        {
+                                            BezierObject b = (BezierObject)goo;
+                                            xPiece =
+                                                Math.Pow((1 - current), 3) * (b.Start.X - Start.ToPointF().X) +
+                                                3 * current * Math.Pow((1 - current), 2) * (b.CP1.X - Start.ToPointF().X) +
+                                                3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.X - Start.ToPointF().X) +
+                                                Math.Pow(current, 3) * (b.Stop.X - Start.ToPointF().X);
+                                            yPiece =
+                                                Math.Pow((1 - current), 3) * (b.Start.Y - Start.ToPointF().Y) +
+                                                3 * current * Math.Pow((1 - current), 2) * (b.CP1.Y - Start.ToPointF().Y) +
+                                                3 * Math.Pow(current, 2) * (1 - current) * (b.CP2.Y - Start.ToPointF().Y) +
+                                                Math.Pow(current, 3) * (b.Stop.Y - Start.ToPointF().Y);
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
+                                // End - Position on trajectory ======================================================
+
+                                if (gp != null)
+                                {
+                                    g.ResetTransform();
+
+                                    g.TranslateTransform(_as.Syllable.X, _as.Syllable.Y);
+                                    float scale = _as.Syllable.Font.Size / 72f;
+                                    g.ScaleTransform(scale, scale);
+                                    g.TranslateTransform(-256, -256);
+
+                                    g.TranslateTransform(center.X, center.Y);
+
+                                    g.TranslateTransform(ip_posX + (float)xPiece, ip_posY + (float)yPiece); //InsertPoint//Trajectory
+                                    g.ScaleTransform(ip_size / 100, ip_size / 100); //InsertPoint
+
+                                    Random random = new Random();
+                                    if (quakeX > 0)
+                                    {
+                                        quakeX = random.Next(-(int)quakeX, (int)quakeX + 1);
+                                    }
+
+                                    if (quakeY > 0)
+                                    {
+                                        quakeY = random.Next(-(int)quakeY, (int)quakeY + 1);
+                                    }
+
+                                    g.TranslateTransform(posX + quakeX, posY + quakeY);
+
+                                    g.RotateTransform(angleZ);
+                                    g.ScaleTransform(scaleX / 100, scaleY / 100);
+
+                                    GraphicsPath gp_2 = GetRotationXY(cro.Array, center, angleX, angleY);
+
+                                    if (shadow > 0)
+                                    {
+                                        g.TranslateTransform(shadow, shadow);
+                                        g.FillPath(new SolidBrush(shadow_c), gp_2);
+                                        g.TranslateTransform(-shadow, -shadow);
+                                    }
+
+                                    g.FillPath(new SolidBrush(front_c), gp_2);
+
+                                    if (border > 0)
+                                    {
+                                        g.DrawPath(new Pen(border_c, border), gp_2);
+                                    }
+
+                                    g.FillEllipse(new SolidBrush(ip_c), -10f, -10f, 20f, 20f);
+                                    g.ResetTransform();
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            else if (_gp.GetType() == typeof(ScriptTypeParticle))
+            {
+
+            }
+        }
+
         public static void DrawFXSubtitle(Graphics g, FXSubtitle fxs, long milliseconds)
         {
             List<AssLine> lines = fxs.GetLinesAt(milliseconds);
             foreach (AssLine al in lines)
             {
                 g.DrawString(al.Line.String, al.Line.Font, Brushes.Red, al.Line.X - al.Line.Size.Width / 2, al.Line.Y - al.Line.Size.Height / 2);
+                if (al.GetParticles().Count > 0)
+                {
+                    foreach (GenericParticle gp in al.GetParticles())
+                    {
+                        DrawParticleInVideoMode(g, gp, al, milliseconds);
+                    }
+                }
             }
 
             List<AssAllSyllables> allsyllables = fxs.GetAllSyllablesAt(milliseconds);
@@ -642,6 +1766,26 @@ namespace RedPlanetX
             {
                 foreach(TString syllable in aas.GetSyllables()){
                     g.DrawString(syllable.String, syllable.Font, Brushes.Yellow, syllable.X - syllable.Size.Width / 2, syllable.Y - syllable.Size.Height / 2);
+                    if (aas.GetParticles().Count > 0)
+                    {
+                        foreach (GenericParticle gp in aas.GetParticles())
+                        {
+                            DrawParticleInVideoMode(g, gp, aas, milliseconds);
+                        }
+                    }
+                }
+            }
+
+            List<AssSyllable> syllables = fxs.GetSyllablesAt(milliseconds);
+            foreach (AssSyllable _as in syllables)
+            {
+                g.DrawString(_as.Syllable.String, _as.Syllable.Font, Brushes.Pink, _as.Syllable.X - _as.Syllable.Size.Width / 2, _as.Syllable.Y - _as.Syllable.Size.Height / 2);
+                if (_as.GetParticles().Count > 0)
+                {
+                    foreach (GenericParticle gp in _as.GetParticles())
+                    {
+                        DrawParticleInVideoMode(g, gp, _as, milliseconds);
+                    }
                 }
             }
         }

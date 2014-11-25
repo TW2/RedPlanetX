@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Objects");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Particles");
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Volumes");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Objects");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Particles");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Volumes");
             this.propertyGridEx1 = new PropertyGridEx.PropertyGridEx();
             this.tvVideo = new System.Windows.Forms.TreeView();
             this.tabcMain = new System.Windows.Forms.TabControl();
@@ -124,16 +124,18 @@
             this.tsbNewProject = new System.Windows.Forms.ToolStripButton();
             this.tsbOpenProject = new System.Windows.Forms.ToolStripButton();
             this.tsbSaveProject = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbAssOpen = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbAvsOpen = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.sfdCreation = new System.Windows.Forms.SaveFileDialog();
             this.ofdCreation = new System.Windows.Forms.OpenFileDialog();
             this.sfdPart = new System.Windows.Forms.SaveFileDialog();
-            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.ofdAss = new System.Windows.Forms.OpenFileDialog();
             this.ofdAvs = new System.Windows.Forms.OpenFileDialog();
+            this.cmsObjects = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmiChooseParticle = new System.Windows.Forms.ToolStripMenuItem();
             this.tabcMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tsVideo.SuspendLayout();
@@ -156,6 +158,7 @@
             this.cmsParticle.SuspendLayout();
             this.cmsVolume.SuspendLayout();
             this.tsMain.SuspendLayout();
+            this.cmsObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // propertyGridEx1
@@ -208,13 +211,14 @@
             // 
             // tvVideo
             // 
+            this.tvVideo.ContextMenuStrip = this.cmsObjects;
             this.tvVideo.Location = new System.Drawing.Point(12, 50);
             this.tvVideo.Name = "tvVideo";
-            treeNode3.Checked = true;
-            treeNode3.Name = "Nœud0";
-            treeNode3.Text = "Objects";
+            treeNode1.Checked = true;
+            treeNode1.Name = "Nœud0";
+            treeNode1.Text = "Objects";
             this.tvVideo.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
+            treeNode1});
             this.tvVideo.Size = new System.Drawing.Size(311, 102);
             this.tvVideo.TabIndex = 1;
             // 
@@ -927,10 +931,10 @@
             this.tvParticles.ContextMenuStrip = this.cmsParticle;
             this.tvParticles.Location = new System.Drawing.Point(12, 158);
             this.tvParticles.Name = "tvParticles";
-            treeNode6.Name = "Nœud0";
-            treeNode6.Text = "Particles";
+            treeNode2.Name = "Nœud0";
+            treeNode2.Text = "Particles";
             this.tvParticles.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode6});
+            treeNode2});
             this.tvParticles.Size = new System.Drawing.Size(311, 97);
             this.tvParticles.TabIndex = 4;
             this.tvParticles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvParticles_AfterSelect);
@@ -979,10 +983,10 @@
             this.tvCreation.ContextMenuStrip = this.cmsVolume;
             this.tvCreation.Location = new System.Drawing.Point(12, 261);
             this.tvCreation.Name = "tvCreation";
-            treeNode5.Name = "Nœud0";
-            treeNode5.Text = "Volumes";
+            treeNode3.Name = "Nœud0";
+            treeNode3.Text = "Volumes";
             this.tvCreation.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode5});
+            treeNode3});
             this.tvCreation.Size = new System.Drawing.Size(311, 119);
             this.tvCreation.TabIndex = 5;
             this.tvCreation.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvCreation_AfterSelect);
@@ -1076,6 +1080,11 @@
             this.tsbSaveProject.Size = new System.Drawing.Size(44, 44);
             this.tsbSaveProject.Text = "toolStripButton3";
             // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 47);
+            // 
             // tsbAssOpen
             // 
             this.tsbAssOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -1085,6 +1094,11 @@
             this.tsbAssOpen.Size = new System.Drawing.Size(44, 44);
             this.tsbAssOpen.Text = "toolStripButton4";
             this.tsbAssOpen.Click += new System.EventHandler(this.tsbAssOpen_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 47);
             // 
             // tsbAvsOpen
             // 
@@ -1118,16 +1132,6 @@
             // 
             this.sfdPart.Filter = "Particle|*.prt";
             // 
-            // toolStripSeparator9
-            // 
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 47);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 47);
-            // 
             // ofdAss
             // 
             this.ofdAss.FileName = "openFileDialog1";
@@ -1137,6 +1141,20 @@
             // 
             this.ofdAvs.FileName = "openFileDialog1";
             this.ofdAvs.Filter = "Avisynth script|*.avs";
+            // 
+            // cmsObjects
+            // 
+            this.cmsObjects.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiChooseParticle});
+            this.cmsObjects.Name = "cmsObjects";
+            this.cmsObjects.Size = new System.Drawing.Size(175, 48);
+            // 
+            // tsmiChooseParticle
+            // 
+            this.tsmiChooseParticle.Name = "tsmiChooseParticle";
+            this.tsmiChooseParticle.Size = new System.Drawing.Size(174, 22);
+            this.tsmiChooseParticle.Text = "Choose a particle...";
+            this.tsmiChooseParticle.Click += new System.EventHandler(this.tsmiChooseParticle_Click);
             // 
             // Form1
             // 
@@ -1181,6 +1199,7 @@
             this.cmsVolume.ResumeLayout(false);
             this.tsMain.ResumeLayout(false);
             this.tsMain.PerformLayout();
+            this.cmsObjects.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1289,6 +1308,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.OpenFileDialog ofdAss;
         private System.Windows.Forms.OpenFileDialog ofdAvs;
+        private System.Windows.Forms.ContextMenuStrip cmsObjects;
+        private System.Windows.Forms.ToolStripMenuItem tsmiChooseParticle;
     }
 }
 

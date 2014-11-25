@@ -183,6 +183,50 @@ namespace RedPlanetX
             }
         }
 
+        private void tsmiChooseParticle_Click(object sender, EventArgs e)
+        {
+            ChooseParticle cp = new ChooseParticle();
+            cp.LoadParticles();
+            DialogResult dr = cp.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                GenericParticle gp = cp.GetParticle();
+                if (gp != null)
+                {
+                    if (video_fxs.GetAssLines().ContainsKey(tvVideo.SelectedNode))
+                    {
+                        AssLine al = new AssLine();
+                        video_fxs.GetAssLines().TryGetValue(tvVideo.SelectedNode, out al);
+                        al.AddParticle(gp);
+
+                        TreeNode tn = new TreeNode(gp.ToString());
+                        video_fxs.GetParticles().Add(tn, gp);
+                        tvVideo.SelectedNode.Nodes.Add(tn);
+                    }
+                    else if (video_fxs.GetAssAllSyllables().ContainsKey(tvVideo.SelectedNode))
+                    {
+                        AssAllSyllables aas = new AssAllSyllables();
+                        video_fxs.GetAssAllSyllables().TryGetValue(tvVideo.SelectedNode, out aas);
+                        aas.AddParticle(gp);
+
+                        TreeNode tn = new TreeNode(gp.ToString());
+                        video_fxs.GetParticles().Add(tn, gp);
+                        tvVideo.SelectedNode.Nodes.Add(tn);
+                    }
+                    else if (video_fxs.GetAssSyllables().ContainsKey(tvVideo.SelectedNode))
+                    {
+                        AssSyllable _as = new AssSyllable();
+                        video_fxs.GetAssSyllables().TryGetValue(tvVideo.SelectedNode, out _as);
+                        _as.AddParticle(gp);
+
+                        TreeNode tn = new TreeNode(gp.ToString());
+                        video_fxs.GetParticles().Add(tn, gp);
+                        tvVideo.SelectedNode.Nodes.Add(tn);
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Particles mode
@@ -1453,9 +1497,12 @@ namespace RedPlanetX
                 GLOBAL_bitmap = ReadFrameBitmap(GLOBAL_Clip, 0);
                 trackbVideo.Maximum = GLOBAL_Clip.num_frames;
                 video_fpm = (Convert.ToDouble(GLOBAL_Clip.raten) / Convert.ToDouble(GLOBAL_Clip.rated)) / 1000d;
+                Drawing.FPM = video_fpm;
                 picbVideo.Refresh();
             }
         }
+
+        
 
         
 

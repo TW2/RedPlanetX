@@ -15,6 +15,7 @@ namespace RedPlanetX
         private Dictionary<TreeNode, AssLine> eachlines = new Dictionary<TreeNode, AssLine>();
         private Dictionary<TreeNode, AssAllSyllables> allSyllables = new Dictionary<TreeNode, AssAllSyllables>();
         private Dictionary<TreeNode, AssSyllable> eachSyllables = new Dictionary<TreeNode, AssSyllable>();
+        private Dictionary<TreeNode, GenericParticle> particles = new Dictionary<TreeNode, GenericParticle>();
 
         public TreeNode GetMappedTreeNodeForASS(List<String> rawAssLines, Font f, int centerX, int centerY)
         {
@@ -102,6 +103,24 @@ namespace RedPlanetX
                 if (starttime <= milliseconds && endtime > milliseconds)
                 {
                     getlist.Add(aas);
+                }
+            }
+
+            return getlist;
+        }
+
+        public List<AssSyllable> GetSyllablesAt(long milliseconds)
+        {
+            List<AssSyllable> templist = new List<AssSyllable>(eachSyllables.Values);
+            List<AssSyllable> getlist = new List<AssSyllable>();
+
+            foreach (AssSyllable _as in templist)
+            {
+                long starttime = _as.Line.StartTime + _as.Syllable.StartTime;
+                long endtime = _as.Line.StartTime + _as.Syllable.StartTime + _as.Syllable.Duration;
+                if (starttime <= milliseconds && endtime > milliseconds)
+                {
+                    getlist.Add(_as);
                 }
             }
 
@@ -205,6 +224,26 @@ namespace RedPlanetX
 
             return durations;
         }
+
+        public Dictionary<TreeNode, AssLine> GetAssLines()
+        {
+            return eachlines;
+        }
+
+        public Dictionary<TreeNode, AssAllSyllables> GetAssAllSyllables()
+        {
+            return allSyllables;
+        }
+
+        public Dictionary<TreeNode, AssSyllable> GetAssSyllables()
+        {
+            return eachSyllables;
+        }
+
+        public Dictionary<TreeNode, GenericParticle> GetParticles()
+        {
+            return particles;
+        }
     }
 
     public enum SyllableDirection
@@ -240,7 +279,7 @@ namespace RedPlanetX
     {
         public TString Line { get; set; }
         public TString Syllable { get; set; }
-        private List<Particle> Particles = new List<Particle>();
+        private List<GenericParticle> Particles = new List<GenericParticle>();
 
         public AssSyllable()
         {
@@ -248,12 +287,12 @@ namespace RedPlanetX
             Syllable = new TString();
         }
 
-        public void AddParticle(Particle p)
+        public void AddParticle(GenericParticle p)
         {
             Particles.Add(p);
         }
 
-        public void RemoveParticle(Particle p)
+        public void RemoveParticle(GenericParticle p)
         {
             if (Particles.Contains(p))
             {
@@ -266,7 +305,7 @@ namespace RedPlanetX
             Particles.Clear();
         }
 
-        public List<Particle> GetParticles()
+        public List<GenericParticle> GetParticles()
         {
             return Particles;
         }
@@ -276,7 +315,7 @@ namespace RedPlanetX
     {
         public TString Line { get; set; }
         private List<TString> Syllables = new List<TString>();
-        private List<Particle> Particles = new List<Particle>();
+        private List<GenericParticle> Particles = new List<GenericParticle>();
 
         public AssAllSyllables()
         {
@@ -306,12 +345,12 @@ namespace RedPlanetX
             return Syllables;
         }
 
-        public void AddParticle(Particle p)
+        public void AddParticle(GenericParticle p)
         {
             Particles.Add(p);
         }
 
-        public void RemoveParticle(Particle p)
+        public void RemoveParticle(GenericParticle p)
         {
             if (Particles.Contains(p))
             {
@@ -324,7 +363,7 @@ namespace RedPlanetX
             Particles.Clear();
         }
 
-        public List<Particle> GetParticles()
+        public List<GenericParticle> GetParticles()
         {
             return Particles;
         }
@@ -333,19 +372,19 @@ namespace RedPlanetX
     public class AssLine
     {
         public TString Line { get; set; }
-        private List<Particle> Particles = new List<Particle>();
+        private List<GenericParticle> Particles = new List<GenericParticle>();
 
         public AssLine()
         {
             Line = new TString();
         }
 
-        public void AddParticle(Particle p)
+        public void AddParticle(GenericParticle p)
         {
             Particles.Add(p);
         }
 
-        public void RemoveParticle(Particle p)
+        public void RemoveParticle(GenericParticle p)
         {
             if (Particles.Contains(p))
             {
@@ -358,7 +397,7 @@ namespace RedPlanetX
             Particles.Clear();
         }
 
-        public List<Particle> GetParticles()
+        public List<GenericParticle> GetParticles()
         {
             return Particles;
         }
