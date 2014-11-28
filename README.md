@@ -3,13 +3,13 @@ RedPlanetX
 
 A small tool to modify videos.
 
-Here is the fourth concept version of RedPlanet. RedPlanetX (RedPlanet Xpress) is a tool which can modify video by addition of transparent layers onto the original video. For the moment it's still an experimental project, some functions don't work.
+Here is the fourth concept version of RedPlanet. RedPlanetX (RedPlanet Xpress) is a tool which can modify video by addition of objects onto video. Due to ist status of experimental project, some functions doesn't work. Written in C# and designed to be a tool for Windows, it uses an avisynth script to load a video, an ASS subtitle file to display letters. ffmpeg is used to encode the video. The software has three modes : video, particle and creation. In the creation mode you can make some sets of figures with effects which you can use in the particle mode to create an original particle and its trajectory (if you want it). These particles can be used in the video mode on the karaoke sentences.
 
-Written in C# and designed to be a tool for Windows (for the moment), it uses ffmpeg to extract images and encode them. A save in JSON is made at the opening of a new video and reloads the files for the next time. At this time, you cannot save or load a project. In the future, we could also use scripting in Python maybe.
+At this time, you cannot save or load a project. In the future, we could also use scripting in Python maybe.
 
 If you want to download an alpha release, it will be <a href="http://www.redarchive.hol.es/">available in an external site</a> in the future. Otherwise, the whole project is in this site. So have fun with source.
 
-For a world access, RedPlanetX is only in english for the moment !
+RedPlanetX is localized in english and in french !
 
 ---
 
