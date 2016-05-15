@@ -7,7 +7,7 @@ Here is the fourth concept version of RedPlanet. RedPlanetX (RedPlanet Xpress) i
 
 At this time, you cannot save or load a project. In the future, we could also use scripting in Python maybe.
 
-If you want to download an alpha release, it will be <a href="http://www.redarchive.hol.es/">available in an external site</a> in the future. Otherwise, the whole project is in this site. So have fun with source.
+You can download this software at <a href="http://minna.red/redarchive/">this address</a>.
 
 RedPlanetX is localized in english and in french !
 
