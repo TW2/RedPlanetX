@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9909C601-6140-4D65-83E8-E4FD70090CE6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RedPlanetXv8</RootNamespace>
+    <AssemblyName>RedPlanetXv8</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PropertyGridEx">
+      <HintPath>..\..\RedPlanetXv7\RedPlanetXv7\bin\Debug\PropertyGridEx.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ASS\AlphaPosition.cs" />
+    <Compile Include="ASS\AssScript.cs" />
+    <Compile Include="ASS\Letter.cs" />
+    <Compile Include="ASS\Sentence.cs" />
+    <Compile Include="ASS\Syllable.cs" />
+    <Compile Include="AviSynth\AviSynthObject.cs" />
+    <Compile Include="AviSynth\AvisynthWrapper.cs" />
+    <Compile Include="Composition\CompositionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Composition\CompositionForm.Designer.cs">
+      <DependentUpon>CompositionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Composition\Drawing\Curve.cs" />
+    <Compile Include="Composition\Drawing\Group.cs" />
+    <Compile Include="Composition\Drawing\IGraphicObject.cs" />
+    <Compile Include="Composition\Drawing\Line.cs" />
+    <Compile Include="Composition\Drawing\Path.cs" />
+    <Compile Include="Composition\FigureDrawArea.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Composition\FrameRate.cs" />
+    <Compile Include="Composition\FrameSize.cs" />
+    <Compile Include="Composition\ParentObject.cs" />
+    <Compile Include="Composition\PathObject.cs" />
+    <Compile Include="Composition\Settings.cs" />
+    <Compile Include="Composition\ShapeManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Composition\ShapeManagerForm.Designer.cs">
+      <DependentUpon>ShapeManagerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Composition\ShapeObject.cs" />
+    <Compile Include="Composition\View.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Composition\XML\Generic.cs" />
+    <Compile Include="Composition\XML\XmlForShapeGroups.cs" />
+    <Compile Include="Data.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Data.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MdiTools.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MdiTools.Designer.cs">
+      <DependentUpon>MdiTools.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MdiView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MdiView.Designer.cs">
+      <DependentUpon>MdiView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Node\ASSTreeNode.cs" />
+    <Compile Include="Node\AVSTreeNode.cs" />
+    <Compile Include="Node\LetterTreeNode.cs" />
+    <Compile Include="Node\MainTreeNode.cs" />
+    <Compile Include="Node\ParentTreeNode.cs" />
+    <Compile Include="Node\PathTreeNode.cs" />
+    <Compile Include="Node\SentenceTreeNode.cs" />
+    <Compile Include="Node\ShapeTreeNode.cs" />
+    <Compile Include="Node\SyllableTreeNode.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Composition\CompositionForm.resx">
+      <DependentUpon>CompositionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Composition\ShapeManagerForm.resx">
+      <DependentUpon>ShapeManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Data.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MdiTools.resx">
+      <DependentUpon>MdiTools.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MdiView.resx">
+      <DependentUpon>MdiView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AvisynthWrapper.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\48_path.png" />
+    <None Include="Resources\48px-Crystal_Clear_app_applixjaune.png" />
+    <None Include="Resources\48px-Crystal_Clear_app_applixbleu.png" />
+    <None Include="Resources\48px-Crystal_Clear_app_applixrouge.png" />
+    <None Include="Resources\48px-Crystal_Clear_app_applixvert.png" />
+    <None Include="Resources\48px-Crystal_Clear_app_applixware.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\48px-Crystal_Clear_app_kcmdf.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\48px-Crystal_Clear_app_camera.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\48px-Crystal_Clear_app_kllckety.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\48px-Crystal_Clear_app_ksplash.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
