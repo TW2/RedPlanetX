@@ -20,6 +20,7 @@ namespace RedPlanetXv8
         MainTreeNode maintn = new MainTreeNode();
         AVSTreeNode avstn = new AVSTreeNode();
         ASSTreeNode asstn = null;
+        TreeNode lastSelectedTreeNode = null;
         Form1 form1 = null;
         PropertyGridEx.PropertyGridEx pgex = new PropertyGridEx.PropertyGridEx();
         int parentCount = 1;
@@ -84,47 +85,85 @@ namespace RedPlanetXv8
 
         private void TreeProject_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            TreeNode selected = treeProject.SelectedNode;
-            if (selected.GetType() == typeof(MainTreeNode)) selected.SelectedImageIndex = 0;
-            if (selected.GetType() == typeof(AVSTreeNode)) selected.SelectedImageIndex = 1;
-            if (selected.GetType() == typeof(ASSTreeNode)) selected.SelectedImageIndex = 4;
-            if (selected.GetType() == typeof(SentenceTreeNode)) selected.SelectedImageIndex = 8;
-            if (selected.GetType() == typeof(SyllableTreeNode)) selected.SelectedImageIndex = 8;
-            if (selected.GetType() == typeof(LetterTreeNode)) selected.SelectedImageIndex = 8;
-            if (selected.GetType() == typeof(ParentTreeNode)) selected.SelectedImageIndex = 2;
-            if (selected.GetType() == typeof(ShapeTreeNode)) selected.SelectedImageIndex = 3;
-            if (selected.GetType() == typeof(PathTreeNode)) selected.SelectedImageIndex = 9;
+            if (lastSelectedTreeNode != null && lastSelectedTreeNode.GetType() == typeof(PathTreeNode))
+            {
+                PathTreeNode ptn = (PathTreeNode)lastSelectedTreeNode;
+                PathObject po = ptn.PathObject;
+                po.Hide = true;
+                form1.MdiView.View.UpdatePaintOnly();
+            }
 
+            TreeNode selected = treeProject.SelectedNode;
+            //================================================================================
+            // MAIN TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(MainTreeNode))
+            {
+                selected.SelectedImageIndex = 0;
+            }
+
+
+            //================================================================================
+            // AVS TREENODE
+            //================================================================================ 
             if (selected.GetType() == typeof(AVSTreeNode))
             {
-                
+                selected.SelectedImageIndex = 1;
             }
-            else if (selected.GetType() == typeof(ASSTreeNode))
-            {
-                
-            }
-            else if (selected.GetType() == typeof(SentenceTreeNode))
-            {
-                
-            }
-            else if (selected.GetType() == typeof(SyllableTreeNode))
-            {
-                
-            }
-            else if (selected.GetType() == typeof(LetterTreeNode))
-            {
-                
-            }
-            else if (selected.GetType() == typeof(ParentTreeNode))
-            {
 
-            }
-            else if (selected.GetType() == typeof(PathTreeNode))
-            {
 
-            }
-            else if (selected.GetType() == typeof(ShapeTreeNode))
+            //================================================================================
+            // ASS TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(ASSTreeNode))
             {
+                selected.SelectedImageIndex = 4;
+            }
+
+
+            //================================================================================
+            // SENTENCE TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(SentenceTreeNode))
+            {
+                selected.SelectedImageIndex = 8;
+            }
+
+
+            //================================================================================
+            // SYLLABLE TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(SyllableTreeNode))
+            {
+                selected.SelectedImageIndex = 8;
+            }
+
+
+            //================================================================================
+            // LETTER TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(LetterTreeNode))
+            {
+                selected.SelectedImageIndex = 8;
+            }
+
+
+            //================================================================================
+            // PARENT TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(ParentTreeNode))
+            {
+                selected.SelectedImageIndex = 2;
+            }
+
+
+            //================================================================================
+            // SHAPE TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(ShapeTreeNode))
+            {
+                selected.SelectedImageIndex = 3;
+
                 ShapeTreeNode stn = (ShapeTreeNode)selected;
                 ShapeObject sho = stn.ShapeObject;
 
@@ -165,6 +204,23 @@ namespace RedPlanetXv8
                 pgex.Item.Add("Shadow depth at end", sho.GetShadowDepth(E), false, "Scale", "Depth", true);
                 pgex.Refresh();
             }
+
+
+            //================================================================================
+            // PATH TREENODE
+            //================================================================================
+            if (selected.GetType() == typeof(PathTreeNode))
+            {
+                selected.SelectedImageIndex = 9;
+
+                PathTreeNode ptn = (PathTreeNode)selected;
+                PathObject po = ptn.PathObject;
+                po.Hide = false;
+                form1.MdiView.View.LastPathTreeNode = ptn;
+                form1.MdiView.View.UpdatePaintOnly();
+            }
+
+            lastSelectedTreeNode = selected;
         }
 
         public void SetROOT()

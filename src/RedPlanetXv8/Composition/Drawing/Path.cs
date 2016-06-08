@@ -16,15 +16,11 @@ namespace RedPlanetXv8.Composition.Drawing
     public class Path
     {
         private List<IGraphicObject> graobjs = new List<IGraphicObject>();
+        private Insert _insert = new Insert();
 
         public Path()
         {
 
-        }
-
-        public void AddLine(Line l)
-        {
-            graobjs.Add(l);
         }
 
         public void AddCurve(Curve c)
@@ -32,14 +28,20 @@ namespace RedPlanetXv8.Composition.Drawing
             graobjs.Add(c);
         }
 
-        public void RemoveObject(IGraphicObject go)
+        public void RemoveCurve(Curve c)
         {
-            graobjs.Remove(go);
+            graobjs.Remove(c);
         }
 
         public List<IGraphicObject> GetGroup()
         {
             return graobjs;
+        }
+
+        public Insert Insert
+        {
+            get { return _insert; }
+            set { _insert = value; }
         }
 
         public void Draw(Graphics g)
@@ -48,6 +50,43 @@ namespace RedPlanetXv8.Composition.Drawing
             {
                 igo.Draw(g);
             }
+            _insert.Draw(g);
+        }
+
+        public static List<Line> GetLinesOfPoint(Point p, Path g)
+        {
+            List<Line> lines = new List<Line>();
+
+            foreach (IGraphicObject igo in g.GetGroup())
+            {
+                if (igo.GetType() == typeof(Line))
+                {
+                    Line l = (Line)igo;
+                    if (Line.ContainsPoint(p, l) == true)
+                    {
+                        lines.Add(l);
+                    }
+                }
+            }
+            return lines;
+        }
+
+        public static List<Curve> GetCurvesOfPoint(Point p, Path g)
+        {
+            List<Curve> curves = new List<Curve>();
+
+            foreach (IGraphicObject igo in g.GetGroup())
+            {
+                if (igo.GetType() == typeof(Curve))
+                {
+                    Curve c = (Curve)igo;
+                    if (Curve.ContainsPoint(p, c) == true)
+                    {
+                        curves.Add(c);
+                    }
+                }
+            }
+            return curves;
         }
     }
 }

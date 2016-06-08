@@ -30,14 +30,18 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbAviSynth = new System.Windows.Forms.ToolStripButton();
             this.tsbASS = new System.Windows.Forms.ToolStripButton();
             this.tsbParent = new System.Windows.Forms.ToolStripButton();
             this.tsbShape = new System.Windows.Forms.ToolStripButton();
             this.tsbDrawing = new System.Windows.Forms.ToolStripButton();
             this.tsbAddPath = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbMakeShape = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsbSetPath = new System.Windows.Forms.ToolStripButton();
+            this.tsbSetPathStart = new System.Windows.Forms.ToolStripButton();
+            this.tsbCursor = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,17 +56,16 @@
             this.tsbDrawing,
             this.tsbAddPath,
             this.toolStripSeparator1,
-            this.tsbMakeShape});
+            this.tsbMakeShape,
+            this.toolStripSeparator2,
+            this.tsbCursor,
+            this.tsbSetPathStart,
+            this.tsbSetPath});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(921, 39);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
             // 
             // tsbAviSynth
             // 
@@ -123,6 +126,11 @@
             this.tsbAddPath.Text = "toolStripButton6";
             this.tsbAddPath.Click += new System.EventHandler(this.tsbAddPath_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
+            // 
             // tsbMakeShape
             // 
             this.tsbMakeShape.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -131,6 +139,41 @@
             this.tsbMakeShape.Name = "tsbMakeShape";
             this.tsbMakeShape.Size = new System.Drawing.Size(36, 36);
             this.tsbMakeShape.Text = "toolStripButton7";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
+            // 
+            // tsbSetPath
+            // 
+            this.tsbSetPath.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbSetPath.Image = ((System.Drawing.Image)(resources.GetObject("tsbSetPath.Image")));
+            this.tsbSetPath.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbSetPath.Name = "tsbSetPath";
+            this.tsbSetPath.Size = new System.Drawing.Size(36, 36);
+            this.tsbSetPath.Text = "toolStripButton1";
+            this.tsbSetPath.Click += new System.EventHandler(this.tsbSetPath_Click);
+            // 
+            // tsbSetPathStart
+            // 
+            this.tsbSetPathStart.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbSetPathStart.Image = ((System.Drawing.Image)(resources.GetObject("tsbSetPathStart.Image")));
+            this.tsbSetPathStart.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbSetPathStart.Name = "tsbSetPathStart";
+            this.tsbSetPathStart.Size = new System.Drawing.Size(36, 36);
+            this.tsbSetPathStart.Text = "toolStripButton1";
+            this.tsbSetPathStart.Click += new System.EventHandler(this.tsbSetPathStart_Click);
+            // 
+            // tsbCursor
+            // 
+            this.tsbCursor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbCursor.Image = ((System.Drawing.Image)(resources.GetObject("tsbCursor.Image")));
+            this.tsbCursor.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbCursor.Name = "tsbCursor";
+            this.tsbCursor.Size = new System.Drawing.Size(36, 36);
+            this.tsbCursor.Text = "toolStripButton1";
+            this.tsbCursor.Click += new System.EventHandler(this.tsbCursor_Click);
             // 
             // Form1
             // 
@@ -159,6 +202,10 @@
         private System.Windows.Forms.ToolStripButton tsbAddPath;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tsbMakeShape;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton tsbSetPathStart;
+        private System.Windows.Forms.ToolStripButton tsbSetPath;
+        private System.Windows.Forms.ToolStripButton tsbCursor;
     }
 }
 

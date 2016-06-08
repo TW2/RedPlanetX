@@ -65,6 +65,7 @@
     <Compile Include="Composition\Drawing\Curve.cs" />
     <Compile Include="Composition\Drawing\Group.cs" />
     <Compile Include="Composition\Drawing\IGraphicObject.cs" />
+    <Compile Include="Composition\Drawing\Insert.cs" />
     <Compile Include="Composition\Drawing\Line.cs" />
     <Compile Include="Composition\Drawing\Path.cs" />
     <Compile Include="Composition\FigureDrawArea.cs">

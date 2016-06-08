@@ -132,6 +132,7 @@ namespace RedPlanetXv8.Composition
                         g.DrawPath(new Pen(_border_color, _border_weight), gp);
                     }
                 }
+                g.ResetTransform();
             }
         }
         #endregion

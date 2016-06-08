@@ -21,7 +21,7 @@ namespace RedPlanetXv8.Node
             _po = po;
         }
 
-        public PathObject Path
+        public PathObject PathObject
         {
             get { return _po; }
             set { _po = value; }

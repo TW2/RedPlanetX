@@ -41,6 +41,7 @@ namespace RedPlanetXv8
             mdiView.Size = new Size(Width - mdiTools.Width - 50, Height - 100);
             mdiView.Show();
             mdiView.Location = new Point(mdiTools.Width, 0);
+            tsbCursor.BackColor = Color.Gold;
         }
 
         private void tsbAviSynth_Click(object sender, EventArgs e)
@@ -135,6 +136,30 @@ namespace RedPlanetXv8
             {
                 mdiTools.AddPath();
             }
+        }
+
+        private void tsbCursor_Click(object sender, EventArgs e)
+        {
+            mdiView.View.PathConstructorType = PathConstructorType.None;
+            tsbCursor.BackColor = Color.Gold;
+            tsbSetPathStart.BackColor = SystemColors.Control;
+            tsbSetPath.BackColor = SystemColors.Control;
+        }
+
+        private void tsbSetPathStart_Click(object sender, EventArgs e)
+        {
+            mdiView.View.PathConstructorType = PathConstructorType.AddStart;
+            tsbCursor.BackColor = SystemColors.Control;
+            tsbSetPathStart.BackColor = Color.Gold;
+            tsbSetPath.BackColor = SystemColors.Control;
+        }
+
+        private void tsbSetPath_Click(object sender, EventArgs e)
+        {
+            mdiView.View.PathConstructorType = PathConstructorType.AddCurve;
+            tsbCursor.BackColor = SystemColors.Control;
+            tsbSetPathStart.BackColor = SystemColors.Control;
+            tsbSetPath.BackColor = Color.Gold;
         }
     }
 }

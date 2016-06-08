@@ -12,6 +12,7 @@ namespace RedPlanetXv8.Composition
         private Path path = new Path(); //Dans un seul path on peut avoir plusieurs courbes.
         private long START = 0L;
         private long END = 5000L;
+        private bool hide = false;
 
         public PathObject()
         {
@@ -33,6 +34,18 @@ namespace RedPlanetXv8.Composition
         {
             get { return END; }
             set { END = value; }
+        }
+
+        public Path Path
+        {
+            get { return path; }
+            set { path = value; }
+        }
+
+        public bool Hide
+        {
+            get { return hide; }
+            set { hide = value; }
         }
 
         // part :: parts
