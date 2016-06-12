@@ -1,6 +1,7 @@
 ﻿using RedPlanetXv8.Composition.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,28 +52,50 @@ namespace RedPlanetXv8.Composition
         // part :: parts
         // time :: times
         // part = time * parts / times
-        public void GetXY(long approximative_time, out double x, out double y, double offset_x, double offset_y)
+        public void GetXY(long approximative_time, out PointF pf)
         {
-            int parts = path.GetGroup().Count;
-            int current_part = Convert.ToInt32(approximative_time * parts / END);
-            double current = Convert.ToDouble(approximative_time) * Convert.ToDouble(parts) / Convert.ToDouble(END);
-            //long regionSTART = END * (current_part - 1) / parts;
-            //long regionEND = END * current_part / parts;
+            double x, y;
+            double apptime = Convert.ToDouble(approximative_time);
+            //Il y a toujours une courbe initialisée avec des valeurs Start
+            //(there is always a curve initialized with Start values)
+            //Nous devons ne pas en tenir compte d'où le -1d
+            //(we get rid of it so there is -1d)
+            double parts = Convert.ToDouble(path.GetGroup().Count) - 1d;
+            double start = Convert.ToDouble(START);
+            double end = Convert.ToDouble(END);
 
-            IGraphicObject current_igo = path.GetGroup()[current_part];
+            double current = parts * (apptime - start) / (end - start);
 
-            Curve c = (Curve)current_igo;
+            int currentPhase = 0;
+            while (current > 1d)
+            {
+                current = current - 1d;
+                currentPhase++;
+            }
+            
+            Curve c = (Curve)path.GetGroup()[currentPhase];
 
-            x =
-                Math.Pow((1 - current), 3) * (c.Start.X - offset_x) +
-                3 * current * Math.Pow((1 - current), 2) * (c.CP1.X - offset_x) +
-                3 * Math.Pow(current, 2) * (1 - current) * (c.CP2.X - offset_x) +
-                Math.Pow(current, 3) * (c.End.X - offset_x);
-            y =
-                Math.Pow((1 - current), 3) * (c.Start.Y - offset_y) +
-                3 * current * Math.Pow((1 - current), 2) * (c.CP1.Y - offset_y) +
-                3 * Math.Pow(current, 2) * (1 - current) * (c.CP2.Y - offset_y) +
-                Math.Pow(current, 3) * (c.End.Y - offset_y);
+            if(approximative_time >= START & approximative_time <= END && currentPhase < path.GetGroup().Count)
+            {
+                x =
+                    Math.Pow((1 - current), 3) * (c.Start.X) +
+                    3 * current * Math.Pow((1 - current), 2) * (c.CP1.X) +
+                    3 * Math.Pow(current, 2) * (1 - current) * (c.CP2.X) +
+                    Math.Pow(current, 3) * (c.End.X);
+                y =
+                    Math.Pow((1 - current), 3) * (c.Start.Y) +
+                    3 * current * Math.Pow((1 - current), 2) * (c.CP1.Y) +
+                    3 * Math.Pow(current, 2) * (1 - current) * (c.CP2.Y) +
+                    Math.Pow(current, 3) * (c.End.Y);
+
+                pf = new PointF(Convert.ToSingle(x), Convert.ToSingle(y));
+            }
+            else
+            {
+                pf = PointF.Empty;
+            }
         }
+
+
     }
 }

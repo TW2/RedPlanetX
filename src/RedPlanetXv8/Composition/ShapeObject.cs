@@ -10,6 +10,7 @@ namespace RedPlanetXv8.Composition
     {
         private List<Group> groups = new List<Group>();
         private Dictionary<ShapeProfile, long> _moments = new Dictionary<ShapeProfile, long>();
+        private Node.PathTreeNode node_ptn = new Node.PathTreeNode(); 
 
         //private int _angle_x = 0;
         //private int _angle_y = 0;
@@ -93,13 +94,23 @@ namespace RedPlanetXv8.Composition
                 int _border_weight = GetBorderWeight(approximative_time);
                 int _shadow_depth = GetShadowDepth(approximative_time);
 
+                PointF _posPTN_XY = GetPathTreeNodePos(approximative_time);
+
                 PointF center = GetGravityCenter(groups);
 
                 List<GraphicsPath> GPS = GetPaths(groups, center, _angle_x, _angle_y);
                 foreach (GraphicsPath gp in GPS)
                 {
                     g.ResetTransform();
-                    g.TranslateTransform(center.X, center.Y);
+                    if(_posPTN_XY.IsEmpty == false)
+                    {
+                        g.TranslateTransform(_posPTN_XY.X, _posPTN_XY.Y);
+                    }
+                    else
+                    {
+                        g.TranslateTransform(center.X, center.Y);
+                    }
+                    
 
                     g.RotateTransform(_angle_z);
                     g.ScaleTransform(_scale_x / 100, _scale_y / 100);
@@ -945,6 +956,29 @@ namespace RedPlanetXv8.Composition
                 int delta = (int)(diff * (approximative_time - lastMinValue) / (lastMaxValue - lastMinValue));
                 return b_min + delta;
             }
+        }
+        #endregion
+
+        #region PathTreeNode GET SET
+        public void SetPathTreeNode(Node.PathTreeNode ptn)
+        {
+            node_ptn = ptn;
+        }
+
+        public Node.PathTreeNode GetPathTreeNode()
+        {
+            return node_ptn;
+        }
+
+        public PointF GetPathTreeNodePos(long approximative_time)
+        {
+            PointF posXY = PointF.Empty;
+            if(node_ptn != null && node_ptn.PathObject != null)
+            {
+                node_ptn.PathObject.GetXY(approximative_time, out posXY);
+            }
+
+            return posXY;
         }
         #endregion
     }

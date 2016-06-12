@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RedPlanetXv8.Node
 {
@@ -25,6 +26,27 @@ namespace RedPlanetXv8.Node
         {
             get { return _po; }
             set { _po = value; }
+        }
+
+        public override string ToString()
+        {
+            return Text;
+        }
+
+        public static PathTreeNode GetFromString(AVSTreeNode reference, string name)
+        {
+            foreach (TreeNode tn in reference.Nodes)
+            {
+                if(tn.GetType() == typeof(PathTreeNode))
+                {
+                    PathTreeNode ptn = (PathTreeNode)tn;
+                    if (ptn.Text.Equals(name))
+                    {
+                        return ptn;
+                    }
+                }
+            }
+            return null;
         }
     }
 }

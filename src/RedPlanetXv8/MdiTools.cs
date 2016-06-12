@@ -3,6 +3,7 @@ using RedPlanetXv8.AviSynth;
 using RedPlanetXv8.Composition;
 using RedPlanetXv8.Node;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -170,6 +171,7 @@ namespace RedPlanetXv8
                 long S = sho.Start, E = sho.End;
 
                 pgex.Item.Clear();
+                PreparePropertyGridForPathTreeNode(pgex);
                 pgex.Item.Add("Start time", S, false, "Time", "Time in milliseconds from sentence", true);
                 pgex.Item.Add("End time", E, false, "Time", "Time in milliseconds from sentence", true);
                 pgex.Item.Add("Angle X at start", sho.GetAngleX(S), false, "Angle", "Angle in degrees", true);
@@ -221,6 +223,29 @@ namespace RedPlanetXv8
             }
 
             lastSelectedTreeNode = selected;
+        }
+
+        private void PreparePropertyGridForPathTreeNode(PropertyGridEx.PropertyGridEx pgex)
+        {
+            List<PathTreeNode> ptn_list = new List<PathTreeNode>();
+            PathTreeNode dummy = new PathTreeNode();
+            dummy.Text = "No path";
+            dummy.PathObject = null;
+            ptn_list.Add(dummy);
+
+            foreach (TreeNode tn in avstn.Nodes)
+            {
+                if(tn.GetType() == typeof(PathTreeNode))
+                {
+                    PathTreeNode ptn = (PathTreeNode)tn;
+                    ptn_list.Add(ptn);
+                }
+            }
+
+            ArrayList ary = new ArrayList(ptn_list);
+
+            pgex.Item.Add("Path", ary[0], false, "Path", "Path of the shape", true);
+            pgex.Item[pgex.Item.Count - 1].Choices = new PropertyGridEx.CustomChoices(ary);
         }
 
         public void SetROOT()
@@ -351,6 +376,8 @@ namespace RedPlanetXv8
             if (sho.GetBorderWeight(E).Equals(oldvalue) & changed.Label.Equals("Border weight at end")) { sho.SetBorderWeight(E, (int)changed.Value); }
             if (sho.GetShadowDepth(S).Equals(oldvalue) & changed.Label.Equals("Shadow depth at start")) { sho.SetShadowDepth(S, (int)changed.Value); }
             if (sho.GetShadowDepth(E).Equals(oldvalue) & changed.Label.Equals("Shadow depth at end")) { sho.SetShadowDepth(E, (int)changed.Value); }
+
+            if (changed.Label.Equals("Path")) { sho.SetPathTreeNode(PathTreeNode.GetFromString(avstn, changed.Value.ToString())); }
         }
     }
 }
