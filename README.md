@@ -3,24 +3,26 @@ RedPlanetX
 
 A small tool to modify videos.
 
-Here is the fourth concept version of RedPlanet. RedPlanetX (RedPlanet Xpress) is a tool which can modify video by addition of objects onto video. Due to its status of experimental project, some functions doesn't work. Written in C# and designed to be a tool for Windows, it uses avisynth script to load video, ASS subtitle file to display letters. ffmpeg to encode video. The software has three modes : video, particle and creation. In the creation mode you can make some sets of figures with effects which you can use in the particle mode to create an original particle and its trajectory (if you want it). These particles can be used in the video mode on the karaoke sentences.
+Here is RedPlanetXv8 (RedPlanet Xpress) which is a tool that can modify video from Avisynth video or can create a video from scratch (in the future, with the drawing tool)
 
-At this time, you cannot save or load a project. In the future, we could also use scripting in Python maybe.
-
-You can download this software at <a href="http://minna.red/redarchive/">this address</a>.
-
-RedPlanetX is localized in english and in french !
-
----
-
-There are graphical objects which can be added to the video area into layers :
-
+Functions:
 <ul>
-<li>Horizontal text (with normal text, text from subtitle with/without karaokes) - not complete</li>
-<li>Vertical text (with normal text, text from subtitle with/without karaokes) - TODO</li>
-<li>Text area (with normal text, text from subtitle with/without karaokes) - TODO</li>
-<li>Shape (including a shape mode and a free design mode working like Points And Curves) - TODO</li>
-<li>Drawing (paint mode) - TODO</li>
-<li>Image - TODO</li>
-<li>Video - TODO</li>
+<li>Read video from Avisynth (works fine)</li>
+<li>Load ASS with karaoke and display it (works fine, TODO order of layers)</li>
+<li>Horizontal text (normal text or karaoke, TODO, TODO order of layers)</li>
+<li>Vertical text (normal text or karaoke, TODO, TODO order of layers)</li>
+<li>Text area (normal text or karaoke, TODO, TODO order of layers)</li>
+<li>Image mode (TODO with drawing, TODO order of layers)</li>
+<li>Video mode (TODO with drawing if possible, TODO order of layers)</li>
+<li>Add shape drawing over the video (works fine, TODO order of layers)</li>
+<li>Set properties to shape (works fine)</li>
+<li>Add a path to shape (works fine)</li>
+<li>Add drawing over the video (TODO, TODO order of layers)</li>
+<li>Add parent (Not Complete)</li>
+<li>Configuration (TODO)</li>
+<li>Encode with ffmpeg (TODO)</li>
 </ul>
+
+To test it I recommend to have Visual Studio 2015 Community because there is a lot of bugs or unfinished functions.
+ 
+RedPlanetXv8 is in English only and code source contains some parts in French and English!
