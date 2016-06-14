@@ -39,9 +39,10 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbMakeShape = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.tsbSetPath = new System.Windows.Forms.ToolStripButton();
-            this.tsbSetPathStart = new System.Windows.Forms.ToolStripButton();
             this.tsbCursor = new System.Windows.Forms.ToolStripButton();
+            this.tsbSetPathStart = new System.Windows.Forms.ToolStripButton();
+            this.tsbSetPath = new System.Windows.Forms.ToolStripButton();
+            this.tsbAddRuby = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,6 +56,7 @@
             this.tsbShape,
             this.tsbDrawing,
             this.tsbAddPath,
+            this.tsbAddRuby,
             this.toolStripSeparator1,
             this.tsbMakeShape,
             this.toolStripSeparator2,
@@ -145,15 +147,15 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
             // 
-            // tsbSetPath
+            // tsbCursor
             // 
-            this.tsbSetPath.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbSetPath.Image = ((System.Drawing.Image)(resources.GetObject("tsbSetPath.Image")));
-            this.tsbSetPath.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbSetPath.Name = "tsbSetPath";
-            this.tsbSetPath.Size = new System.Drawing.Size(36, 36);
-            this.tsbSetPath.Text = "toolStripButton1";
-            this.tsbSetPath.Click += new System.EventHandler(this.tsbSetPath_Click);
+            this.tsbCursor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbCursor.Image = ((System.Drawing.Image)(resources.GetObject("tsbCursor.Image")));
+            this.tsbCursor.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbCursor.Name = "tsbCursor";
+            this.tsbCursor.Size = new System.Drawing.Size(36, 36);
+            this.tsbCursor.Text = "toolStripButton1";
+            this.tsbCursor.Click += new System.EventHandler(this.tsbCursor_Click);
             // 
             // tsbSetPathStart
             // 
@@ -165,15 +167,25 @@
             this.tsbSetPathStart.Text = "toolStripButton1";
             this.tsbSetPathStart.Click += new System.EventHandler(this.tsbSetPathStart_Click);
             // 
-            // tsbCursor
+            // tsbSetPath
             // 
-            this.tsbCursor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbCursor.Image = ((System.Drawing.Image)(resources.GetObject("tsbCursor.Image")));
-            this.tsbCursor.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbCursor.Name = "tsbCursor";
-            this.tsbCursor.Size = new System.Drawing.Size(36, 36);
-            this.tsbCursor.Text = "toolStripButton1";
-            this.tsbCursor.Click += new System.EventHandler(this.tsbCursor_Click);
+            this.tsbSetPath.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbSetPath.Image = ((System.Drawing.Image)(resources.GetObject("tsbSetPath.Image")));
+            this.tsbSetPath.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbSetPath.Name = "tsbSetPath";
+            this.tsbSetPath.Size = new System.Drawing.Size(36, 36);
+            this.tsbSetPath.Text = "toolStripButton1";
+            this.tsbSetPath.Click += new System.EventHandler(this.tsbSetPath_Click);
+            // 
+            // tsbAddRuby
+            // 
+            this.tsbAddRuby.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbAddRuby.Image = ((System.Drawing.Image)(resources.GetObject("tsbAddRuby.Image")));
+            this.tsbAddRuby.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbAddRuby.Name = "tsbAddRuby";
+            this.tsbAddRuby.Size = new System.Drawing.Size(36, 36);
+            this.tsbAddRuby.Text = "toolStripButton1";
+            this.tsbAddRuby.Click += new System.EventHandler(this.tsbAddRuby_Click);
             // 
             // Form1
             // 
@@ -206,6 +218,7 @@
         private System.Windows.Forms.ToolStripButton tsbSetPathStart;
         private System.Windows.Forms.ToolStripButton tsbSetPath;
         private System.Windows.Forms.ToolStripButton tsbCursor;
+        private System.Windows.Forms.ToolStripButton tsbAddRuby;
     }
 }
 

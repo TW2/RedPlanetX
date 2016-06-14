@@ -28,3 +28,11 @@ C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\
 C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\obj\Debug\RedPlanetXv8.csproj.GenerateResource.Cache
 C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\obj\Debug\RedPlanetXv8.Composition.ShapeManagerForm.resources
 C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\PropertyGridEx.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\IronRuby.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\IronRuby.Libraries.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\IronRuby.Libraries.Yaml.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\Microsoft.Dynamic.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\Microsoft.Scripting.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\Microsoft.Scripting.Metadata.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\obj\Debug\RedPlanetXv8.Composition.Ruby.RubyEditorForm.resources
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\Alsing.SyntaxBox.dll

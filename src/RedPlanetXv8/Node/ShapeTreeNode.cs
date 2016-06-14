@@ -9,7 +9,7 @@ namespace RedPlanetXv8.Node
 {
     public class ShapeTreeNode : MainTreeNode
     {
-        private ShapeObject _so = null;
+        private ShapeObject _so = null;        
 
         public ShapeTreeNode()
         {

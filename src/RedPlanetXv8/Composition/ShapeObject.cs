@@ -10,7 +10,7 @@ namespace RedPlanetXv8.Composition
     {
         private List<Group> groups = new List<Group>();
         private Dictionary<ShapeProfile, long> _moments = new Dictionary<ShapeProfile, long>();
-        private Node.PathTreeNode node_ptn = new Node.PathTreeNode(); 
+        private Node.PathTreeNode node_ptn = new Node.PathTreeNode(); //Sauvegarde le chemin actif (save the active path)
 
         //private int _angle_x = 0;
         //private int _angle_y = 0;

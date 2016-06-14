@@ -11,10 +11,11 @@ namespace RedPlanetXv8.Node
     public class PathTreeNode : MainTreeNode
     {
         private PathObject _po = null;
+        private int _index = 0; // Index for select the path in property grid
 
         public PathTreeNode()
         {
-
+            
         }
 
         public PathTreeNode(PathObject po)
@@ -26,6 +27,12 @@ namespace RedPlanetXv8.Node
         {
             get { return _po; }
             set { _po = value; }
+        }
+
+        public int PathIndex
+        {
+            get { return _index; }
+            set { _index = value; }
         }
 
         public override string ToString()

@@ -101,6 +101,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(MainTreeNode))
             {
                 selected.SelectedImageIndex = 0;
+
+                pgex.Item.Clear();
+                pgex.Refresh();
             }
 
 
@@ -110,6 +113,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(AVSTreeNode))
             {
                 selected.SelectedImageIndex = 1;
+
+                pgex.Item.Clear();
+                pgex.Refresh();
             }
 
 
@@ -119,6 +125,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(ASSTreeNode))
             {
                 selected.SelectedImageIndex = 4;
+
+                pgex.Item.Clear();
+                pgex.Refresh();
             }
 
 
@@ -128,6 +137,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(SentenceTreeNode))
             {
                 selected.SelectedImageIndex = 8;
+
+                pgex.Item.Clear();
+                pgex.Refresh();
             }
 
 
@@ -137,6 +149,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(SyllableTreeNode))
             {
                 selected.SelectedImageIndex = 8;
+
+                pgex.Item.Clear();
+                pgex.Refresh();
             }
 
 
@@ -146,6 +161,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(LetterTreeNode))
             {
                 selected.SelectedImageIndex = 8;
+
+                pgex.Item.Clear();
+                pgex.Refresh();
             }
 
 
@@ -155,6 +173,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(ParentTreeNode))
             {
                 selected.SelectedImageIndex = 2;
+
+                pgex.Item.Clear();
+                pgex.Refresh();
             }
 
 
@@ -171,7 +192,7 @@ namespace RedPlanetXv8
                 long S = sho.Start, E = sho.End;
 
                 pgex.Item.Clear();
-                PreparePropertyGridForPathTreeNode(pgex);
+                PreparePropertyGridForPathTreeNode(pgex, sho);
                 pgex.Item.Add("Start time", S, false, "Time", "Time in milliseconds from sentence", true);
                 pgex.Item.Add("End time", E, false, "Time", "Time in milliseconds from sentence", true);
                 pgex.Item.Add("Angle X at start", sho.GetAngleX(S), false, "Angle", "Angle in degrees", true);
@@ -215,6 +236,9 @@ namespace RedPlanetXv8
             {
                 selected.SelectedImageIndex = 9;
 
+                pgex.Item.Clear();
+                pgex.Refresh();
+
                 PathTreeNode ptn = (PathTreeNode)selected;
                 PathObject po = ptn.PathObject;
                 po.Hide = false;
@@ -225,7 +249,7 @@ namespace RedPlanetXv8
             lastSelectedTreeNode = selected;
         }
 
-        private void PreparePropertyGridForPathTreeNode(PropertyGridEx.PropertyGridEx pgex)
+        private void PreparePropertyGridForPathTreeNode(PropertyGridEx.PropertyGridEx pgex, ShapeObject so)
         {
             List<PathTreeNode> ptn_list = new List<PathTreeNode>();
             PathTreeNode dummy = new PathTreeNode();
@@ -244,7 +268,10 @@ namespace RedPlanetXv8
 
             ArrayList ary = new ArrayList(ptn_list);
 
-            pgex.Item.Add("Path", ary[0], false, "Path", "Path of the shape", true);
+            int v = 0;
+            if (so.GetPathTreeNode().PathIndex != v) { v = so.GetPathTreeNode().PathIndex; }
+
+            pgex.Item.Add("Path", ary[v], false, "Path", "Path of the shape", true);
             pgex.Item[pgex.Item.Count - 1].Choices = new PropertyGridEx.CustomChoices(ary);
         }
 
@@ -335,6 +362,7 @@ namespace RedPlanetXv8
         {
             PathTreeNode pathtn = new PathTreeNode(new PathObject());
             pathtn.Text = "Path " + pathCount;
+            pathtn.PathIndex = pathCount;
             pathtn.ImageIndex = 9;
             avstn.Nodes.Add(pathtn);
             pathCount++;
@@ -377,7 +405,11 @@ namespace RedPlanetXv8
             if (sho.GetShadowDepth(S).Equals(oldvalue) & changed.Label.Equals("Shadow depth at start")) { sho.SetShadowDepth(S, (int)changed.Value); }
             if (sho.GetShadowDepth(E).Equals(oldvalue) & changed.Label.Equals("Shadow depth at end")) { sho.SetShadowDepth(E, (int)changed.Value); }
 
-            if (changed.Label.Equals("Path")) { sho.SetPathTreeNode(PathTreeNode.GetFromString(avstn, changed.Value.ToString())); }
+            if (changed.Label.Equals("Path"))
+            {
+                sho.SetPathTreeNode(PathTreeNode.GetFromString(avstn, changed.Value.ToString()));
+                
+            }
         }
     }
 }

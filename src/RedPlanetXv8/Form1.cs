@@ -161,5 +161,15 @@ namespace RedPlanetXv8
             tsbSetPathStart.BackColor = SystemColors.Control;
             tsbSetPath.BackColor = Color.Gold;
         }
+
+        private void tsbAddRuby_Click(object sender, EventArgs e)
+        {
+            Composition.Ruby.RubyEditorForm re = new Composition.Ruby.RubyEditorForm();
+            DialogResult dr = re.ShowDialog();
+            if(dr == DialogResult.OK)
+            {
+
+            }
+        }
     }
 }
