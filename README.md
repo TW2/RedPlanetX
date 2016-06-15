@@ -23,6 +23,6 @@ Functions:
 <li>Encode with ffmpeg (TODO)</li>
 </ul>
 
-To test it I recommend to have Visual Studio 2015 Community because there is a lot of bugs or unfinished functions.
+To test it I recommand to have Visual Studio 2015 Community because there is a lot of bugs or unfinished functions.
  
 RedPlanetXv8 is in English only and code source contains some parts in French and English!
