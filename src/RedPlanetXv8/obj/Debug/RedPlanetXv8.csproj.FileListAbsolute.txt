@@ -35,4 +35,5 @@ C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\
 C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\Microsoft.Scripting.dll
 C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\Microsoft.Scripting.Metadata.dll
 C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\obj\Debug\RedPlanetXv8.Composition.Ruby.RubyEditorForm.resources
-C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\Alsing.SyntaxBox.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\FastColoredTextBox.dll
+C:\Users\Naruto\Documents\Visual Studio 2015\Projects\RedPlanetXv8\RedPlanetXv8\bin\Debug\FastColoredTextBox.xml
