@@ -7,20 +7,20 @@ Here is RedPlanetXv8 (RedPlanet Xpress) which is a tool that can modify video fr
 
 Functions:
 <ul>
-<li>Read video from Avisynth (works fine)</li>
-<li>Load ASS with karaoke and display it (works fine, TODO order of layers)</li>
-<li>Horizontal text (normal text or karaoke, TODO, TODO order of layers)</li>
-<li>Vertical text (normal text or karaoke, TODO, TODO order of layers)</li>
-<li>Text area (normal text or karaoke, TODO, TODO order of layers)</li>
-<li>Image mode (TODO with drawing, TODO order of layers)</li>
-<li>Video mode (TODO with drawing if possible, TODO order of layers)</li>
-<li>Add shape drawing over the video (works fine, TODO order of layers)</li>
-<li>Set properties to shape (works fine)</li>
-<li>Add a path to shape (works fine)</li>
-<li>Add drawing over the video (TODO, TODO order of layers)</li>
-<li>Add parent (Not Complete)</li>
-<li>Configuration (TODO)</li>
-<li>Encode with ffmpeg (TODO)</li>
+<li>Read video from Avisynth (<span style="color:#01DF01">works fine</span>)</li>
+<li>Load ASS with karaoke and display it (<span style="color:#01DF01">works fine</span>, TODO order of layers)</li>
+<li>Horizontal text (normal text or karaoke, <span style="color:#FF0000">TODO</span>, TODO order of layers)</li>
+<li>Vertical text (normal text or karaoke, <span style="color:#FF0000">TODO</span>, TODO order of layers)</li>
+<li>Text area (normal text or karaoke, <span style="color:#FF0000">TODO</span>, TODO order of layers)</li>
+<li>Image mode (<span style="color:#FF0000">TODO</span> with drawing, TODO order of layers)</li>
+<li>Video mode (<span style="color:#FF0000">TODO</span> with drawing if possible, TODO order of layers)</li>
+<li>Add shape drawing over the video (<span style="color:#01DF01">works fine</span>, TODO order of layers)</li>
+<li>Set properties to shape (<span style="color:#01DF01">works fine</span>)</li>
+<li>Add a path to shape (<span style="color:#01DF01">works fine</span>)</li>
+<li>Add drawing over the video (<span style="color:#FF0000">TODO</span>, TODO order of layers)</li>
+<li>Add parent (<span style="color:#FF8000">Not Complete</span>)</li>
+<li>Configuration (<span style="color:#FF0000">TODO</span>)</li>
+<li>Encode with ffmpeg (<span style="color:#FF0000">TODO</span>)</li>
 </ul>
 
 To test it I recommand to have Visual Studio 2015 Community because there is a lot of bugs or unfinished functions.
