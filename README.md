@@ -7,7 +7,7 @@ Here is RedPlanetXv8 (RedPlanet Xpress) which is a tool that can modify video fr
 
 Functions:
 <ul>
-<li>Read video from Avisynth (<span style="color:#01DF01">works fine</span>)</li>
+<li>Read video from Avisynth (works fine <img src="https://1drv.ms/u/s!AunkQ3FeUpyV1ERqHDtpjPrZrmN8" /> )</li>
 <li>Load ASS with karaoke and display it (<span style="color:#01DF01">works fine</span>, TODO order of layers)</li>
 <li>Horizontal text (normal text or karaoke, <span style="color:#FF0000">TODO</span>, TODO order of layers)</li>
 <li>Vertical text (normal text or karaoke, <span style="color:#FF0000">TODO</span>, TODO order of layers)</li>
