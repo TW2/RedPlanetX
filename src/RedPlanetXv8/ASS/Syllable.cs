@@ -18,6 +18,7 @@ namespace RedPlanetXv8.ASS
         private long _sentence_end_ms = 0;
         private Point _position_pixels = Point.Empty;
         private List<Letter> _letter_list = new List<Letter>();
+        private Sentence _from_sentence = null;
 
         public Syllable()
         {
@@ -46,6 +47,12 @@ namespace RedPlanetXv8.ASS
                 let.SentenceDuration = _sentence_duration_ms;
                 let.SentenceStart = _sentence_start_ms;
                 let.SentenceEnd = _sentence_end_ms;
+
+                let.FromSentence = this.FromSentence;
+                let.FromSyllable = this;
+                let.Moments.Add(new LetterProfile(), _start_ms);
+                let.Moments.Add(new LetterProfile(), _end_ms);
+
                 _letter_list.Add(let);
             }
         }
@@ -103,6 +110,12 @@ namespace RedPlanetXv8.ASS
             get { return _letter_list; }
             set { _letter_list = value; }
         }
-        
+
+        public Sentence FromSentence
+        {
+            get { return _from_sentence; }
+            set { _from_sentence = value; }
+        }
+
     }
 }

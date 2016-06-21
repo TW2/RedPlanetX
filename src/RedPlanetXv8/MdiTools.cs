@@ -138,6 +138,9 @@ namespace RedPlanetXv8
             {
                 selected.SelectedImageIndex = 8;
 
+                SentenceTreeNode stn = (SentenceTreeNode)selected;
+                Sentence sen = stn.String;
+
                 pgex.Item.Clear();
                 pgex.Refresh();
             }
@@ -150,6 +153,9 @@ namespace RedPlanetXv8
             {
                 selected.SelectedImageIndex = 8;
 
+                SyllableTreeNode stn = (SyllableTreeNode)selected;
+                Syllable syl = stn.String;
+
                 pgex.Item.Clear();
                 pgex.Refresh();
             }
@@ -161,6 +167,9 @@ namespace RedPlanetXv8
             if (selected.GetType() == typeof(LetterTreeNode))
             {
                 selected.SelectedImageIndex = 8;
+
+                LetterTreeNode ltn = (LetterTreeNode)selected;
+                Letter let = ltn.String;
 
                 pgex.Item.Clear();
                 pgex.Refresh();

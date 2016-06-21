@@ -150,6 +150,8 @@ namespace RedPlanetXv8.ASS
                         dur_milli, start + sentence_start, 
                         sentence_duration, sentence_start);
 
+                    syl.FromSentence = this;
+
                     list.Add(syl);
 
                     start += dur_milli;
@@ -261,6 +263,23 @@ namespace RedPlanetXv8.ASS
             }
             gr.DrawString(text, font, Brushes.Blue, start_x, start_y);
         }
+
+        //private int _angle_x = 0;
+        //private int _angle_y = 0;
+        //private int _angle_z = 0;
+        //private Color _front_color = Color.AliceBlue;
+        //private Color _back_color = Color.AliceBlue; //(unused)
+        //private Color _border_color = Color.Red;
+        //private Color _shadow_color = Color.Gray;
+        //private float _relative_position_x = 0f;
+        //private float _relative_position_y = 0f;
+        //private int _quake_x = 0;
+        //private int _quake_y = 0;
+        //private float _scale_x = 100f; //de 0.0 à 100.0
+        //private float _scale_y = 100f; //de 0.0 à 100.0
+        //private int _border_weight = 1;
+        //private int _shadow_depth = 0;
+
 
     }
 }

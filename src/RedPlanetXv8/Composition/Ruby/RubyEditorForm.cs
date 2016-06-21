@@ -86,6 +86,8 @@ namespace RedPlanetXv8.Composition.Ruby
                     outputFile.AutoFlush = true;
                     outputFile.Write(fctb.Text);
                 }
+
+                MessageBox.Show("The script has been saved!");
             }            
         }
 
@@ -96,6 +98,8 @@ namespace RedPlanetXv8.Composition.Ruby
                 outputFile.AutoFlush = true;
                 outputFile.Write(fctb.Text);
             }
+
+            MessageBox.Show("The script has been saved!");
         }
     }
 }
