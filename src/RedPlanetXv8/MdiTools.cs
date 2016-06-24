@@ -81,6 +81,23 @@ namespace RedPlanetXv8
                 }
             }
 
+            
+            if (selected.GetType() == typeof(LetterTreeNode))
+            {
+                LetterTreeNode ltn = (LetterTreeNode)selected;
+                CompareAndUpdateLetter(e.ChangedItem, e.OldValue, ltn.String);
+            }
+            else if (selected.GetType() == typeof(SyllableTreeNode))
+            {
+                SyllableTreeNode stn = (SyllableTreeNode)selected;
+                CompareAndUpdateSyllable(e.ChangedItem, e.OldValue, stn.String);
+            }
+            else if (selected.GetType() == typeof(SentenceTreeNode))
+            {
+                SentenceTreeNode stn = (SentenceTreeNode)selected;
+                CompareAndUpdateSentence(e.ChangedItem, e.OldValue, stn.String);
+            }
+
             form1.MdiView.View.UpdatePaintOnly();
         }
 
@@ -141,7 +158,41 @@ namespace RedPlanetXv8
                 SentenceTreeNode stn = (SentenceTreeNode)selected;
                 Sentence sen = stn.String;
 
+                long S = sen.SentenceStart, E = sen.SentenceEnd;
+
                 pgex.Item.Clear();
+                pgex.Item.Add("Start time", S, false, "Time", "Time in milliseconds from sentence", true);
+                pgex.Item.Add("End time", E, false, "Time", "Time in milliseconds from sentence", true);
+                pgex.Item.Add("Angle X at start", sen.GetAngleX(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle X at end", sen.GetAngleY(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Y at start", sen.GetAngleY(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Y at end", sen.GetAngleY(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Z at start", sen.GetAngleZ(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Z at end", sen.GetAngleZ(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Front color at start", sen.GetFrontColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Front color at end", sen.GetFrontColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Back color at start", sen.GetBackColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Back color at end", sen.GetBackColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Border color at start", sen.GetBorderColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Border color at end", sen.GetBorderColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Shadow color at start", sen.GetShadowColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Shadow color at end", sen.GetShadowColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Position X at start", sen.GetRelativePositionX(S), false, "Position", "Relative position on X", true);
+                pgex.Item.Add("Position X at end", sen.GetRelativePositionX(E), false, "Position", "Relative position on X", true);
+                pgex.Item.Add("Position Y at start", sen.GetRelativePositionY(S), false, "Position", "Relative position on Y", true);
+                pgex.Item.Add("Position Y at end", sen.GetRelativePositionY(E), false, "Position", "Relative position on Y", true);
+                pgex.Item.Add("Quake X at start", sen.GetQuakeX(S), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake X at end", sen.GetQuakeX(E), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake Y at start", sen.GetQuakeY(S), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake Y at end", sen.GetQuakeY(E), false, "Quake", "Quake", true);
+                pgex.Item.Add("Scale X at start", sen.GetScaleX(S), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale X at end", sen.GetScaleX(E), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale Y at start", sen.GetScaleY(S), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale Y at end", sen.GetScaleY(E), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Border weight at start", sen.GetBorderWeight(S), false, "Scale", "Weight", true);
+                pgex.Item.Add("Border weight at end", sen.GetBorderWeight(E), false, "Scale", "Weight", true);
+                pgex.Item.Add("Shadow depth at start", sen.GetShadowDepth(S), false, "Scale", "Depth", true);
+                pgex.Item.Add("Shadow depth at end", sen.GetShadowDepth(E), false, "Scale", "Depth", true);
                 pgex.Refresh();
             }
 
@@ -156,7 +207,41 @@ namespace RedPlanetXv8
                 SyllableTreeNode stn = (SyllableTreeNode)selected;
                 Syllable syl = stn.String;
 
+                long S = syl.SyllableStart, E = syl.SyllableEnd;
+
                 pgex.Item.Clear();
+                pgex.Item.Add("Start time", S, false, "Time", "Time in milliseconds from syllable", true);
+                pgex.Item.Add("End time", E, false, "Time", "Time in milliseconds from syllable", true);
+                pgex.Item.Add("Angle X at start", syl.GetAngleX(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle X at end", syl.GetAngleY(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Y at start", syl.GetAngleY(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Y at end", syl.GetAngleY(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Z at start", syl.GetAngleZ(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Z at end", syl.GetAngleZ(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Front color at start", syl.GetFrontColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Front color at end", syl.GetFrontColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Back color at start", syl.GetBackColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Back color at end", syl.GetBackColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Border color at start", syl.GetBorderColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Border color at end", syl.GetBorderColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Shadow color at start", syl.GetShadowColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Shadow color at end", syl.GetShadowColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Position X at start", syl.GetRelativePositionX(S), false, "Position", "Relative position on X", true);
+                pgex.Item.Add("Position X at end", syl.GetRelativePositionX(E), false, "Position", "Relative position on X", true);
+                pgex.Item.Add("Position Y at start", syl.GetRelativePositionY(S), false, "Position", "Relative position on Y", true);
+                pgex.Item.Add("Position Y at end", syl.GetRelativePositionY(E), false, "Position", "Relative position on Y", true);
+                pgex.Item.Add("Quake X at start", syl.GetQuakeX(S), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake X at end", syl.GetQuakeX(E), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake Y at start", syl.GetQuakeY(S), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake Y at end", syl.GetQuakeY(E), false, "Quake", "Quake", true);
+                pgex.Item.Add("Scale X at start", syl.GetScaleX(S), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale X at end", syl.GetScaleX(E), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale Y at start", syl.GetScaleY(S), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale Y at end", syl.GetScaleY(E), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Border weight at start", syl.GetBorderWeight(S), false, "Scale", "Weight", true);
+                pgex.Item.Add("Border weight at end", syl.GetBorderWeight(E), false, "Scale", "Weight", true);
+                pgex.Item.Add("Shadow depth at start", syl.GetShadowDepth(S), false, "Scale", "Depth", true);
+                pgex.Item.Add("Shadow depth at end", syl.GetShadowDepth(E), false, "Scale", "Depth", true);
                 pgex.Refresh();
             }
 
@@ -171,7 +256,41 @@ namespace RedPlanetXv8
                 LetterTreeNode ltn = (LetterTreeNode)selected;
                 Letter let = ltn.String;
 
+                long S = let.LetterStart, E = let.LetterEnd;
+
                 pgex.Item.Clear();
+                pgex.Item.Add("Start time", S, false, "Time", "Time in milliseconds from letter", true);
+                pgex.Item.Add("End time", E, false, "Time", "Time in milliseconds from letter", true);
+                pgex.Item.Add("Angle X at start", let.GetAngleX(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle X at end", let.GetAngleY(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Y at start", let.GetAngleY(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Y at end", let.GetAngleY(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Z at start", let.GetAngleZ(S), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Angle Z at end", let.GetAngleZ(E), false, "Angle", "Angle in degrees", true);
+                pgex.Item.Add("Front color at start", let.GetFrontColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Front color at end", let.GetFrontColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Back color at start", let.GetBackColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Back color at end", let.GetBackColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Border color at start", let.GetBorderColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Border color at end", let.GetBorderColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Shadow color at start", let.GetShadowColor(S), false, "Color", "Color", true);
+                pgex.Item.Add("Shadow color at end", let.GetShadowColor(E), false, "Color", "Color", true);
+                pgex.Item.Add("Position X at start", let.GetRelativePositionX(S), false, "Position", "Relative position on X", true);
+                pgex.Item.Add("Position X at end", let.GetRelativePositionX(E), false, "Position", "Relative position on X", true);
+                pgex.Item.Add("Position Y at start", let.GetRelativePositionY(S), false, "Position", "Relative position on Y", true);
+                pgex.Item.Add("Position Y at end", let.GetRelativePositionY(E), false, "Position", "Relative position on Y", true);
+                pgex.Item.Add("Quake X at start", let.GetQuakeX(S), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake X at end", let.GetQuakeX(E), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake Y at start", let.GetQuakeY(S), false, "Quake", "Quake", true);
+                pgex.Item.Add("Quake Y at end", let.GetQuakeY(E), false, "Quake", "Quake", true);
+                pgex.Item.Add("Scale X at start", let.GetScaleX(S), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale X at end", let.GetScaleX(E), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale Y at start", let.GetScaleY(S), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Scale Y at end", let.GetScaleY(E), false, "Scale", "Scale from 0.0 to 1.0", true);
+                pgex.Item.Add("Border weight at start", let.GetBorderWeight(S), false, "Scale", "Weight", true);
+                pgex.Item.Add("Border weight at end", let.GetBorderWeight(E), false, "Scale", "Weight", true);
+                pgex.Item.Add("Shadow depth at start", let.GetShadowDepth(S), false, "Scale", "Depth", true);
+                pgex.Item.Add("Shadow depth at end", let.GetShadowDepth(E), false, "Scale", "Depth", true);
                 pgex.Refresh();
             }
 
@@ -419,6 +538,138 @@ namespace RedPlanetXv8
                 sho.SetPathTreeNode(PathTreeNode.GetFromString(avstn, changed.Value.ToString()));
                 
             }
+        }
+
+        private void CompareAndUpdateLetter(GridItem changed, object oldvalue, Letter let)
+        {
+            long S = let.LetterStart, E = let.LetterEnd;
+
+            if (S.Equals(oldvalue) & changed.Label.Equals("Start time")) { let.LetterStart = (long)changed.Value; }
+            if (E.Equals(oldvalue) & changed.Label.Equals("End time")) { let.LetterEnd = (long)changed.Value; }
+            if (let.GetAngleX(S).Equals(oldvalue) & changed.Label.Equals("Angle X at start")) { let.SetAngleX(S, (int)changed.Value); }
+            if (let.GetAngleX(E).Equals(oldvalue) & changed.Label.Equals("Angle X at end")) { let.SetAngleX(E, (int)changed.Value); }
+            if (let.GetAngleY(S).Equals(oldvalue) & changed.Label.Equals("Angle Y at start")) { let.SetAngleY(S, (int)changed.Value); }
+            if (let.GetAngleY(E).Equals(oldvalue) & changed.Label.Equals("Angle Y at end")) { let.SetAngleY(E, (int)changed.Value); }
+            if (let.GetAngleZ(S).Equals(oldvalue) & changed.Label.Equals("Angle Z at start")) { let.SetAngleZ(S, (int)changed.Value); }
+            if (let.GetAngleZ(E).Equals(oldvalue) & changed.Label.Equals("Angle Z at end")) { let.SetAngleZ(E, (int)changed.Value); }
+            if (let.GetFrontColor(S).Equals(oldvalue) & changed.Label.Equals("Front color at start")) { let.SetFrontColor(S, (Color)changed.Value); }
+            if (let.GetFrontColor(E).Equals(oldvalue) & changed.Label.Equals("Front color at end")) { let.SetFrontColor(E, (Color)changed.Value); }
+            if (let.GetBackColor(S).Equals(oldvalue) & changed.Label.Equals("Back color at start")) { let.SetBackColor(S, (Color)changed.Value); }
+            if (let.GetBackColor(E).Equals(oldvalue) & changed.Label.Equals("Back color at end")) { let.SetBackColor(E, (Color)changed.Value); }
+            if (let.GetBorderColor(S).Equals(oldvalue) & changed.Label.Equals("Border color at start")) { let.SetBorderColor(S, (Color)changed.Value); }
+            if (let.GetBorderColor(E).Equals(oldvalue) & changed.Label.Equals("Border color at end")) { let.SetBorderColor(E, (Color)changed.Value); }
+            if (let.GetShadowColor(S).Equals(oldvalue) & changed.Label.Equals("Shadow color at start")) { let.SetShadowColor(S, (Color)changed.Value); }
+            if (let.GetShadowColor(E).Equals(oldvalue) & changed.Label.Equals("Shadow color at end")) { let.SetShadowColor(E, (Color)changed.Value); }
+            if (let.GetRelativePositionX(S).Equals(oldvalue) & changed.Label.Equals("Position X at start")) { let.SetRelativePositionX(S, (float)changed.Value); }
+            if (let.GetRelativePositionX(E).Equals(oldvalue) & changed.Label.Equals("Position X at end")) { let.SetRelativePositionX(E, (float)changed.Value); }
+            if (let.GetRelativePositionY(S).Equals(oldvalue) & changed.Label.Equals("Position Y at start")) { let.SetRelativePositionY(S, (float)changed.Value); }
+            if (let.GetRelativePositionY(E).Equals(oldvalue) & changed.Label.Equals("Position Y at end")) { let.SetRelativePositionY(E, (float)changed.Value); }
+            if (let.GetQuakeX(S).Equals(oldvalue) & changed.Label.Equals("Quake X at start")) { let.SetQuakeX(S, (int)changed.Value); }
+            if (let.GetQuakeX(E).Equals(oldvalue) & changed.Label.Equals("Quake X at end")) { let.SetQuakeX(E, (int)changed.Value); }
+            if (let.GetQuakeY(S).Equals(oldvalue) & changed.Label.Equals("Quake Y at start")) { let.SetQuakeY(S, (int)changed.Value); }
+            if (let.GetQuakeY(E).Equals(oldvalue) & changed.Label.Equals("Quake Y at end")) { let.SetQuakeY(E, (int)changed.Value); }
+            if (let.GetScaleX(S).Equals(oldvalue) & changed.Label.Equals("Scale X at start")) { let.SetScaleX(S, (float)changed.Value); }
+            if (let.GetScaleX(E).Equals(oldvalue) & changed.Label.Equals("Scale X at end")) { let.SetScaleX(E, (float)changed.Value); }
+            if (let.GetScaleY(S).Equals(oldvalue) & changed.Label.Equals("Scale Y at start")) { let.SetScaleY(S, (float)changed.Value); }
+            if (let.GetScaleY(E).Equals(oldvalue) & changed.Label.Equals("Scale Y at end")) { let.SetScaleY(E, (float)changed.Value); }
+            if (let.GetBorderWeight(S).Equals(oldvalue) & changed.Label.Equals("Border weight at start")) { let.SetBorderWeight(S, (int)changed.Value); }
+            if (let.GetBorderWeight(E).Equals(oldvalue) & changed.Label.Equals("Border weight at end")) { let.SetBorderWeight(E, (int)changed.Value); }
+            if (let.GetShadowDepth(S).Equals(oldvalue) & changed.Label.Equals("Shadow depth at start")) { let.SetShadowDepth(S, (int)changed.Value); }
+            if (let.GetShadowDepth(E).Equals(oldvalue) & changed.Label.Equals("Shadow depth at end")) { let.SetShadowDepth(E, (int)changed.Value); }
+
+            //if (changed.Label.Equals("Path"))
+            //{
+            //    let.SetPathTreeNode(PathTreeNode.GetFromString(avstn, changed.Value.ToString()));
+
+            //}
+        }
+
+        private void CompareAndUpdateSyllable(GridItem changed, object oldvalue, Syllable syl)
+        {
+            long S = syl.SyllableStart, E = syl.SyllableEnd;
+
+            if (S.Equals(oldvalue) & changed.Label.Equals("Start time")) { syl.SyllableStart = (long)changed.Value; }
+            if (E.Equals(oldvalue) & changed.Label.Equals("End time")) { syl.SyllableEnd = (long)changed.Value; }
+            if (syl.GetAngleX(S).Equals(oldvalue) & changed.Label.Equals("Angle X at start")) { syl.SetAngleX(S, (int)changed.Value); }
+            if (syl.GetAngleX(E).Equals(oldvalue) & changed.Label.Equals("Angle X at end")) { syl.SetAngleX(E, (int)changed.Value); }
+            if (syl.GetAngleY(S).Equals(oldvalue) & changed.Label.Equals("Angle Y at start")) { syl.SetAngleY(S, (int)changed.Value); }
+            if (syl.GetAngleY(E).Equals(oldvalue) & changed.Label.Equals("Angle Y at end")) { syl.SetAngleY(E, (int)changed.Value); }
+            if (syl.GetAngleZ(S).Equals(oldvalue) & changed.Label.Equals("Angle Z at start")) { syl.SetAngleZ(S, (int)changed.Value); }
+            if (syl.GetAngleZ(E).Equals(oldvalue) & changed.Label.Equals("Angle Z at end")) { syl.SetAngleZ(E, (int)changed.Value); }
+            if (syl.GetFrontColor(S).Equals(oldvalue) & changed.Label.Equals("Front color at start")) { syl.SetFrontColor(S, (Color)changed.Value); }
+            if (syl.GetFrontColor(E).Equals(oldvalue) & changed.Label.Equals("Front color at end")) { syl.SetFrontColor(E, (Color)changed.Value); }
+            if (syl.GetBackColor(S).Equals(oldvalue) & changed.Label.Equals("Back color at start")) { syl.SetBackColor(S, (Color)changed.Value); }
+            if (syl.GetBackColor(E).Equals(oldvalue) & changed.Label.Equals("Back color at end")) { syl.SetBackColor(E, (Color)changed.Value); }
+            if (syl.GetBorderColor(S).Equals(oldvalue) & changed.Label.Equals("Border color at start")) { syl.SetBorderColor(S, (Color)changed.Value); }
+            if (syl.GetBorderColor(E).Equals(oldvalue) & changed.Label.Equals("Border color at end")) { syl.SetBorderColor(E, (Color)changed.Value); }
+            if (syl.GetShadowColor(S).Equals(oldvalue) & changed.Label.Equals("Shadow color at start")) { syl.SetShadowColor(S, (Color)changed.Value); }
+            if (syl.GetShadowColor(E).Equals(oldvalue) & changed.Label.Equals("Shadow color at end")) { syl.SetShadowColor(E, (Color)changed.Value); }
+            if (syl.GetRelativePositionX(S).Equals(oldvalue) & changed.Label.Equals("Position X at start")) { syl.SetRelativePositionX(S, (float)changed.Value); }
+            if (syl.GetRelativePositionX(E).Equals(oldvalue) & changed.Label.Equals("Position X at end")) { syl.SetRelativePositionX(E, (float)changed.Value); }
+            if (syl.GetRelativePositionY(S).Equals(oldvalue) & changed.Label.Equals("Position Y at start")) { syl.SetRelativePositionY(S, (float)changed.Value); }
+            if (syl.GetRelativePositionY(E).Equals(oldvalue) & changed.Label.Equals("Position Y at end")) { syl.SetRelativePositionY(E, (float)changed.Value); }
+            if (syl.GetQuakeX(S).Equals(oldvalue) & changed.Label.Equals("Quake X at start")) { syl.SetQuakeX(S, (int)changed.Value); }
+            if (syl.GetQuakeX(E).Equals(oldvalue) & changed.Label.Equals("Quake X at end")) { syl.SetQuakeX(E, (int)changed.Value); }
+            if (syl.GetQuakeY(S).Equals(oldvalue) & changed.Label.Equals("Quake Y at start")) { syl.SetQuakeY(S, (int)changed.Value); }
+            if (syl.GetQuakeY(E).Equals(oldvalue) & changed.Label.Equals("Quake Y at end")) { syl.SetQuakeY(E, (int)changed.Value); }
+            if (syl.GetScaleX(S).Equals(oldvalue) & changed.Label.Equals("Scale X at start")) { syl.SetScaleX(S, (float)changed.Value); }
+            if (syl.GetScaleX(E).Equals(oldvalue) & changed.Label.Equals("Scale X at end")) { syl.SetScaleX(E, (float)changed.Value); }
+            if (syl.GetScaleY(S).Equals(oldvalue) & changed.Label.Equals("Scale Y at start")) { syl.SetScaleY(S, (float)changed.Value); }
+            if (syl.GetScaleY(E).Equals(oldvalue) & changed.Label.Equals("Scale Y at end")) { syl.SetScaleY(E, (float)changed.Value); }
+            if (syl.GetBorderWeight(S).Equals(oldvalue) & changed.Label.Equals("Border weight at start")) { syl.SetBorderWeight(S, (int)changed.Value); }
+            if (syl.GetBorderWeight(E).Equals(oldvalue) & changed.Label.Equals("Border weight at end")) { syl.SetBorderWeight(E, (int)changed.Value); }
+            if (syl.GetShadowDepth(S).Equals(oldvalue) & changed.Label.Equals("Shadow depth at start")) { syl.SetShadowDepth(S, (int)changed.Value); }
+            if (syl.GetShadowDepth(E).Equals(oldvalue) & changed.Label.Equals("Shadow depth at end")) { syl.SetShadowDepth(E, (int)changed.Value); }
+
+            //if (changed.Label.Equals("Path"))
+            //{
+            //    syl.SetPathTreeNode(PathTreeNode.GetFromString(avstn, changed.Value.ToString()));
+
+            //}
+        }
+
+        private void CompareAndUpdateSentence(GridItem changed, object oldvalue, Sentence sen)
+        {
+            long S = sen.SentenceStart, E = sen.SentenceEnd;
+
+            if (S.Equals(oldvalue) & changed.Label.Equals("Start time")) { sen.SentenceStart = (long)changed.Value; }
+            if (E.Equals(oldvalue) & changed.Label.Equals("End time")) { sen.SentenceEnd = (long)changed.Value; }
+            if (sen.GetAngleX(S).Equals(oldvalue) & changed.Label.Equals("Angle X at start")) { sen.SetAngleX(S, (int)changed.Value); }
+            if (sen.GetAngleX(E).Equals(oldvalue) & changed.Label.Equals("Angle X at end")) { sen.SetAngleX(E, (int)changed.Value); }
+            if (sen.GetAngleY(S).Equals(oldvalue) & changed.Label.Equals("Angle Y at start")) { sen.SetAngleY(S, (int)changed.Value); }
+            if (sen.GetAngleY(E).Equals(oldvalue) & changed.Label.Equals("Angle Y at end")) { sen.SetAngleY(E, (int)changed.Value); }
+            if (sen.GetAngleZ(S).Equals(oldvalue) & changed.Label.Equals("Angle Z at start")) { sen.SetAngleZ(S, (int)changed.Value); }
+            if (sen.GetAngleZ(E).Equals(oldvalue) & changed.Label.Equals("Angle Z at end")) { sen.SetAngleZ(E, (int)changed.Value); }
+            if (sen.GetFrontColor(S).Equals(oldvalue) & changed.Label.Equals("Front color at start")) { sen.SetFrontColor(S, (Color)changed.Value); }
+            if (sen.GetFrontColor(E).Equals(oldvalue) & changed.Label.Equals("Front color at end")) { sen.SetFrontColor(E, (Color)changed.Value); }
+            if (sen.GetBackColor(S).Equals(oldvalue) & changed.Label.Equals("Back color at start")) { sen.SetBackColor(S, (Color)changed.Value); }
+            if (sen.GetBackColor(E).Equals(oldvalue) & changed.Label.Equals("Back color at end")) { sen.SetBackColor(E, (Color)changed.Value); }
+            if (sen.GetBorderColor(S).Equals(oldvalue) & changed.Label.Equals("Border color at start")) { sen.SetBorderColor(S, (Color)changed.Value); }
+            if (sen.GetBorderColor(E).Equals(oldvalue) & changed.Label.Equals("Border color at end")) { sen.SetBorderColor(E, (Color)changed.Value); }
+            if (sen.GetShadowColor(S).Equals(oldvalue) & changed.Label.Equals("Shadow color at start")) { sen.SetShadowColor(S, (Color)changed.Value); }
+            if (sen.GetShadowColor(E).Equals(oldvalue) & changed.Label.Equals("Shadow color at end")) { sen.SetShadowColor(E, (Color)changed.Value); }
+            if (sen.GetRelativePositionX(S).Equals(oldvalue) & changed.Label.Equals("Position X at start")) { sen.SetRelativePositionX(S, (float)changed.Value); }
+            if (sen.GetRelativePositionX(E).Equals(oldvalue) & changed.Label.Equals("Position X at end")) { sen.SetRelativePositionX(E, (float)changed.Value); }
+            if (sen.GetRelativePositionY(S).Equals(oldvalue) & changed.Label.Equals("Position Y at start")) { sen.SetRelativePositionY(S, (float)changed.Value); }
+            if (sen.GetRelativePositionY(E).Equals(oldvalue) & changed.Label.Equals("Position Y at end")) { sen.SetRelativePositionY(E, (float)changed.Value); }
+            if (sen.GetQuakeX(S).Equals(oldvalue) & changed.Label.Equals("Quake X at start")) { sen.SetQuakeX(S, (int)changed.Value); }
+            if (sen.GetQuakeX(E).Equals(oldvalue) & changed.Label.Equals("Quake X at end")) { sen.SetQuakeX(E, (int)changed.Value); }
+            if (sen.GetQuakeY(S).Equals(oldvalue) & changed.Label.Equals("Quake Y at start")) { sen.SetQuakeY(S, (int)changed.Value); }
+            if (sen.GetQuakeY(E).Equals(oldvalue) & changed.Label.Equals("Quake Y at end")) { sen.SetQuakeY(E, (int)changed.Value); }
+            if (sen.GetScaleX(S).Equals(oldvalue) & changed.Label.Equals("Scale X at start")) { sen.SetScaleX(S, (float)changed.Value); }
+            if (sen.GetScaleX(E).Equals(oldvalue) & changed.Label.Equals("Scale X at end")) { sen.SetScaleX(E, (float)changed.Value); }
+            if (sen.GetScaleY(S).Equals(oldvalue) & changed.Label.Equals("Scale Y at start")) { sen.SetScaleY(S, (float)changed.Value); }
+            if (sen.GetScaleY(E).Equals(oldvalue) & changed.Label.Equals("Scale Y at end")) { sen.SetScaleY(E, (float)changed.Value); }
+            if (sen.GetBorderWeight(S).Equals(oldvalue) & changed.Label.Equals("Border weight at start")) { sen.SetBorderWeight(S, (int)changed.Value); }
+            if (sen.GetBorderWeight(E).Equals(oldvalue) & changed.Label.Equals("Border weight at end")) { sen.SetBorderWeight(E, (int)changed.Value); }
+            if (sen.GetShadowDepth(S).Equals(oldvalue) & changed.Label.Equals("Shadow depth at start")) { sen.SetShadowDepth(S, (int)changed.Value); }
+            if (sen.GetShadowDepth(E).Equals(oldvalue) & changed.Label.Equals("Shadow depth at end")) { sen.SetShadowDepth(E, (int)changed.Value); }
+
+            //if (changed.Label.Equals("Path"))
+            //{
+            //    sen.SetPathTreeNode(PathTreeNode.GetFromString(avstn, changed.Value.ToString()));
+
+            //}
         }
     }
 }

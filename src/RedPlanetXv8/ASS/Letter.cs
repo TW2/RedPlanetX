@@ -16,7 +16,6 @@ namespace RedPlanetXv8.ASS
         private Color _outlineColor = Color.Black;
         private Color _shadowColor = Color.Black;
         private RectangleF _rf = RectangleF.Empty;
-        private Font _font = new Font("Arial", 40, FontStyle.Bold);
 
         //Ces données sont remplit dans Syllable
         private long _duration_ms = 0;
@@ -25,6 +24,9 @@ namespace RedPlanetXv8.ASS
         private long _sentence_duration_ms = 0;
         private long _sentence_start_ms = 0;
         private long _sentence_end_ms = 0;
+        private long _let_duration_ms = 0;
+        private long _let_start_ms = 0;
+        private long _let_end_ms = 0;
 
         private Sentence _from_sentence = null;
         private Syllable _from_syllable = null;
@@ -75,10 +77,22 @@ namespace RedPlanetXv8.ASS
             set { _rf = value; }
         }
 
-        public Font Font
+        public long LetterDuration
         {
-            get { return _font; }
-            set { _font = value; }
+            get { return _let_duration_ms; }
+            set { _let_duration_ms = value; }
+        }
+
+        public long LetterStart
+        {
+            get { return _let_start_ms; }
+            set { _let_start_ms = value; }
+        }
+
+        public long LetterEnd
+        {
+            get { return _let_end_ms; }
+            set { _let_end_ms = value; }
         }
 
         public long SyllableDuration
@@ -133,21 +147,39 @@ namespace RedPlanetXv8.ASS
         {
             if (time >= _sentence_start_ms && time <= _sentence_end_ms)
             {
-                int _angle_x = GetAngleX(time);
-                int _angle_y = GetAngleY(time);
-                int _angle_z = GetAngleZ(time);
-                Color _front_color = GetFrontColor(time);
-                Color _back_color = GetBackColor(time); //(unused)
-                Color _border_color = GetBorderColor(time);
-                Color _shadow_color = GetShadowColor(time);
-                float _relative_position_x = GetRelativePositionX(time);
-                float _relative_position_y = GetRelativePositionY(time);
-                int _quake_x = GetQuakeX(time);
-                int _quake_y = GetQuakeY(time);
-                float _scale_x = GetScaleX(time); //de 0.0 à 100.0
-                float _scale_y = GetScaleY(time); //de 0.0 à 100.0
-                int _border_weight = GetBorderWeight(time);
-                int _shadow_depth = GetShadowDepth(time);
+                int _angle_x = GetAngleX(time) 
+                    + FromSyllable.GetAngleX(time) 
+                    + FromSentence.GetAngleX(time);
+                int _angle_y = GetAngleY(time)
+                    + FromSyllable.GetAngleY(time)
+                    + FromSentence.GetAngleY(time);
+                int _angle_z = GetAngleZ(time)
+                    + FromSyllable.GetAngleZ(time)
+                    + FromSentence.GetAngleZ(time);
+                Color _front_color = ColorMix(GetFrontColor(time), FromSyllable.GetFrontColor(time), FromSentence.GetFrontColor(time));
+                Color _back_color = ColorMix(GetBackColor(time), FromSyllable.GetBackColor(time), FromSentence.GetBackColor(time)); //(unused)
+                Color _border_color = ColorMix(GetBorderColor(time), FromSyllable.GetBorderColor(time), FromSentence.GetBorderColor(time));
+                Color _shadow_color = ColorMix(GetShadowColor(time), FromSyllable.GetShadowColor(time), FromSentence.GetShadowColor(time));
+                float _relative_position_x = GetRelativePositionX(time)
+                    + FromSyllable.GetRelativePositionX(time)
+                    + FromSentence.GetRelativePositionX(time);
+                float _relative_position_y = GetRelativePositionY(time)
+                    + FromSyllable.GetRelativePositionY(time)
+                    + FromSentence.GetRelativePositionY(time);
+                int _quake_x = GetQuakeX(time)
+                    + FromSyllable.GetQuakeX(time)
+                    + FromSentence.GetQuakeX(time);
+                int _quake_y = GetQuakeY(time)
+                    + FromSyllable.GetQuakeY(time)
+                    + FromSentence.GetQuakeY(time);
+                float _scale_x = ScaleMix(GetScaleX(time), FromSyllable.GetScaleX(time), FromSentence.GetScaleX(time)); //de 0.0 à 100.0
+                float _scale_y = ScaleMix(GetScaleY(time), FromSyllable.GetScaleY(time), FromSentence.GetScaleY(time)); //de 0.0 à 100.0
+                int _border_weight = GetBorderWeight(time)
+                    + FromSyllable.GetBorderWeight(time)
+                    + FromSentence.GetBorderWeight(time);
+                int _shadow_depth = GetShadowDepth(time)
+                    + FromSyllable.GetShadowDepth(time)
+                    + FromSentence.GetShadowDepth(time);
 
 
                 using (SolidBrush sb = new SolidBrush(_mainColor))
@@ -156,8 +188,10 @@ namespace RedPlanetXv8.ASS
                 using (Pen border = new Pen(_border_color, _border_weight) { LineJoin = LineJoin.Round })
                 using (StringFormat sf = new StringFormat())
                 {
+                    Font _font = FromSentence.Font;
                     RectangleF new_rf = new RectangleF(_rf.X, _rf.Y, _rf.Width * 2, _rf.Height);
-                    
+
+                    gp.AddString(_string, _font.FontFamily, (int)_font.Style, _font.Size, new Point((int)_rf.X, (int)_rf.Y), sf);
 
                     g.ResetTransform();
                     g.RotateTransform(_angle_z);
@@ -171,15 +205,17 @@ namespace RedPlanetXv8.ASS
                     if (_shadow_depth > 0)
                     {
                         g.TranslateTransform(_shadow_depth, _shadow_depth);
-                        g.DrawString(_string, _font, shadow, new_rf);
+                        //g.DrawString(_string, _font, shadow, new_rf);
+                        g.FillPath(shadow, gp);
                         g.TranslateTransform(-_shadow_depth, -_shadow_depth);
                     }
-                    //if (_border_weight > 0)
-                    //{
-                    //    g.DrawPath(border, gp);
-                    //}
+                    if (_border_weight > 0)
+                    {
+                        g.DrawPath(border, gp);
+                    }
 
-                    g.DrawString(_string, _font, sb, new_rf);
+                    //g.DrawString(_string, _font, sb, new_rf);
+                    g.FillPath(sb, gp);
                     g.ResetTransform();
 
                     //switch (AlphaPosition.AlphaPositionType)
@@ -212,21 +248,39 @@ namespace RedPlanetXv8.ASS
         {
             if (time >= _start_ms && time <= _end_ms && time >= _sentence_start_ms && time <= _sentence_end_ms)
             {
-                int _angle_x = GetAngleX(time);
-                int _angle_y = GetAngleY(time);
-                int _angle_z = GetAngleZ(time);
-                Color _front_color = GetFrontColor(time);
-                Color _back_color = GetBackColor(time); //(unused)
-                Color _border_color = GetBorderColor(time);
-                Color _shadow_color = GetShadowColor(time);
-                float _relative_position_x = GetRelativePositionX(time);
-                float _relative_position_y = GetRelativePositionY(time);
-                int _quake_x = GetQuakeX(time);
-                int _quake_y = GetQuakeY(time);
-                float _scale_x = GetScaleX(time); //de 0.0 à 100.0
-                float _scale_y = GetScaleY(time); //de 0.0 à 100.0
-                int _border_weight = GetBorderWeight(time);
-                int _shadow_depth = GetShadowDepth(time);
+                int _angle_x = GetAngleX(time)
+                    + FromSyllable.GetAngleX(time)
+                    + FromSentence.GetAngleX(time);
+                int _angle_y = GetAngleY(time)
+                    + FromSyllable.GetAngleY(time)
+                    + FromSentence.GetAngleY(time);
+                int _angle_z = GetAngleZ(time)
+                    + FromSyllable.GetAngleZ(time)
+                    + FromSentence.GetAngleZ(time);
+                Color _front_color = ColorMix(GetFrontColor(time), FromSyllable.GetFrontColor(time), FromSentence.GetFrontColor(time));
+                Color _back_color = ColorMix(GetBackColor(time), FromSyllable.GetBackColor(time), FromSentence.GetBackColor(time)); //(unused)
+                Color _border_color = ColorMix(GetBorderColor(time), FromSyllable.GetBorderColor(time), FromSentence.GetBorderColor(time));
+                Color _shadow_color = ColorMix(GetShadowColor(time), FromSyllable.GetShadowColor(time), FromSentence.GetShadowColor(time));
+                float _relative_position_x = GetRelativePositionX(time)
+                    + FromSyllable.GetRelativePositionX(time)
+                    + FromSentence.GetRelativePositionX(time);
+                float _relative_position_y = GetRelativePositionY(time)
+                    + FromSyllable.GetRelativePositionY(time)
+                    + FromSentence.GetRelativePositionY(time);
+                int _quake_x = GetQuakeX(time)
+                    + FromSyllable.GetQuakeX(time)
+                    + FromSentence.GetQuakeX(time);
+                int _quake_y = GetQuakeY(time)
+                    + FromSyllable.GetQuakeY(time)
+                    + FromSentence.GetQuakeY(time);
+                float _scale_x = ScaleMix(GetScaleX(time), FromSyllable.GetScaleX(time), FromSentence.GetScaleX(time)); //de 0.0 à 100.0
+                float _scale_y = ScaleMix(GetScaleY(time), FromSyllable.GetScaleY(time), FromSentence.GetScaleY(time)); //de 0.0 à 100.0
+                int _border_weight = GetBorderWeight(time)
+                    + FromSyllable.GetBorderWeight(time)
+                    + FromSentence.GetBorderWeight(time);
+                int _shadow_depth = GetShadowDepth(time)
+                    + FromSyllable.GetShadowDepth(time)
+                    + FromSentence.GetShadowDepth(time);
 
                 using (SolidBrush sb = new SolidBrush(_karaColor))
                 using (SolidBrush shadow = new SolidBrush(_shadow_color))
@@ -234,7 +288,10 @@ namespace RedPlanetXv8.ASS
                 using (Pen border = new Pen(_border_color, _border_weight) { LineJoin = LineJoin.Round })
                 using (StringFormat sf = new StringFormat())
                 {
+                    Font _font = FromSentence.Font;
                     RectangleF new_rf = new RectangleF(_rf.X, _rf.Y, _rf.Width * 2, _rf.Height);
+
+                    gp.AddString(_string, _font.FontFamily, (int)_font.Style, _font.Size, new Point((int)_rf.X, (int)_rf.Y), sf);
 
                     g.ResetTransform();
                     g.RotateTransform(_angle_z);
@@ -247,15 +304,17 @@ namespace RedPlanetXv8.ASS
                     if (_shadow_depth > 0)
                     {
                         g.TranslateTransform(_shadow_depth, _shadow_depth);
-                        g.DrawString(_string, _font, shadow, new_rf);
+                        //g.DrawString(_string, _font, shadow, new_rf);
+                        g.FillPath(shadow, gp);
                         g.TranslateTransform(-_shadow_depth, -_shadow_depth);
                     }
-                    //if (_border_weight > 0)
-                    //{
-                    //    g.DrawPath(border, gp);
-                    //}
+                    if (_border_weight > 0)
+                    {
+                        g.DrawPath(border, gp);
+                    }
 
-                    g.DrawString(_string, _font, sb, new_rf);
+                    //g.DrawString(_string, _font, sb, new_rf);
+                    g.FillPath(sb, gp);
                     g.ResetTransform();
 
                     //switch (AlphaPosition.AlphaPositionType)
@@ -307,15 +366,15 @@ namespace RedPlanetXv8.ASS
         public int GetAngleX(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             int angleX_min = list[0].AngleX, angleX_max = list[1].AngleX;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return angleX_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return angleX_max;
             }
@@ -345,15 +404,15 @@ namespace RedPlanetXv8.ASS
         public int GetAngleY(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             int angleY_min = list[0].AngleY, angleY_max = list[1].AngleY;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return angleY_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return angleY_max;
             }
@@ -383,15 +442,15 @@ namespace RedPlanetXv8.ASS
         public int GetAngleZ(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             int angleZ_min = list[0].AngleZ, angleZ_max = list[1].AngleZ;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return angleZ_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return angleZ_max;
             }
@@ -423,15 +482,15 @@ namespace RedPlanetXv8.ASS
         public Color GetFrontColor(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             Color c_min = list[0].FrontColor, c_max = list[1].FrontColor;
 
             int diff_R = c_max.R - c_min.R;
             int diff_G = c_max.G - c_min.G;
             int diff_B = c_max.B - c_min.B;
 
-            approximative_time = lastMinValue <= 0 ? approximative_time : approximative_time - lastMinValue;
-            lastMaxValue = lastMinValue >= 0 ? lastMaxValue : lastMaxValue - lastMinValue;
+            approximative_time = lastMinValue == 0 ? approximative_time : approximative_time - lastMinValue;
+            lastMaxValue = lastMinValue == 0 ? lastMaxValue : lastMaxValue - lastMinValue;
 
             int delta_R = (int)(diff_R * approximative_time / lastMaxValue);
             int delta_G = (int)(diff_G * approximative_time / lastMaxValue);
@@ -455,15 +514,15 @@ namespace RedPlanetXv8.ASS
         public Color GetBackColor(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             Color c_min = list[0].BackColor, c_max = list[1].BackColor;
 
             int diff_R = c_max.R - c_min.R;
             int diff_G = c_max.G - c_min.G;
             int diff_B = c_max.B - c_min.B;
 
-            approximative_time = lastMinValue <= 0 ? approximative_time : approximative_time - lastMinValue;
-            lastMaxValue = lastMinValue >= 0 ? lastMaxValue : lastMaxValue - lastMinValue;
+            approximative_time = lastMinValue == 0 ? approximative_time : approximative_time - lastMinValue;
+            lastMaxValue = lastMinValue == 0 ? lastMaxValue : lastMaxValue - lastMinValue;
 
             int delta_R = (int)(diff_R * approximative_time / lastMaxValue);
             int delta_G = (int)(diff_G * approximative_time / lastMaxValue);
@@ -487,15 +546,15 @@ namespace RedPlanetXv8.ASS
         public Color GetBorderColor(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             Color c_min = list[0].BorderColor, c_max = list[1].BorderColor;
 
             int diff_R = c_max.R - c_min.R;
             int diff_G = c_max.G - c_min.G;
             int diff_B = c_max.B - c_min.B;
 
-            approximative_time = lastMinValue <= 0 ? approximative_time : approximative_time - lastMinValue;
-            lastMaxValue = lastMinValue >= 0 ? lastMaxValue : lastMaxValue - lastMinValue;
+            approximative_time = lastMinValue == 0 ? approximative_time : approximative_time - lastMinValue;
+            lastMaxValue = lastMinValue == 0 ? lastMaxValue : lastMaxValue - lastMinValue;
 
             int delta_R = (int)(diff_R * approximative_time / lastMaxValue);
             int delta_G = (int)(diff_G * approximative_time / lastMaxValue);
@@ -519,15 +578,15 @@ namespace RedPlanetXv8.ASS
         public Color GetShadowColor(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             Color c_min = list[0].ShadowColor, c_max = list[1].ShadowColor;
 
             int diff_R = c_max.R - c_min.R;
             int diff_G = c_max.G - c_min.G;
             int diff_B = c_max.B - c_min.B;
 
-            approximative_time = lastMinValue <= 0 ? approximative_time : approximative_time - lastMinValue;
-            lastMaxValue = lastMinValue >= 0 ? lastMaxValue : lastMaxValue - lastMinValue;
+            approximative_time = lastMinValue == 0 ? approximative_time : approximative_time - lastMinValue;
+            lastMaxValue = lastMinValue == 0 ? lastMaxValue : lastMaxValue - lastMinValue;
 
             int delta_R = (int)(diff_R * approximative_time / lastMaxValue);
             int delta_G = (int)(diff_G * approximative_time / lastMaxValue);
@@ -553,15 +612,15 @@ namespace RedPlanetXv8.ASS
         public float GetRelativePositionX(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             float pos_min = list[0].RelativePositionX, pos_max = list[1].RelativePositionX;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return pos_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return pos_max;
             }
@@ -591,15 +650,15 @@ namespace RedPlanetXv8.ASS
         public float GetRelativePositionY(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             float pos_min = list[0].RelativePositionY, pos_max = list[1].RelativePositionY;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return pos_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return pos_max;
             }
@@ -631,15 +690,15 @@ namespace RedPlanetXv8.ASS
         public int GetQuakeX(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             int quake_min = list[0].QuakeX, quake_max = list[1].QuakeX;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return quake_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return quake_max;
             }
@@ -669,15 +728,15 @@ namespace RedPlanetXv8.ASS
         public int GetQuakeY(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             int quake_min = list[0].QuakeY, quake_max = list[1].QuakeY;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return quake_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return quake_max;
             }
@@ -709,15 +768,15 @@ namespace RedPlanetXv8.ASS
         public float GetScaleX(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             float scale_min = list[0].ScaleX, scale_max = list[1].ScaleX;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return scale_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return scale_max;
             }
@@ -747,15 +806,15 @@ namespace RedPlanetXv8.ASS
         public float GetScaleY(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             float scale_min = list[0].ScaleY, scale_max = list[1].ScaleY;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return scale_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return scale_max;
             }
@@ -787,15 +846,15 @@ namespace RedPlanetXv8.ASS
         public int GetBorderWeight(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             int b_min = list[0].BorderWeight, b_max = list[1].BorderWeight;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return b_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return b_max;
             }
@@ -825,15 +884,15 @@ namespace RedPlanetXv8.ASS
         public int GetShadowDepth(long approximative_time)
         {
             List<LetterProfile> list = new List<LetterProfile>(_moments.Keys);
-            long lastMinValue = _start_ms, lastMaxValue = _end_ms;
+            long lastMinValue = _let_start_ms, lastMaxValue = _let_end_ms;
             int b_min = list[0].ShadowDepth, b_max = list[1].ShadowDepth;
 
-            if (lastMinValue <= approximative_time)
+            if (lastMinValue == approximative_time)
             {
                 return b_min;
             }
 
-            if (lastMaxValue >= approximative_time)
+            if (lastMaxValue == approximative_time)
             {
                 return b_max;
             }
@@ -852,6 +911,36 @@ namespace RedPlanetXv8.ASS
             }
         }
         #endregion
+
+        private Color ColorMix(Color c1, Color c2, Color c3)
+        {
+            int a1 = c1.A, a2 = c2.A, a3 = c3.A;
+            int r1 = c1.R, r2 = c2.R, r3 = c3.R;
+            int g1 = c1.G, g2 = c2.G, g3 = c3.G;
+            int b1 = c1.B, b2 = c2.B, b3 = c3.B;
+
+            int alpha = (a1 + a2 + a3) / 3;
+            int red = (r1 + r2 + r3) / 3;
+            int green = (g1 + g2 + g3) / 3;
+            int blue = (b1 + b2 + b3) / 3;
+
+            if (alpha < 0) { alpha = 0; }
+            if (alpha > 255) { alpha = 255; }
+            if (red < 0) { red = 0; }
+            if (red > 255) { red = 255; }
+            if (green < 0) { green = 0; }
+            if (green > 255) { green = 255; }
+            if (blue < 0) { blue = 0; }
+            if (blue > 255) { blue = 255; }
+
+            return Color.FromArgb(alpha, red, green, blue);
+        }
+
+        private float ScaleMix(float s1, float s2, float s3)
+        {
+            //100% >> 100.0f
+            return (s1 + s2 + s3) / 3f;
+        }
 
     }
 
