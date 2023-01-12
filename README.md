@@ -1,27 +1,30 @@
-RedPlanetX
-==========
+# RedPlanetX
+
+
+| Discord |
+| ------- |
+| <a href="https://discord.gg/ssU9SKg">![Discord](https://github.com/TW2/logonator/blob/main/logos/discord-100x40.png)</a> |
 
 A small tool to modify videos.
 
 Here is RedPlanetXv8 (RedPlanet Xpress) which is a tool that can modify video from Avisynth video or can create a video from scratch (in the future, with the drawing tool)
 
 Functions:
-<ul>
-<li>Read video from Avisynth (works fine <img src="https://s5.postimg.org/k91c77q0n/16_OK.png" /> )</li>
-<li>Load ASS with karaoke and display it (works fine <img src="https://s5.postimg.org/k91c77q0n/16_OK.png" />, TODO order of layers)</li>
-<li>Horizontal text (normal text or karaoke, TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" />, TODO order of layers)</li>
-<li>Vertical text (normal text or karaoke, TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" />, TODO order of layers)</li>
-<li>Text area (normal text or karaoke, TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" />, TODO order of layers)</li>
-<li>Image mode (TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" /> with drawing, TODO order of layers)</li>
-<li>Video mode (TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" /> with drawing if possible, TODO order of layers)</li>
-<li>Add shape drawing over the video (works fine <img src="https://s5.postimg.org/k91c77q0n/16_OK.png" />, TODO order of layers)</li>
-<li>Set properties to shape (works fine <img src="https://s5.postimg.org/k91c77q0n/16_OK.png" /> )</li>
-<li>Add a path to shape (works fine <img src="https://s5.postimg.org/k91c77q0n/16_OK.png" /> )</li>
-<li>Add drawing over the video (TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" />, TODO order of layers)</li>
-<li>Add parent (Not Complete)</li>
-<li>Configuration (TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" />)</li>
-<li>Encode with ffmpeg (TODO <img src="https://s5.postimg.org/63vj5egzb/16_KO.png" />)</li>
-</ul>
+
+- [x] Read video from Avisynth (works fine)
+- [x] Load ASS with karaoke and display it (works fine, TODO order of layers)
+- [ ] Horizontal text (normal text or karaoke, TODO order of layers)
+- [ ] Vertical text (normal text or karaoke, TODO order of layers)
+- [ ] Text area (normal text or karaoke, TODO order of layers)
+- [ ] Image mode (TODO with drawing, TODO order of layers)
+- [ ] Video mode (TODO with drawing if possible, TODO order of layers)
+- [ ] Add shape drawing over the video (works fine, TODO order of layers)
+- [x] Set properties to shape (works fine)
+- [x] Add a path to shape (works fine)
+- [ ] Add drawing over the video (TODO order of layers)
+- [ ] Add parent (Not Complete)
+- [ ] Configuration (TODO)
+- [ ] Encode with ffmpeg (TODO)
 
 To test it I recommand to have Visual Studio 2015 Community because there is a lot of bugs or unfinished functions.
  
